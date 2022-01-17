@@ -1,0 +1,87 @@
+{
+  "version": "v2",
+  "intents": {
+    "what_services": {
+      "includes": [
+        "what services do you have",
+        "what can you offer",
+        "I would like",
+        "I'd like",
+        "I need help",
+        "services",
+        "could you help me",
+        "tell me about your services"
+      ]
+    },
+    "order_food": {
+      "includes": [
+        "I'd like to order some food",
+        "I'd like something to eat",
+        "I'd like to order something to eat",
+        "some food",
+        "food",
+        "something to eat",
+        "breakfast",
+        "lunch",
+        "dinner",
+        "want some food",
+        "make an order",
+        "order to my room",
+        "order some food to my room"
+      ],
+      "excludes": [
+        "services",
+        "service"
+      ]
+    },
+    "need_cleaning": {
+      "includes": [
+        "I'd like my room cleaned",
+        "clean the room",
+        "cleaned",
+        "my room cleaned",
+        "could someone clean my room please",
+        "get the room cleaned",
+        "the room cleaned up",
+        "the room cleaned"
+      ]
+    },
+    "check_out_info": {
+      "includes": [
+        "question about check out",
+        "check out question",
+        "checkout",
+        "I have a question about my check out",
+        "I have a question about the checkout",
+        "check out",
+        "my checkout",
+        "my check out",
+        "regarding the checkout",
+        "about the checkout",
+        "about my checkout"
+      ]
+    },
+    "agreement#pos": {
+      "includes": [
+        "yes",
+        "yeah",
+        "yes I confirm",
+        "confirm",
+        "correct",
+        "yes thats correct",
+        "thats correct",
+        "affirmative"
+      ]
+    },
+    "agreement#neg": {
+      "includes": ["no", "nope", "there is mistake", "thats wrong", "negative"]
+    },
+    "nothing": {
+      "includes": [
+        "nothing",
+        "don't want anything",
+        "do not need anything"
+      ]
+    }
+  }
+}
