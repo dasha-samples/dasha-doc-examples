@@ -1,4 +1,4 @@
-# Topic: Example name
+# NLU: Intents usage example
 
 ## Description
 
