@@ -1,0 +1,77 @@
+{
+  "version": "v2",
+  "entities": {
+    "estimation": {
+      "open_set": false,
+      "values": [
+        {
+          "value": "1",
+          "synonyms": ["one", "awful", "disaster"]
+        },
+        {
+          "value": "2",
+          "synonyms": [
+            "two",
+            "bad",
+            "not good",
+            "pretty bad",
+            "shitty",
+            "don't like",
+            "do not like"
+          ]
+        },
+        {
+          "value": "3",
+          "synonyms": ["tree", "boring", "not interesting"]
+        },
+        {
+          "value": "4",
+          "synonyms": ["four", "good", "not bad", "pretty good", "fine", "like"]
+        },
+        {
+          "value": "5",
+          "synonyms": ["five", "excellent", "fantastic", "brilliant"]
+        }
+      ],
+      "includes": [
+        "It was (brilliant)[estimation]",
+        "I think it was (fine)[estimation]"
+      ],
+      "excludes": ["what", "repeat"]
+    },
+    "service": {
+      "open_set": true,
+      "values": [
+        {
+          "value": "courier",
+          "synonyms": ["carrier", "postman"]
+        },
+        {
+          "value": "time",
+          "synonyms": [
+            "delivery time",
+            "speed",
+            "time of delivery",
+            "slow",
+            "fast"
+          ]
+        },
+        {
+          "value": "convenience",
+          "synonyms": [
+            "comfortable",
+            "uncomfortable",
+            "convenient",
+            "inconvenient"
+          ]
+        }
+      ],
+      "includes": [
+        "Delivery was (inconvenient)[service] and (slow)[service] and (postman)[service] was untidy"
+      ],
+      "excludes": [
+        "the"
+      ]
+    }
+  }
+}
