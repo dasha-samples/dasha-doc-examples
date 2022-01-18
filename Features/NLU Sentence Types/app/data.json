@@ -1,0 +1,27 @@
+{
+  "version": "v2",
+  "intents": {
+    "finish": {
+      "includes": [
+        "finish",
+        "exit",
+        "close",
+        "finish the (dialog)[dialogue]",
+        "exit the (dialog)[dialogue]",
+        "I want to finish this (conversation)[dialogue]",
+        "I want this (dialog)[dialogue] to be over"
+      ]
+    }
+  },
+  "entities": {
+    "dialogue": {
+      "open_set": false,
+      "values": [
+        {
+          "value": "dialogue",
+          "synonyms": ["conversation", "dialog"]
+        }
+      ]
+    }
+  }
+}
