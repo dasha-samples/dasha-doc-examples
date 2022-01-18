@@ -1,3 +1,19 @@
+/**
+
+The dialog of this demo is linear: nodes are switching one by one.
+
+In the node `greeting` user is asked about his estimation. 
+If such estimation is parsed, the dialog continues in node `get_feedback`. 
+Otherwise, the digression `dont_understand` is triggered and user is asked about the estimation again.
+
+When we come to the node `get_feedback`, we are sure that user has already said his estimation. 
+The output var `$estimation` is set with parsed number. 
+Then the user is asked about our services depending on estimation value and dialog continues in the last node after user says anything.
+
+In the last node `goodbye` user feedback is set with last raw user input and with services that are parsed from this input.
+
+*/
+
 context {
     // input parameters (provided outside)
     // phone to call
@@ -13,6 +29,7 @@ context {
 
 start node root {
     do {
+        #log("node 'root'");
         #connectSafe($phone);
         // waiting until user says something
         // if nothing happens during 2000 ms, force-start the dialog
@@ -36,6 +53,7 @@ start node root {
 
 node greeting {
     do {
+        #log("node 'greeting'");
         #sayText("Hi, this is delivery service quality control department.");
         #sayText("How would you evaluate our service?");
         // now user asked to evaluate our delivery service
@@ -52,8 +70,10 @@ node greeting {
 
 node get_feedback {
     do {
+        #log("node 'get_feedback'");
         // convert first parsed user estimation to number
         set $estimation = #messageGetData("estimation")[0]?.value?.parseNumber();
+        #log({estimation: $estimation});
         // threshold of good estimation is 4
         if ($estimation is not null && $estimation >= 4) {
             set $feedback = "[good] ";
@@ -72,6 +92,7 @@ node get_feedback {
 
 node goodbye {
     do {
+        #log("node 'goodbye'");
         // if entity 'service' was parsed
         if (#messageHasData("service")) {
             var services: string?[] = [];
@@ -98,6 +119,7 @@ digression dont_understand {
         on true priority -100;
     }
     do {
+        #log("digression 'dont_understand'");
         // say phrase that will no be repeated 
         #sayText("Sorry, I did not get it", repeatMode:"ignore");
         // repeat last phrase without 'repeatMode:"ignore"' option
@@ -113,6 +135,7 @@ digression user_hangup {
         on true priority 100 tags: onclosed;
     }
     do {
+        #log("digression 'user_hangup'");
         exit;
     }
 }

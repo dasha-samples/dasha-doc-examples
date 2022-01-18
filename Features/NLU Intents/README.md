@@ -57,7 +57,15 @@ Run `npm start chat` for launching text chat or run `npm start <your_phone_numbe
 
 ## Detailed script description
 
-...
+This demo mostly uses [digressions](https://docs.dasha.ai/en-us/default/dasha-script-language/program-structure#digression) since the logic of the script assume that user asks questions and requests us about something.
+
+After the initiating the call in `root` and asking the user in `greeting` the dialog waits in node `main_hub`.
+This node is made just for waiting for any triggers and returning back here after the trigger is handled.
+
+The triggers are implemented with digressions (`what_services`, `order_food`, `check_out_info`, `need_cleaning`, `goodbye`) and corresponding intents that are specified in `data.json`. 
+Note that intent `"bye"` is the system intent. It is available due to enabling skill "common_phrases" in `.dashaapp`.
+
+Every digression contains phrases that are said to the user and after they are done, dialog returns to the further listening. Except for `goodbye` - this digression is used as a trigger for exiting dialog.
 
 ## Dialogue example
 
