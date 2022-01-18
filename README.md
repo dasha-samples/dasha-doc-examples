@@ -12,6 +12,9 @@ Features
  - NLU Sentence Types
  - NLU Full example
  - DSL Digressions
+   - Simple
+   - Shared
+   - Preprocessor
  - DSL Multi file
  - DSL Common libraries
    - Answering machine detection
@@ -41,6 +44,7 @@ Integrations
    - CSV file
    - Postgresql
    - Mongo
+   - MySQL
  - HTTP
    - Calling HTTP API from your application
    - HTTP Server with Dasha
