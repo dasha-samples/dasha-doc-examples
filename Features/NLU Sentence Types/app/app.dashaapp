@@ -1,6 +1,6 @@
 {
   "formatVersion": "2",
-  "name": "dasha-blank-demo",
+  "name": "dasha-sentence-types-demo",
   "dialogue": {
     "file": "main.dsl"
   },

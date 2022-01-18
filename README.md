@@ -9,7 +9,7 @@ Every example is supposed to be independent and simplified as much as possible d
 Features
  - [NLU Intents](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Intents)
  - [NLU Entities](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Entities)
- - NLU Sentence Types
+ - [NLU Sentence Types](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Sentence%20Types)
  - NLU Full example
  - DSL Digressions
    - Simple
