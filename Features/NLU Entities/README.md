@@ -46,7 +46,13 @@ Run `npm start chat` for launching text chat or run `npm start <your_phone_numbe
 
 ## Detailed script description
 
-...
+The dialog of this demo is linear: nodes are switching one by one.
+
+In the node `greeting` user is asked about his estimation. If such estimation is parsed, the dialog continues in node `get_feedback`. Otherwise, the digression `dont_understand` is triggered and user is asked about the estimation again.
+
+When we come to the node `get_feedback`, we are sure that user has already said his estimation. The output var `$estimation` is set with parsed number. Then the user is asked about our services depending on estimation value and dialog continues in the last node after user says anything.
+
+In the last node `goodbye` user feedback is set with last raw user input and with services that are parsed from this input.
 
 ## Dialogue example
 
