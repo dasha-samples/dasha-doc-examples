@@ -11,9 +11,9 @@ To explore these features independently, please see docs and demos:
 See also [DSL NLU control documentation](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#nlu-control).
 
 The main goal of this demo is to demonstrate the *connection* between *entities* and *intents*.
-As it mentioned in other demos and docs, intents are made to express user's requests, wishes and feelings (i.e. intentions). 
+As it mentioned in other demos and docs, intents are to express user's requests, wishes and feelings (i.e. intentions). 
 At the same time entities often serve as the objects operated by user intentions.
-Moreover when creating entities the **must** be marked up (so that they are able to be extracted later). 
+Moreover when creating entities they **must** be marked up (so that they are able to be extracted later). 
 This marking up can be done in `includes` sections either in intents or in entities.
 That is why the connection between entities and intents can be pretty strong.
 
@@ -23,10 +23,10 @@ To do that we have to collect several pieces of data from user:
 - target account
 - amount of money to transfer
 
-Let's discuss the building our nlu model.
+Let's discuss the building of our nlu model.
 Take a look on `app/data.json` file.
 
-We assume that the only option the user can ask Dasha is to transfer money from on of his accounts (particularly, `saving` or `deposit`) to some another account (his or some bank account) - so we need the intent `transfer_money`.
+We assume that the only thing the user can ask Dasha is to transfer money from on of his accounts (particularly, `saving` or `deposit`) to some another account (his or some bank account) - so we need the intent `transfer_money`.
 
 Also we have to collect the source and target accounts. 
 To do that we need entities that represent user accounts (`account` entity) and bank accounts (`bank` entity) - see `app/data.json`.
@@ -175,8 +175,13 @@ conversation result {
 
 ```
 AI: Hello, this is Acme bank. How can I help you?
-USER: Yes, please transfer 100 dollars to Wells Fargo
+USER: Transfer money
 AI: Absolutely, we can assist you with that.
+AI: Please, tell me
+AI: From what source account would you like to transfer?
+AI: and
+AI: What is your target account?
+USER: Please transfer 100 dollars to Wells Fargo
 AI: Please, tell me
 AI: From what source account would you like to transfer?
 USER: What is my source account?
@@ -198,6 +203,7 @@ AI: Is that correct?
 USER: Yes
 AI: Wait for a second please while I'm executing the transfer.
 AI: Transfer failed. Have a great day!
+----
 conversation result {
   result: {
     source_account: 'deposit',
