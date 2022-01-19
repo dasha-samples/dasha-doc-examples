@@ -99,6 +99,31 @@
         "(JPMorgan)[bank] please"
       ],
       "excludes": ["dwell", "dwells"]
+    },
+    "transfer_item": {
+      "open_set": false,
+      "values": [
+        {
+          "value": "source_account",
+          "synonyms": ["source account", "source"]
+        },
+        {
+          "value": "target_account",
+          "synonyms": ["target account", "target"]
+        },
+        {
+          "value": "amount",
+          "synonyms": ["money amount", "transfer amount", "amount of money"]
+        }
+      ],
+      "includes": [
+        "What is (source account)[transfer_item]",
+        "What is my (target)[transfer_item]",
+        "What is (transfer amount)[transfer_item]",
+        "How much is the (transfer amount)[transfer_item]",
+        "Please tell me, what is my (transfer amount)[transfer_item]",
+        "How (much)[transfer_item] do I transfer"
+      ]
     }
   }
 }

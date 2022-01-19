@@ -1,8 +1,13 @@
-# Topic: Example name
+# NLU: Intents and Entities example
 
 ## Description
 
-[Feature doc link](https://docs.dasha.ai/en-us/default/current-feature-doc)
+<!-- [Feature doc link](https://docs.dasha.ai/en-us/default/current-feature-doc) -->
+
+This demo uses both intents and entities
+
+[Intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents) [Entities doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-entities)
+
 
 Some common information about the feature. What is it? How do we handle it, i.e. what instruments are there in Dasha to rule this feature? [Link to original demo if needed](https://some.demo.com)
 
@@ -45,12 +50,53 @@ AI: Is that correct?
 USER: Yes
 AI: Wait for a second please while I'm executing the transfer.
 AI: Transfer is completed. Have a great day!
+----
 conversation result {
   result: {
     source_account: 'deposit',
     target_account: 'JPMorgan Chase',
     amount: '500',
     success: true
+  }
+}
+```
+
+```
+AI: Hello, this is Acme bank. How can I help you?
+USER: transfer 100 to JPMorgan bank
+AI: Absolutely, we can assist you with that.
+AI: Please, tell me
+AI: From what source account would you like to transfer?
+USER: deposit
+AI: Awesome! Let's summarize!
+AI: Transferring $100 from deposit to JPMorgan bank
+AI: Is that correct?
+USER: I'm sorry what is my source account again?
+AI: Your source account is deposit
+AI: Transferring $100 from deposit to JPMorgan bank
+AI: Is that correct?
+USER: What is my target? 
+AI: Your target account is JPMorgan bank
+AI: Transferring $100 from deposit to JPMorgan bank
+AI: Is that correct?
+USER: How much do I transfer?
+AI: Sorry, I did not get it
+AI: Transferring $100 from deposit to JPMorgan bank
+AI: Is that correct?
+USER: How much is the transfer amount?
+AI: Your transfer amount is 100
+AI: Transferring $100 from deposit to JPMorgan bank
+AI: Is that correct?
+USER: yes
+AI: Wait for a second please while I'm executing the transfer.
+AI: Transfer failed. Have a great day!
+----
+conversation result {
+  result: {
+    source_account: 'deposit',
+    target_account: 'JPMorgan bank',
+    amount: '100',
+    success: false
   }
 }
 ```
