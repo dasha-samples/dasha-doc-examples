@@ -1,7 +1,10 @@
-context
-{
+context {
+    // input parameters (provided outside)
+    // phone to call
     input phone: string;
 
+    // output parameters (will be set during the dialogue)
+    // resulting object with user parsed and validated data
     output result: {
         source_account: string;
         target_account: string;
@@ -15,27 +18,23 @@ context
     };
 }
 
-start node root
-{
-    do
-    {
+start node root {
+    do {
         #log("node 'root'");
         #connectSafe($phone);
         #waitForSpeech(1000);
-        #say("greeting");
-        
+        #sayText("Hello, this is Acme bank. How can I help you?");
         wait *;
     }
-    transitions
-    {
+    transitions {
         transfer_money: goto transfer_money on #messageHasIntent("transfer_money");
     }
 }
 
-preprocessor digression transfer_data
-{
-    conditions
-    {
+// preprocessor for parsing transfer data items (source account, target account, amount of money)
+preprocessor digression transfer_data {
+    conditions {
+        // triggers on any user input
         on true;
     }
     
@@ -47,11 +46,18 @@ preprocessor digression transfer_data
     do
     {
         #log("preprocessor 'transfer_data'");
-        set digression.transfer_data.amount = #messageGetData("numberword", { value: true })[0]?.value??"";
+        // set initials on every user input
+        set digression.transfer_data.amount = "";
+        set digression.transfer_data.source_account = "";
+        set digression.transfer_data.target_account = "";
+        set digression.transfer_data.account = "";
         
+        // parse numberwords to set amount of transferring money
+        set digression.transfer_data.amount = #messageGetData("numberword", { value: true })[0]?.value??"";
+        // parse mentioned user accounts and bank accounts
         var accounts = #messageGetData("account", { value: true, tag: true });
         var banks = #messageGetData("bank", { value: true, tag: true });
-
+        // try set source and target from user accounts
         for (var account in accounts) {
             if (account.tag == "source") {
                 set digression.transfer_data.source_account = account?.value??"";
@@ -59,6 +65,7 @@ preprocessor digression transfer_data
                 set digression.transfer_data.target_account = account?.value??"";
             }
         }
+        // try set source and target from bank accounts
         for (var bank in banks) {
             if (bank.tag == "source") {
                 set digression.transfer_data.source_account = bank?.value??"";
@@ -66,30 +73,28 @@ preprocessor digression transfer_data
                 set digression.transfer_data.target_account = bank?.value??"";
             }
         }
-
+        // set account that could not be parsed with source/target tag
         set digression.transfer_data.account = #messageGetData("account", { value: true, tag: false })[0]?.value 
                                                 ?? #messageGetData("bank", { value: true, tag: false })[0]?.value 
                                                 ?? "";
-
         #log({
             parsed_source_account: digression.transfer_data.source_account,
             parsed_target_account: digression.transfer_data.target_account,
+            parsed_account: digression.transfer_data.account,
             parsed_amount: digression.transfer_data.amount
         });
         return;
     }
 }
 
-node transfer_money
-{
-    do
-    {
+node transfer_money {
+    do {
         #log("node 'transfer_money'");
-        if (#getVisitCount("transfer_money") == 1) #say("will_help");
+        // say this phrase only during the first visit
+        if (#getVisitCount("transfer_money") == 1) #sayText("Absolutely, we can assist you with that.");
         
         var needSpecifying = false;
         var questions: string[]  = [];
-
         if ($result.source_account == "") {
             if (digression.transfer_data.source_account != "") {
                 set $result.source_account = digression.transfer_data.source_account;
@@ -137,44 +142,33 @@ node transfer_money
             goto confirm;
         }
     }
-    transitions
-    {
+    transitions {
         provide_data: goto transfer_money on #messageHasIntent("transfer_money") or #messageHasData("bank") or #messageHasData("account") or #messageHasData("numberword");
         confirm: goto transfer_confirmation;
     }
 }
 
-node transfer_confirmation
-{
-    do
-    {
+node transfer_confirmation {
+    do {
         #log("node 'transfer_confirmation'");
         #sayText("Awesome! Let's summarize!");
         #sayText("Transferring $" + $result.amount + " from " + $result.source_account + " to " + $result.target_account);
         #sayText("Is that correct?", repeatMode:"complement");
         wait *;
     }
-    transitions
-    {
+    transitions {
         positive: goto process_transfer on #messageHasIntent("agreement", "positive");
         change_amount: goto transfer_money on #messageHasIntent("differentamt");
         negative: goto transfer_money on #messageHasIntent("agreement", "negative");        
     }
-    onexit 
-    {
+    onexit {
         change_amount: do {
             set $result.amount = "";
-            set digression.transfer_data.amount = "";
-            set digression.transfer_data.source_account = "";
-            set digression.transfer_data.target_account = "";
         }
         negative: do {
             set $result.amount = "";
             set $result.source_account = "";
             set $result.target_account = "";
-            set digression.transfer_data.amount = "";
-            set digression.transfer_data.source_account = "";
-            set digression.transfer_data.target_account = "";
         }
     }
 }
@@ -212,25 +206,23 @@ digression questions {
             }
             #sayText(msg, repeatMode:"ignore");
         }
+        // repeat last phrase without 'repeatMode:"ignore"' option
         #repeat();
+        // return to the node where this digression was triggered
         return;
     }
 }
 
-node process_transfer
-{
-    do
-    {
+node process_transfer {
+    do {
         #log("node 'process_transfer'");
-        #say("wait_for_processing");
+        #sayText("Wait for a second please while I'm executing the transfer.");
         set $result.success = #random() > 0.7;
-        if($result.success)
-        {
-            #say("transfer_success");
+        if($result.success) {
+            #sayText("Transfer is completed. Have a great day!");
         }
-        else
-        {
-            #say("transfer_failed");
+        else {
+            #sayText("Transfer failed. Have a great day!");
         }
         exit;
     }
