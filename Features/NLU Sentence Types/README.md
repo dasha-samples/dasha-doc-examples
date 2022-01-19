@@ -16,6 +16,7 @@ This feature can be used to extract additional information from user input becid
 
 In this demo the user input are parsed with [#getSentenceType](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#getsentencetype) function and the results are stored in corresponding fields of output object.
 User is asked for a new sentence in endless loop until he *asks* to finish the conversation.
+See also [DSL NLU control documentation](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#nlu-control).
 
 Using sentence type parsing do not require any training data. Although, you need `data.json` file with at least one intent to be connected to your application.
 

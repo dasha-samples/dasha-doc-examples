@@ -11,7 +11,8 @@ The main file to be discussed here is `app/data.json`. The `app/main.dsl` contai
 
 In the current example a user is asked about his *estimation* of delivery service. 
 Then he is asked about *feedback*: what he liked or did not like (depending on his estimation). 
-Both estimation and feedback are extracted with our ner system, processed and handled in dialog using [DSL](https://docs.dasha.ai/en-us/default/dasha-script-language/) functions: [`#messageHasData`](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasdata) and [`#messageGetData`](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagegetdata). 
+Both estimation and feedback are extracted with our ner system, processed and handled in dialog using [DSL](https://docs.dasha.ai/en-us/default/dasha-script-language/) functions: [`#messageHasData`](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasdata) and [`#messageGetData`](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagegetdata).  
+See also [DSL NLU control documentation](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#nlu-control).
 
 Entites and their possible values are defined in custom dataset file `app/data.json`. 
 Let's take a look on its structure. 

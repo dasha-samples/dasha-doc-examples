@@ -40,6 +40,7 @@ Every intent specified in the `data.json` has following subsections (see [custom
 
 To handle the intents in dialogue script [DSL](https://docs.dasha.ai/en-us/default/dasha-script-language/) provides functions like: [#messageHasIntent](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasintent), [#messageHasAnyIntent](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasanyintent). 
 They allow you to understand whether such intent was extracted or not.
+See also [DSL NLU control documentation](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#nlu-control).
 
 Note that if you need to extract some intent with particular `state` the `#messageHasIntent` function provides corresponding parameter, i.e. if you want to extract user's *disagreement* you must do it like this `#messageHasIntent("agreement", "negative")`.
 
