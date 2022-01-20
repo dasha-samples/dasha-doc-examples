@@ -1,0 +1,16 @@
+{
+  "formatVersion": "2",
+  "name": "dasha-basic-demo",
+  "dialogue": {
+    "file": "main.dsl"
+  },
+  "nlu": {
+    "language": "en-US",
+    "skills": []
+  },
+  "nlg": {
+    "type": "phrases",
+    "file": "phrasemap.json",
+    "signatureFile": "phrasemap.json"
+  }
+}
