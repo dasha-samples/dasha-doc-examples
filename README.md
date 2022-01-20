@@ -6,11 +6,22 @@ Every example is supposed to be independent and simplified as much as possible d
 
 ## Contents (Work In Progress)
 
+[Basic example](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Basic)
+
 Features
  - [NLU Intents](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Intents)
  - [NLU Entities](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Entities)
  - [NLU Sentence Types](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Sentence%20Types)
  - [NLU Full example](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Full)
+ - NLU Service example
+ - NLG phrasemaps
+   - Random phrase
+   - Repeat phrase
+   - Passing args to the phrase
+ - DSL Blocks
+ - DSL Context, local variables, digression properties
+ - DSL NLU control
+ - DSL NLG control
  - DSL Digressions
    - Simple
    - Shared
@@ -20,18 +31,27 @@ Features
    - Answering machine detection
    - Pinging user
    - What to do, if we don't understand
+ - DSL Types
+   - basic
+   - union
+   - array
+   - object
+   - nullable
+   - custom
+   - compatibility
+   - casting
+   - special
+ - DSL HTTP
+ - DSL External functions
  - VoIP outbound calls
  - VoIP inbound calls
+ - VoIP outbound calls (local)
+ - VoIP inbound calls (local)
  - VoIP working with DTMF
  - VoIP web rtc
  - Text To Speech pre-recorded
  - Text To Speech emotions control
  - Text To Speech voice cloning
- - NLG phrasemaps
-   - Random phrase
-   - Repeat phrase
-   - Passing args to the phrase
- - NLG control
  - Calling application from model
  - Audio
    - Noise volume

@@ -1,4 +1,4 @@
-# NLU: Intents and Entities example
+# NLU: Intents, Entities and Sentence Type usage example
 
 ## Description
 
