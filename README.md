@@ -46,16 +46,17 @@ Features
  - VoIP outbound calls
  - VoIP inbound calls
  - VoIP outbound calls (local)
- - VoIP inbound calls (local)
+ - [VoIP inbound calls (local)](Features/VoIP%20inbounds%20(local))
  - VoIP working with DTMF
  - VoIP web rtc
+ - SDK concurrency
  - Text To Speech pre-recorded
  - Text To Speech emotions control
  - Text To Speech voice cloning
- - Calling application from model
  - Audio
    - Noise volume
    - Call records
+ - Calling application from model
  - Isolation between application
    - Using groups for isolation
 
