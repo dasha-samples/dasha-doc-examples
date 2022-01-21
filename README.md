@@ -9,10 +9,11 @@ Every example is supposed to be independent and simplified as much as possible d
 [Basic example](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Basic)
 
 Features
- - [NLU Intents](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Intents)
- - [NLU Entities](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Entities)
- - [NLU Sentence Types](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Sentence%20Types)
- - [NLU Full example](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Full)
+ - [NLU Intents (simple)](Features/NLU%20Intents%20(simple))
+ - [NLU Intents](Features/NLU%20Intents)
+ - [NLU Entities](Features/NLU%20Entities)
+ - [NLU Sentence Types](Features/NLU%20Sentence%20Types)
+ - [NLU Full example](Features/NLU%20Full)
  - NLG phrasemaps
    - Random phrase
    - Repeat phrase

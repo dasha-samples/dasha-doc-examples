@@ -1,0 +1,26 @@
+{
+  "version": "v2",
+  "intents": {
+    "exit": {
+      "includes": [
+        "I want to exit",
+        "Let's end this dialog",
+        "Exit the dialog",
+        "That is enough",
+        "Goodbye",
+        "Exit",
+        "Finish the conversation",
+        "Finish"
+      ],
+      "excludes": [
+        "begin",
+        "apple"
+      ]
+    },
+    "some_other": {
+      "includes": [
+        "some text"
+      ]
+    }
+  }
+}

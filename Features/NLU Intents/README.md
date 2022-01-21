@@ -35,8 +35,8 @@ The following intents are specified there:
 - `"nothing"` - extracted if user says that he don't want anything
 
 Every intent specified in the `data.json` has following subsections (see [custom intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)):
-- `"includes"` that contains phrases where this intent must be extracted
-- `"excludes"` that contains phrases where this intent must NOT be extracted
+- `"includes"` (required) that contains phrases where this intent must be extracted
+- `"excludes"` (optional) that contains phrases where this intent must NOT be extracted
 
 To handle the intents in dialogue script [DSL](https://docs.dasha.ai/en-us/default/dasha-script-language/) provides functions like: [#messageHasIntent](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasintent), [#messageHasAnyIntent](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasanyintent). 
 They allow you to understand whether such intent was extracted or not.
