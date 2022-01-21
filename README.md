@@ -13,7 +13,6 @@ Features
  - [NLU Entities](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Entities)
  - [NLU Sentence Types](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Sentence%20Types)
  - [NLU Full example](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Features/NLU%20Full)
- - NLU Service example
  - NLG phrasemaps
    - Random phrase
    - Repeat phrase
@@ -77,6 +76,10 @@ Integrations
  - Monitoring
    - Prometheus
    - Logging data
+
+Standalone services
+ - NLU Service example
+
 
 Profiling
  - Sample profile file

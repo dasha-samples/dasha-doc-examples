@@ -56,18 +56,24 @@ dasha sip list-inbound
 
 ### Running incoming calls
 
-If you want to be able to call your application with from some phone, you must have some phone number that is connected to sip uri. To create one, you may use some external service, e.g. [twilio](https://www.twilio.com/console/sip-trunking/trunks) (see [sip inbound calls tutorial](https://docs.dasha.ai/en-us/default/tutorials/sip-inbound-calls/)).
+If you want to be able to call your application with from some phone, you must have some phone number that is connected to sip inbound uri. 
+To create one, you may use some external service, e.g. [twilio](https://www.twilio.com/console/sip-trunking/trunks) (see [sip inbound calls tutorial](https://docs.dasha.ai/en-us/default/tutorials/sip-inbound-calls/)).
 
-For simplicity this example does not require any external services. 
-We are going to use [microsip](https://www.microsip.org/) instead.
+[Tutorial](https://docs.dasha.ai/en-us/default/tutorials/sip-inbound-calls#configuration-with-twilio-sip-trunking) for configuration with Twillio SIP tranking.
+
+Alernatively, for testing purposes you may use [microsip](https://www.microsip.org/) (see the instructions below).
 
 ## Installation
 
 1. Setup environment (see [doc](https://docs.dasha.ai/en-us/default/setup-enviroment/))
 1. Run `npm i` in a current folder.
 2. [Configure inbound](#configuring-with-dasha-cli)
-3. Download and install [microsip](https://www.microsip.org/downloads)
-4. Open microsip and create the account:
+3. Create a phone that is connected to your inbound (see [Running incoming calls](#running-incoming-calls))
+
+Alternatively for local testing:
+
+1. Download and install [microsip](https://www.microsip.org/downloads)
+2. Open microsip and create the account:
    1. Right click on the bottom panel
    2. Choose "Add Account"
    3. Fill necessary fields with any letters
@@ -76,13 +82,7 @@ We are going to use [microsip](https://www.microsip.org/) instead.
 ## Running the demo
 
 1. Run `npm start` - this will start the application that await for incoming calls.
-1. Call your application using microsip (just use sip `uri` from the CLI output as a phone number is microsip)
-
-## Detailed script description
-
-This section is needed to make code example clear to user. What exactly is going on in the example? How current feature is related to this example?
-
-This section probalby uses other features - they must be mentioned and referenced (references to the docs and demos)
+1. Call your application using created phone or microsip (just use sip `uri` from the CLI output as a phone number is microsip)
 
 ## Dialogue example
 
