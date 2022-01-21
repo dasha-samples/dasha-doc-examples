@@ -45,8 +45,8 @@ Features
  - DSL External functions
  - VoIP outbound calls
  - VoIP inbound calls
- - VoIP outbound calls (local)
- - [VoIP inbound calls (local)](Features/VoIP%20inbounds%20(local))
+ - VoIP outbound calls
+ - [VoIP inbound calls](Features/VoIP%20inbounds)
  - VoIP working with DTMF
  - VoIP web rtc
  - SDK concurrency
