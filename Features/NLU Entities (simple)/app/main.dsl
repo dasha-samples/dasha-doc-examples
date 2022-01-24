@@ -1,18 +1,32 @@
 /**
-The dialogue script consists of three main nodes: 
-- `root` - start node that connects to user and tells him initial information
-- `goodbye` - terminal node that is visited if user wishes to end the dialogue
-- `echo` - digression that triggers on any other user input and repeats user's words
 
-Also, there is a handler for the event when user hangs up - user hangup `digression`.
-Without it the dialogue ends with an error because of the unhandled event.
+The DSL script consists of a few nodes:
+- node `root` - initiates the dialogue
+- digression `language_echo` - echoes extracted language
+- digression `dont_understand` - handles case when nothing was recognized
+
+Also, there is handler for user hang up event - digression `user_hangup`. 
+Without it the dialogue would end with an error in case of user hangs up a phone.
+
+The entity is extracted and checked in digression `language_echo`.
+Notice the condition of this digresison: it is implemented via `messageHasData` - builtin DSL function that checks if entity is in user's input.
+The actual value extraction is made with DSL function `#messageGetData`.
+(See those and other NLU functions in out [doc](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#nlu-control))
+Then the value is compared with predefined languages and after that Dasha reacts depending on this comparison.
+
+To learn more about digressions see the [digressions doc](https://docs.dasha.ai/en-us/default/dasha-script-language/program-structure#digression)
+
 */
 
 context {
     // input parameters (provided outside)
     // phone to call
     input phone: string;
+
     predefinedLanguages: string[] = ["german","french","russian","english","chineese"];
+
+    // output parameters (will be set during the dialogue)
+    output extractedLanguages: string[] = [];
 }
 
 start node root {
@@ -27,12 +41,6 @@ start node root {
         #sayText("So, now please tell me. What language do you speak?");
         wait*;
     }
-    /*
-    transitions {
-        // transition that triggers on intent 'exit'
-        goodbye: goto goodbye on ;
-    }
-    */
 }
 
 digression language_echo {
@@ -54,17 +62,6 @@ digression language_echo {
     }
 }
 
-/*
-node goodbye {
-    do {
-        #log("node 'goodbye'");
-        #sayText("You said that you want to exit. Goodbye!");
-        // interrupt the dialogue 
-        exit;
-    }
-}
-*/
-
 // this digression is visited if no other transition can be executed
 digression dont_understand {
     conditions {
@@ -74,7 +71,7 @@ digression dont_understand {
     do {
         #log("digression 'dont_understand'");
         // say phrase that will no be repeated 
-        #sayText("Sorry, I did not get it", repeatMode:"ignore");
+        #sayText("Seems like I dont know this language", repeatMode:"ignore");
         // repeat last phrase without 'repeatMode:"ignore"' option
         #repeat();
         // return to the node where this digression was triggered

@@ -31,6 +31,7 @@ Features
    - Simple
    - Shared
    - Preprocessor
+ - DSL forwarding
  - DSL Multi file
  - DSL Common libraries
    - Answering machine detection
@@ -53,14 +54,15 @@ Features
  - VoIP working with DTMF
  - VoIP web rtc
  - SDK concurrency
- - SDK conversation
+ - SDK conversation input data
+ - SDK conversation config
    - Audio
    - Noise volume
    - Call records
- - Text To Speech pre-recorded
- - Text To Speech emotions control
- - Text To Speech voice cloning
-
+ - Text To Speech
+   - pre-recorded
+   - emotions control
+   - voice cloning
  - Calling application from model
  - Isolation between application
    - Using groups for isolation
