@@ -23,7 +23,7 @@ Features
    - Repeat phrase
    - Passing args to the phrase
  - DSL Blocks
- - DSL Context, local variables, digression properties
+ - DSL Context and local variables, digression properties
  - DSL NLU control
  - DSL NLG control
  - DSL Events
@@ -52,13 +52,16 @@ Features
  - VoIP outbound calls
  - [VoIP inbound calls](Features/VoIP%20inbounds)
  - VoIP working with DTMF
- - VoIP web rtc
+ - [VoIP WebRTC](Featues/../Features/VoIP%20WebRTC)
  - SDK concurrency
  - SDK conversation input data
+ - SDK conversation output data
+ - SDK conversation audio record
  - SDK conversation config
    - Audio
    - Noise volume
    - Call records
+ - SDK web
  - Text To Speech
    - pre-recorded
    - emotions control
