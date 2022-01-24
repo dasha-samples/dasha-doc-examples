@@ -1,6 +1,6 @@
 {
   "formatVersion": "2",
-  "name": "dasha-intents-demo",
+  "name": "dasha-intents-simple-demo",
   "dialogue": {
     "file": "main.dsl"
   },

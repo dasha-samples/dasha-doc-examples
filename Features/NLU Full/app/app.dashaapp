@@ -1,5 +1,5 @@
 {
-  "name": "dasha-intents-and-entities-demo",
+  "name": "dasha-nlu-full-demo",
   "formatVersion": "2",
   "dialogue": {
     "file": "main.dsl"

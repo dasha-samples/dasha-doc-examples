@@ -1,6 +1,6 @@
 {
   "formatVersion": "2",
-  "name": "dasha-voip-inbound-local-demo",
+  "name": "dasha-voip-inbound-demo",
   "dialogue": {
     "file": "main.dsl"
   },

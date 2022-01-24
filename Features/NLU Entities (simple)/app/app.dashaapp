@@ -1,6 +1,6 @@
 {
   "formatVersion": "2",
-  "name": "dasha-blank-demo",
+  "name": "dasha-entities-simple-demo",
   "dialogue": {
     "file": "main.dsl"
   },
