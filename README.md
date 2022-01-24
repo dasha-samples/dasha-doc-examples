@@ -8,9 +8,13 @@ Every example is supposed to be independent and simplified as much as possible d
 
 [Basic example](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Basic)
 
+Standalone services
+ - NLU Service
+
 Features
  - [NLU Intents (simple)](Features/NLU%20Intents%20(simple))
  - [NLU Intents](Features/NLU%20Intents)
+ - [NLU Entities (simple)](Features/NLU%20Entities%20(simple))
  - [NLU Entities](Features/NLU%20Entities)
  - [NLU Sentence Types](Features/NLU%20Sentence%20Types)
  - [NLU Full example](Features/NLU%20Full)
@@ -22,6 +26,7 @@ Features
  - DSL Context, local variables, digression properties
  - DSL NLU control
  - DSL NLG control
+ - DSL Events
  - DSL Digressions
    - Simple
    - Shared
@@ -41,21 +46,21 @@ Features
    - compatibility
    - casting
    - special
- - DSL HTTP
+ - DSL HTTP requests
  - DSL External functions
- - VoIP outbound calls
- - VoIP inbound calls
  - VoIP outbound calls
  - [VoIP inbound calls](Features/VoIP%20inbounds)
  - VoIP working with DTMF
  - VoIP web rtc
  - SDK concurrency
+ - SDK conversation
+   - Audio
+   - Noise volume
+   - Call records
  - Text To Speech pre-recorded
  - Text To Speech emotions control
  - Text To Speech voice cloning
- - Audio
-   - Noise volume
-   - Call records
+
  - Calling application from model
  - Isolation between application
    - Using groups for isolation
@@ -77,10 +82,6 @@ Integrations
  - Monitoring
    - Prometheus
    - Logging data
-
-Standalone services
- - NLU Service example
-
 
 Profiling
  - Sample profile file

@@ -1,0 +1,28 @@
+{
+  "version": "v2",
+  "entities": {
+    "language": {
+      "open_set": true,
+      "values": [
+        {
+          "value": "german"
+        },
+        {
+          "value": "french"
+        },
+        {
+          "value": "russian"
+        },
+        {
+          "value": "english"
+        },
+        {
+          "value": "chineese"
+        }
+      ],
+      "includes": [
+        "I speak (german)[language]"
+      ]
+    }
+  }
+}

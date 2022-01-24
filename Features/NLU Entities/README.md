@@ -18,7 +18,7 @@ Entites and their possible values are defined in custom dataset file `app/data.j
 Let's take a look on its structure. 
 - Every entity is described with its possible values (section `"values"`) and phrases that are going to be used to train entities (sections `"includes"` and `"excludes"`).
 - The `"includes"` and `"excludes"` sections are filled with phrases which must and must not contain the entity. Moreover, the `"includes"` section phrases must be marked up due to system be able to learn and recognize them (see [doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-entities) for details)
-- Every value has synonyms that will be normalized to a original value when extracted.
+- Every value has synonyms that will be normalized to the original value when extracted.
 - Also note the `open_set` parameter. It defines whether the values set is fixed or not, i.e. if `open_set` is `true` then the system will try to extract values that are not defined in your dataset.
 
 To connect your entities to the application they must be configured in `.dashaapp` file (see [Connecting to the application](https://docs.dasha.ai/en-us/default/natural-language-understanding/connecting-to-the-application)).

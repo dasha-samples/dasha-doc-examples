@@ -12,7 +12,7 @@ This makes the system to be able to handle such inputs robustly and efficiently.
 The current example demonstrates using a single intent in a simple application.
 
 The intents are defined in `app/data.json` file.
-The file may be named as you want but it has to be connected to the application in `.dashaapp` file (see Connecting to the application the [doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/connecting-to-the-application)).
+The file may be named what ever you want but it has to be connected to the application in `.dashaapp` file (see Connecting to the application the [doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/connecting-to-the-application)).
 
 Every intent specified in the `app/data.json` has following subsections (see [custom intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)):
 - `"includes"` (required) that contains phrases where this intent must be extracted
