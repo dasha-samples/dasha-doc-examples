@@ -49,7 +49,8 @@ Features
    - special
  - DSL HTTP requests
  - DSL External functions
- - VoIP outbound calls
+ - [VoIP overview](Features/VoIP%20overview)
+ - [VoIP outbound calls](Features/VoIP%20outbounds)
  - [VoIP inbound calls](Features/VoIP%20inbounds)
  - VoIP working with DTMF
  - [VoIP WebRTC](Featues/../Features/VoIP%20WebRTC)
