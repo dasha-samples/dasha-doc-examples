@@ -8,10 +8,7 @@
     "language": "en-US",
     "skills": [
       "common_phrases"
-    ],
-    "customIntents": {
-      "file": "data.json"
-    }
+    ]
   },
   "nlg": {
     "type": "phrases",

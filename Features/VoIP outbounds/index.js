@@ -9,7 +9,7 @@ async function main() {
   // create conversation with provided phone
   const phone = process.argv[2];
   const conv = app.createConversation({
-    phone: phone,
+    endpoint: phone,
   });
   // sip configuration name, must be one of `dasha sip list-outbound`
   conv.sip.config = "dasha-voip-outbound-demo";

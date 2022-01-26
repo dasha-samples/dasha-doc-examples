@@ -1,26 +1,40 @@
-# VoIP: outputs configuration and usage example
+# VoIP: outbounds configuration and usage example
 
 ## Description
 
-Voice over Internet Protocol ([VoIP](https://en.wikipedia.org/wiki/Voice_over_IP)) is a method and group of technologies for the delivery of voice and multimedia communications over IP networks.
+If you are not familiar with Voice over Internet Protocol, SIP or SIP trunks see the [VoIP overwiev](../VoIP/README.md) to learn about basic terms connected with this technology.
+
 In Dasha platform the VoIP is used to establish phone calls for connecting to your app.
 The telephony is the default way of using Dasha.
 
 By default, Dasha application will use our telephony when making a call to a user, i.e. the user will see our phone number when recieving a call.
 You may want to redirect this call to be made wihthin your telephony and phone number.
-Dasha platform provides an ability for that.
+To do that you have to configure the sip outbound.
 
 This example demonstrates configuring the outbound telephony.
 
 At first we will configure the telephony using Dasha CLI and then the configured telephony will be connected to the application in SDK part of the application.
 
-Also, see our another [demo](https://github.com/dasha-samples/dasha-sip-test) with creating outbounds.
+Also, see our another [demo](https://github.com/dasha-samples/dasha-sip-test) that demonstrates creating outbounds.
+
+### Create SIP trunk
+
+To test this demo you need a SIP trunk (see [VoIP overview](../VoIP%20overview/README.md) to learn what SIP trunk is) aquired from some SIP provider.
+E.g. you can follow [this instruciton](https://docs.dasha.ai/en-us/default/tutorials/sip-outbound-calls) to learn how to create a SIP trunk in [twillio](https://www.twilio.com/).
+
+The following steps require information about your SIP trunk:
+- termination URI
+- account name
+- password
 
 ### Configuring with Dasha CLI
 
+Suppose, you already have your SIP trunk and all required data about it.
+Now it's time to configure the applicaiton for using it.
+
 To configure a new outbound telephony, use Dasha CLI `sip create-outbound` command:
 ```
-sage: dasha sip create-outbound [options] <configName>
+Usage: dasha sip create-outbound [options] <configName>
 
 create an outbound SIP configuration
 
@@ -32,9 +46,35 @@ Options:
   --ask-password
   --transport <tcp|udp>        (default: "udp")
 ```
-The `<config_name>` will be used later when configuring the telephony in the SDK.
+Where
+- `server` - trunk termination SIP URI (obtained when creating trunk)
+- `account` - trunk account name (obtained when creating trunk)
+- `domain` - domain name
+- `password` - password that will be used to connect to your trunk (obtained when creating trunk)
+- `transport` - the type of the transport protocol
+- `<config_name>` - the name of the configuration that **will be used later** when configuring the conversation in the SDK code.
 
-The current example uses [twillio](https://www.twilio.com/) as PSTN provider
+The current example's SDK code expects that `<config_name>` is set to `dasha-voip-outbound-demo`.
+
+Example
+```
+dasha sip create-outbound --server your-unique-uri.pstn.twilio.com --account +19733588889 --ask-password dasha-voip-outbound-demo
+password: enter_your_password_here
+```
+
+Note: You can use `dasha sip list-outbound` command to get all your defined configurations.
+
+### Configuring the conversation via SDK
+
+The SDK code is almost the same as in the [Basic example](../../Basic/index.js).
+The only difference here is choosing the sip config:
+```
+conv.sip.config = "dasha-voip-outbound-demo";
+```
+
+## Checking outbounds
+
+After [installation](#installation) and [running a call](#running-the-demo) to your phone number, you can see that incoming call is made from your SIP trunk.
 
 ## Installation
 
@@ -43,15 +83,29 @@ The current example uses [twillio](https://www.twilio.com/) as PSTN provider
 
 ## Running the demo
 
-Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
-
-
-## Detailed script description
-
-This section is needed to make code example clear to user. What exactly is going on in the example? How current feature is related to this example?
-
-This section probalby uses other features - they must be mentioned and referenced (references to the docs and demos)
+Run `npm start <your_phone_number>` to start a phone call directed to your number.
 
 ## Dialogue example
 
-Example demonstrating the real dialogue
+```
+{
+  speaker: 'ai',
+  text: 'Hello, can you hear me?',
+  startTime: 2022-01-20T09:07:26.636Z,
+  endTime: 2022-01-20T09:07:28.070Z
+}
+{
+  speaker: 'human',
+  text: 'yes i can',
+  startTime: 2022-01-20T09:07:31.412Z,
+  endTime: 2022-01-20T09:07:32.997Z
+}
+{
+  speaker: 'ai',
+  text: 'And I can hear you too. Goodbye',
+  startTime: 2022-01-20T09:07:33.001Z,
+  endTime: 2022-01-20T09:07:35.190Z
+}
+----
+conversation result { success: true }
+```
