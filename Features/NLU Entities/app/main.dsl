@@ -17,7 +17,7 @@ In the last node `goodbye` user feedback is set with last raw user input and wit
 context {
     // input parameters (provided outside)
     // phone to call
-    input phone: string;
+    input  endpoint: string;
 
     // output parameters (will be set during the dialogue)
     // parsed user estimation converted to a number
@@ -30,7 +30,7 @@ context {
 start node root {
     do {
         #log("node 'root'");
-        #connectSafe($phone);
+        #connectSafe($endpoint);
         // waiting until user says something
         // if nothing happens during 2000 ms, force-start the dialog
         if (#waitForSpeech(2000)) {

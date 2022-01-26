@@ -12,7 +12,7 @@ and the type of the sentence must be `request` - this is the trigger to end the 
 context {
     // input parameters (provided outside)
     // phone to call
-    input phone: string;
+    input  endpoint: string;
 
     // output parameters (will be set during the dialogue)
     // recognized sentences grouped by their types
@@ -31,7 +31,7 @@ context {
 
 start node root {
     do {
-        #connectSafe($phone);
+        #connectSafe($endpoint);
         // waiting until user says something
         // if nothing happens during 2000 ms, force-start the dialog
         if (#waitForSpeech(2000)) {

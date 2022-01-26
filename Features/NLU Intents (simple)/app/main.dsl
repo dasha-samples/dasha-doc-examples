@@ -11,13 +11,13 @@ Without it the dialogue ends with an error because of the unhandled event.
 context {
     // input parameters (provided outside)
     // phone to call
-    input phone: string;
+    input  endpoint: string;
 }
 
 start node root {
     do {
         #log("node 'root'");
-        #connectSafe($phone);
+        #connectSafe($endpoint);
         // wait for user voice for 2000 ms
         #waitForSpeech(2000);
         #sayText("Hello, I am simple echo bot.");

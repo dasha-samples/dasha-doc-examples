@@ -18,7 +18,7 @@ Except for `goodbye` - this digression is used as a trigger for exiting dialog.
 context {
     // input parameters (provided outside)
     // phone to call
-    input phone: string;
+    input  endpoint: string;
 
     // output parameters (will be set during the dialogue)
     // all these vars are set to true if user asked about them
@@ -29,7 +29,7 @@ context {
 
 start node root {
     do {
-        #connectSafe($phone);
+        #connectSafe($endpoint);
         // waiting until user says something
         // if nothing happens during 2000 ms, force-start the dialog
         if (#waitForSpeech(2000)) {

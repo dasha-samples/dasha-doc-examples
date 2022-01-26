@@ -1,7 +1,7 @@
 context {
     // input parameters (provided outside)
     // phone to call
-    input phone: string;
+    input  endpoint: string;
     
     // output parameters (will be set during the dialogue)
     success: boolean = false;
@@ -10,7 +10,7 @@ context {
 
 start node root {
     do {
-        #connectSafe($phone);
+        #connectSafe($endpoint);
         // waiting until user says something
         #waitForSpeech(2000)
         goto greeting;

@@ -33,7 +33,7 @@ If thet are mentioned by user then the corresponding phrase is said.
 context {
     // input parameters (provided outside)
     // phone to call
-    input phone: string;
+    input  endpoint: string;
 
     // output parameters (will be set during the dialogue)
     // resulting object with user parsed and validated data
@@ -53,7 +53,7 @@ context {
 start node root {
     do {
         #log("node 'root'");
-        #connectSafe($phone);
+        #connectSafe($endpoint);
         #waitForSpeech(1000);
         #sayText("Hello, this is Acme bank. How can I help you?");
         wait *;

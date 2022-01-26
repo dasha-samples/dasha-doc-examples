@@ -9,7 +9,7 @@ async function main() {
   // create conversation with provided phone
   const phone = process.argv[2];
   const conv = app.createConversation({
-    phone: phone,
+    endpoint: phone,
   });
   const isChat = phone === "chat";
   // if starting with phone, set handler for audio transcriptions to show them on the screen
