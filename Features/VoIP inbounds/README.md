@@ -2,11 +2,11 @@
 
 ## Description
 
-Voice over Internet Protocol ([VoIP](https://en.wikipedia.org/wiki/Voice_over_IP)) is a method and group of technologies for the delivery of voice and multimedia communications over IP networks.
-In Dasha platform the VoIP is used to establish phone calls for connecting to your app.
-The telephony is the default way of using Dasha.
+If you are not familiar with Voice over Internet Protocol, SIP or SIP trunks see the [VoIP overwiev](../VoIP/README.md) to learn about basic terms connected with this technology.
 
 The inbound call is the common way of designing chat bots.
+Like in the case when your are building intelligence information system that is called by user.
+
 Dasha platform provides an ability to configure inbound calls for your application.
 [Basic](../../Basic) Dasha application allows you to call someone, but the receiving calls requires some additional steps.
 The configuring inbound telephony can be made with Dasha CLI and alos some additional code in SDK part is needed.
