@@ -1,6 +1,6 @@
 # Voice over Internet Protocol overview
 
-The current documentary is created to explain basic terms connected with *Voice over Internet Protocol* ([VoIP](https://en.wikipedia.org/wiki/Voice_over_IP)) and to overview VoIP from the point of view of Dasha platform in a few words.
+The current documentary is created to explain in a few words basic terms connected with *Voice over Internet Protocol* ([VoIP](https://en.wikipedia.org/wiki/Voice_over_IP)) and to overview VoIP from the point of view of Dasha platform.
 
 ## VoIP
 

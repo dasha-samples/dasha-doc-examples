@@ -8,25 +8,27 @@ The inbound call is the common way of designing chat bots.
 Like in the case when your are building intelligence information system that is called by user.
 
 Dasha platform provides an ability to configure inbound calls for your application.
-[Basic](../../Basic) Dasha application allows you to call someone, but the receiving calls requires some additional steps.
-The configuring inbound telephony can be made with Dasha CLI and alos some additional code in SDK part is needed.
-It does not require any special logic in the dialogue model. 
+[Basic](../../Basic) Dasha application allows you to call someone, but the receiving calls requires some configurations and modificaions in SDK code.
+The configuring inbound telephony can be made with Dasha CLI.
+The dialogue model is independent and does not require any special manipulations. 
 
-This example demonstrates configuring the inbound telephony with some existing PSTN phone (in our example the twillio's [PSTN](https://www.twilio.com/docs/glossary/what-is-pstn) is used).
+This example demonstrates configuring the inbound telephony with some existing PSTN phone (SIP trunk).
+In our example the twillio's [PSTN](https://www.twilio.com/docs/glossary/what-is-pstn) is used.
 
-Also, the way of local inbound testing is shown. This alternative way requires microsip.
+Also, the example shows the way of local testing the inbounds. 
+To do this the [microsip](https://www.microsip.org/downloads) is required.
 
-Also, explore our another [demo](https://github.com/dasha-samples/dasha-sip-test) with inbounds.
+Also, explore our another [demo](https://github.com/dasha-samples/dasha-sip-test) that uses inbounds.
 
 ### SDK part
 
-Since our application is going to recieve calls, an arbitrary conversation is going to come to a application queue.
-Dasha SDK provides handlers for this queue.
+Since our application is going to recieve calls, we need to create conversation queue.
+To configure conversation queues Dasha SDK API provides special handlers that define all main events.
 
-Particularly, we have to set the handler for the event "ready": `async (id, conv, info) => { ... }`.
+Particularly, in this example we have to set the handler for the event "ready": `async (id, conv, info) => { ... }`.
 Here, `id` is the key of the current call, `conv` is the conversation object that is goind to be executed and `info` contains information about the received call.
 
-Basically, this is all that needed here.
+Basically, this is all for SDK code.
 
 ### Configuring with Dasha CLI
 
@@ -68,8 +70,6 @@ dasha sip list-inbound
 If you want to be able to call your application with from some phone, you must have some phone number that is connected to sip inbound uri. 
 To create one, you may use some external service, e.g. [twilio](https://www.twilio.com/console/sip-trunking/trunks) (see [sip inbound calls tutorial](https://docs.dasha.ai/en-us/default/tutorials/sip-inbound-calls/)).
 
-[Tutorial](https://docs.dasha.ai/en-us/default/tutorials/sip-inbound-calls#configuration-with-twilio-sip-trunking) for configuration with Twillio SIP tranking.
-
 Alernatively, for testing purposes you may use [microsip](https://www.microsip.org/) (see the instructions below).
 
 ## Installation
@@ -77,7 +77,7 @@ Alernatively, for testing purposes you may use [microsip](https://www.microsip.o
 1. Setup environment (see [doc](https://docs.dasha.ai/en-us/default/setup-enviroment/))
 1. Run `npm i` in a current folder.
 2. [Configure inbound](#configuring-with-dasha-cli)
-3. Create a phone that is connected to your inbound (see [Running incoming calls](#running-incoming-calls))
+3. Create a phone (sip trunk) that is connected to your inbound (see [Running incoming calls](#running-incoming-calls))
 
 Alternatively for local testing:
 
