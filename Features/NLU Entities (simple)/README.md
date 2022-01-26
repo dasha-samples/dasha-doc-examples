@@ -35,7 +35,8 @@ After you answer this question, Dasha reacts with one of the following phrases:
 - `"Seems like I dont know this language"` - if `language` was not recognized.
 
 Then conversation is loop to the same question about the speaking language.
-The conversation lasts until you hang up your phone.
+
+The conversation lasts until 5 languages are extracted.
 
 ## Installation
 
@@ -66,4 +67,33 @@ To learn more about digressions see the [digressions doc](https://docs.dasha.ai/
 
 ## Dialogue example
 
-Example demonstrating the real dialogue
+```
+AI: Hello! I will ask you about languages.
+AI: To stop it, hangup your phone or say 5 languages
+AI: Otherwise, this conversation will last like forever.
+AI: So, now please tell me. What language do you speak?
+apple
+AI: Seems like I dont know this language
+AI: So, now please tell me. What language do you speak?
+apa-apa
+AI: Seems like I dont know this language
+AI: So, now please tell me. What language do you speak?
+german language
+AI: Oh, german, I know that one!
+AI: What other languages do you speak?
+spanish
+AI: Hm, I don't know language spanish, but I think I've heard of it
+AI: What other languages do you speak?
+I study russian
+AI: Oh, russian, I know that one!
+AI: What other languages do you speak?
+I speak apa-apa
+AI: Hm, I don't know language apa-apa, but I think I've heard of it
+AI: What other languages do you speak?
+english is my native
+AI: Oh, english, I know that one!
+----
+conversation result {
+  extractedLanguages: [ 'german', 'spanish', 'russian', 'apa-apa', 'english' ]
+}
+```

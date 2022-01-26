@@ -21,7 +21,14 @@
         }
       ],
       "includes": [
-        "I speak (german)[language]"
+        "I speak (german)[language]",
+        "(german)[language] is my native language",
+        "I study (german)[language]",
+        "(german)[language] language"
+      ],
+      "excludes": [
+        "orange",
+        "apple"
       ]
     }
   }

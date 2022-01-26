@@ -21,7 +21,7 @@ To learn more about digressions see the [digressions doc](https://docs.dasha.ai/
 context {
     // input parameters (provided outside)
     // phone to call
-    input phone: string;
+    input  endpoint: string;
 
     predefinedLanguages: string[] = ["german","french","russian","english","chineese"];
 
@@ -32,11 +32,11 @@ context {
 start node root {
     do {
         #log("node 'root'");
-        #connectSafe($phone);
+        #connectSafe($endpoint);
         // wait for user voice for 2000 ms
         #waitForSpeech(2000);
-        #sayText("Hello! This conversation will ask you about languages in an endless loop.");
-        #sayText("To stop it, hangup your phone.");
+        #sayText("Hello! I will ask you about languages.");
+        #sayText("To stop it, hangup your phone or say 5 languages.");
         #sayText("Otherwise, this conversation will last like forever.");
         #sayText("So, now please tell me. What language do you speak?");
         wait*;
@@ -52,11 +52,16 @@ digression language_echo {
         var extractedLanguage = #messageGetData("language")[0]?.value ?? "";
         var isKnownLanguage = false;
         for (var pl in $predefinedLanguages) 
-            if (pl == extractedLanguage) isKnownLanguage = true;
+            if (pl == extractedLanguage) set isKnownLanguage = true;
         if (isKnownLanguage)
             #sayText("Oh, " + extractedLanguage + ", I know that one!");
         else
-            #sayText("Hm, I don't know about " + extractedLanguage + ", but I think I've heard of it");
+            #sayText("Hm, I don't know language " + extractedLanguage + ", but I think I've heard of it");
+        $extractedLanguages.push(extractedLanguage);
+        // terminate the dialogue if 5 languages are extracted
+        if ($extractedLanguages.length() >= 5) {
+            exit;
+        }
         #sayText("What other languages do you speak?");
         return;
     }
