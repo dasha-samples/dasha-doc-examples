@@ -52,8 +52,8 @@ Features
  - [VoIP overview](Features/VoIP%20overview)
  - [VoIP outbound calls](Features/VoIP%20outbounds)
  - [VoIP inbound calls](Features/VoIP%20inbounds)
- - VoIP working with DTMF
- - [VoIP WebRTC](Featues/../Features/VoIP%20WebRTC)
+ - [VoIP working with DTMF](Features/VoIP%20working%20with%20DTMF)
+ - [VoIP WebRTC](Features/VoIP%20WebRTC)
  - SDK concurrency
  - SDK conversation data
    - input
