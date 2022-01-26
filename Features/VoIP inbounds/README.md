@@ -3,11 +3,20 @@
 ## Description
 
 Voice over Internet Protocol ([VoIP](https://en.wikipedia.org/wiki/Voice_over_IP)) is a method and group of technologies for the delivery of voice and multimedia communications over IP networks.
+In Dasha platform the VoIP is used to establish phone calls for connecting to your app.
+The telephony is the default way of using Dasha.
 
+The inbound call is the common way of designing chat bots.
 Dasha platform provides an ability to configure inbound calls for your application.
-Basic Dasha application allows you to call someone, but receiving calls requires some additional steps.
+[Basic](../../Basic) Dasha application allows you to call someone, but the receiving calls requires some additional steps.
 The configuring inbound telephony can be made with Dasha CLI and alos some additional code in SDK part is needed.
 It does not require any special logic in the dialogue model. 
+
+This example demonstrates configuring the inbound telephony with some existing PSTN phone (in our example the twillio's [PSTN](https://www.twilio.com/docs/glossary/what-is-pstn) is used).
+
+Also, the way of local inbound testing is shown. This alternative way requires microsip.
+
+Also, explore our another [demo](https://github.com/dasha-samples/dasha-sip-test) with inbounds.
 
 ### SDK part
 
@@ -45,7 +54,7 @@ The result of command above:
   "applicationName": "dasha-voip-inbound-local-demo",
   "priority": 0,
   "groupName": "Default",
-  "uri": "sip:8e988902-a333-4527-b434-c319526ca78b@sip.us.dasha.ai"
+  "uri": "sip:<uuid>@sip.us.dasha.ai"
 }
 ```
 

@@ -54,9 +54,10 @@ Features
  - VoIP working with DTMF
  - [VoIP WebRTC](Featues/../Features/VoIP%20WebRTC)
  - SDK concurrency
- - SDK conversation input data
- - SDK conversation output data
- - SDK conversation audio record
+ - SDK conversation data
+   - input
+   - output
+   - audio record
  - SDK conversation config
    - Audio
    - Noise volume

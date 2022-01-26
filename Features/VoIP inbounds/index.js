@@ -19,7 +19,8 @@ async function main() {
   // start app that waits for incoming calls
   await app.start();
 
-  // log some information about sip uri - it can also be got in CLI
+  // log some information about sip uri
+  // it can also be got by Dasha CLI using `dasha sip list-inbound`
   console.log("Waiting for calls via SIP");
   const config = (await dasha.sip.inboundConfigs.listConfigs())[
     "dasha-voip-inbound-local-demo"
