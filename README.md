@@ -49,11 +49,11 @@ Features
    - special
  - DSL HTTP requests
  - DSL External functions
- - [VoIP overview](Features/VoIP%20overview)
- - [VoIP outbound calls](Features/VoIP%20outbounds)
- - [VoIP inbound calls](Features/VoIP%20inbounds)
- - [VoIP working with DTMF](Features/VoIP%20working%20with%20DTMF)
- - [VoIP WebRTC](Features/VoIP%20WebRTC)
+ - [Voice over IP](Features/VoIP%20overview)
+   - [outbound calls](Features/VoIP%20outbounds)
+   - [inbound calls](Features/VoIP%20inbounds)
+   - [working with DTMF](Features/VoIP%20working%20with%20DTMF)
+   - [WebRTC](Features/VoIP%20WebRTC)
  - SDK concurrency
  - SDK conversation data
    - input
