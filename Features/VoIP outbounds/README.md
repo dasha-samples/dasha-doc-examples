@@ -47,12 +47,14 @@ Options:
   --transport <tcp|udp>        (default: "udp")
 ```
 Where
-- `server` - trunk termination SIP URI (obtained when creating trunk)
-- `account` - trunk account name (obtained when creating trunk)
-- `domain` - domain name
+- `server` - IP address or domain name with optional port (i.e. `ip:port` or `dns_name:port`, by default port is 5060) (in this example it is obtained when creating trunk)
+- `account` - Username, that will be used in SIP [`From`](https://datatracker.ietf.org/doc/html/rfc3261#section-8.1.1.3) header and in Auth Challenge if auth is required (in this example it is obtained when creating trunk)
+- `domain` - (optional) domain name, that will be used in [`From`](https://datatracker.ietf.org/doc/html/rfc3261#section-8.1.1.3) and [`To`](https://datatracker.ietf.org/doc/html/rfc3261#section-8.1.1.2) headers (after @)
 - `password` - password that will be used to connect to your trunk (obtained when creating trunk)
-- `transport` - the type of the transport protocol
+- `transport` - lower-level transport protocol, that will be used for transferring SIP messages (TCP or UDP, by default the UDP is used)
 - `<config_name>` - the name of the configuration that **will be used later** when configuring the conversation in the SDK code.
+
+(See the [VoIP overview](../VoIP%20overview/README.md) to learn basic SIP terms.)
 
 The current example's SDK code expects that `<config_name>` is set to `dasha-voip-outbound-demo`.
 
