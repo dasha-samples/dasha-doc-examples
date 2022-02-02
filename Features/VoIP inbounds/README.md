@@ -42,10 +42,28 @@ From Dasha sip api:
 ```
 dasha sip create-inbound -h
 Usage: dasha sip create-inbound [options] <configName>
-```
 
-In our case the application name is `dasha-voip-inbound-local-demo` (see `app/app.dashaapp`).
-So, to create the inbound for this demo you can run the following:
+create an inbound SIP configuration
+
+Options:
+  --application-name <applicationName>
+  --group-name <groupName>
+  --ip-acls <listOfIpsWithMasks>
+  --password <password>
+  --ask-password
+  --priority <value>                     (default: 0)
+  -h, --help                            display help for command
+```
+Where
+- `application-name` - application name specified in `.dashaapp` file
+- `group-name` - name of the group used to configure call flows (same as specified when deploying the app)
+- `ip-acls` - list of allowed IPs and networks in format `ip/mask_length` separated by commas (use double quotes when providing several IPs)
+- `password` - password that will be required from user
+- `ask-password` - pass password in cli implicitly
+- `priority` - priority of calls in conversation queue
+
+**In our case the application name is `dasha-voip-inbound-local-demo` (see `app/app.dashaapp`).**
+**So, to create the inbound for this demo you can run the following:**
 ```
 dasha sip create-inbound --application-name dasha-voip-inbound-local-demo my-inbound
 ```
@@ -64,6 +82,19 @@ This `uri` is the one that is going to be called in future. You can always get i
 ```
 dasha sip list-inbound
 ```
+
+#### Security
+
+There are two options to make your application sequere:
+- specifying the sip password for you inbound
+- specifying the list of allowed IPs
+
+To set the password that will be required from user, use the `--password` or `--ask-password` parameters of `dasha sip create-inbound` command (see the [configuring](#configuring-with-dasha-cli) section).
+If password is provided via SIP INVITE, then the authentification challenge begins (see SIP [doc](https://datatracker.ietf.org/doc/html/rfc3261#section-22) for the details).
+
+To set the list of IPs (or networks) that are allowed to call your inbound, use the `ip-acls` command (see the [configuring](#configuring-with-dasha-cli) section to learn format).
+
+https://datatracker.ietf.org/doc/html/rfc3261#section-22
 
 ### Running incoming calls
 

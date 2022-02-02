@@ -22,25 +22,13 @@ async function main() {
   // log some information about sip uri
   // it can also be got by Dasha CLI using `dasha sip list-inbound`
   console.log("Waiting for calls via SIP");
-  const config = (await dasha.sip.inboundConfigs.listConfigs())[
-    "dasha-voip-inbound-local-demo"
-  ];
-  if (config?.applicationName === "dasha-voip-inbound-local-demo") {
-    console.log("URI to call:", config?.uri);
-  }
+  // name of the using app
+  const appName = "dasha-voip-inbound-local-demo";
+  // find config for this app
+  const config = Object.values(await dasha.sip.inboundConfigs.listConfigs()).filter(c => c.applicationName === appName)[0];
+  if (config === undefined) throw new Error(`Could not find config for application ${appName}`)
+  console.log("URI to call:", config?.uri)
   console.log("Press Ctrl+C to exit");
-  console.log(
-    "More details: https://docs.dasha.ai/en-us/default/tutorials/sip-inbound-calls/"
-  );
 }
 
 main();
-
-// dasha sip create-inbound --application-name dasha-voip-inbound-local-demo dasha-voip-inbound-local-demo
-
-// {
-//  "applicationName": "dasha-voip-inbound-local-demo",
-//  "priority": 0,
-//  "groupName": "Default",
-//  "uri": "sip:8e988902-a333-4527-b434-c319526ca78b@sip.us.dasha.ai"
-// }
