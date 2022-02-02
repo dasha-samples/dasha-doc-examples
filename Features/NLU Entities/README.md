@@ -45,7 +45,7 @@ Please, see our [doc](https://docs.dasha.ai/en-us/default/natural-language-under
 
 Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
 
-## Detailed script description
+## Script description
 
 The dialog of this demo is linear: nodes are switching one by one.
 

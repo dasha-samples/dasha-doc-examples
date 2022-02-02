@@ -30,7 +30,7 @@ Using sentence type parsing do not require any training data. Although, you need
 Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
 
 
-## Detailed script description
+## Script description
 
 The script consists of a few nodes. After initiating a call and dialogue comes to the endless loop:
 - node `listen` is used to just get user input and go the node `guess`

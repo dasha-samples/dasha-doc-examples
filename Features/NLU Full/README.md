@@ -67,7 +67,7 @@ Feel free to take a look on and explore that one!
 
 Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
 
-## Detailed script description
+## Script description
 
 Other features used in this demo:
 - [digressions](https://docs.dasha.ai/en-us/default/dasha-script-language/program-structure#digression)

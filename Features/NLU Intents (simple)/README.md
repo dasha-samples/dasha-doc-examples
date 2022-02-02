@@ -38,7 +38,7 @@ Consider creating several intents instead of one that has several meanings.
 Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
 
 
-## Detailed script description
+## Script description
 
 The dialogue script consists of three main nodes: 
 - `root` - start node that connects to user and tells him initial information

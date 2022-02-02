@@ -47,7 +47,7 @@ The conversation lasts until 5 languages are extracted.
 
 Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
 
-## Detailed script description
+## Script description
 
 The DSL script consists of a few nodes:
 - node `root` - initiates the dialogue

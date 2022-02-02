@@ -56,7 +56,7 @@ When building your own custom intents, it will probably require testing, debuggi
 Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
 
 
-## Detailed script description
+## Script description
 
 This demo mostly uses [digressions](https://docs.dasha.ai/en-us/default/dasha-script-language/program-structure#digression) since the logic of the script assume that user asks questions and requests us about something.
 
