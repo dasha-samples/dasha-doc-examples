@@ -2,12 +2,11 @@
 
 ## Description
 
-Dual-tone multi-frequency signaling ([DTMF](https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling)) is a telecommunication signaling system.
+Dual-tone multi-frequency signaling ([DTMF](https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling)) is a telecommunication signaling system. Commonly it is used to dial telephone numbers or to issue commands to switching systems.
 
-It is used to dial telephone numbers or to issue commands to switching systems.
+Dasha provides an ability of using it. DTMF codes are transmitted over TCP via [rfc2833](https://datatracker.ietf.org/doc/html/rfc2833).
 
-These signals may be used inside your application.
-DSL provides functions [sendDTMF](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#senddtmf) and [getDTMF](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#getdtmf) to handle them in your script.
+DTMF signaling may be used inside your application via DSL functions: [sendDTMF](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#senddtmf) and [getDTMF](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#getdtmf) to handle them in your script.
 
 This example simply awaits for DTMF signals sent from your phone and echoes them with voice and with [sounds](https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling#Keypad).
 
@@ -23,7 +22,7 @@ When 4 DTMF signals are sent, the dialogue ends with DSL [#forward](https://docs
 Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
 
 
-## Detailed script description
+## Script description
 
 The logic of the dialogue is implemented with the digression that triggers when valid DTMF signal is recieved.
 The digression body consists of echoing the DTMF and adding it to the buffer.
