@@ -18,6 +18,15 @@ To connect customers, a SIP trunking service uses *SIP trunks* which roughly spe
 
 Those *SIP trunks* are used to configure your telephony when connecting it to Dasha application.
 
+The *SIP messages* are text-based messasges with the request-response mechanism that are used to transfer data.
+
+The actual data transmission is done by the *Transmission Control Protocol* ([TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)) or the *User Datagram Protocol* ([UDP](https://en.wikipedia.org/wiki/User_Datagram_Protocol)). 
+The Session Description Protocol ([SDP](https://en.wikipedia.org/wiki/Session_Description_Protocol)) controls which of the protocols is used.
+
+*SIP Header* is a component of a SIP message that contains information about the SIP message.
+
+[SIP documentation](https://datatracker.ietf.org/doc/html/rfc3261)
+
 ## Using VoIP in Dasha
 
 By default, Dasha applications use inbound or oubound telephony.
