@@ -1,0 +1,24 @@
+{
+    "version": "v2",
+    "entities": {
+      "animal": {
+        "open_set": false,
+        "values": [
+          {
+            "value": "еж",
+            "synonyms": ["ежиха", "ежик"]
+          },
+          {
+            "value": "енот",
+            "synonyms": ["енотик", "полоскун"]
+          }
+        ],
+        "includes": [
+          "(еж)[animal]",
+          "(еж)[animal] это животное",
+          "животное (еж)[animal]"
+        ]
+      }
+    }
+  }
+  

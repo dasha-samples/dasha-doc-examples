@@ -9,7 +9,7 @@ Every example is supposed to be independent and simplified as much as possible d
 [Basic example](https://github.com/dasha-samples/dasha-doc-examples/tree/main/Basic)
 
 Standalone services
- - NLU Service
+ - [NLU Service](Standalone-Services/NLU)
  - [TTS Service](Standalone-Services/TTS/README.md)
    - [Synthesize](Standalone-Services/TTS/Synthesize)
    - [Custom-Speaker](Standalone-Services/TTS/Custom-Speaker)
