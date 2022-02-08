@@ -10,6 +10,9 @@ Every example is supposed to be independent and simplified as much as possible d
 
 Standalone services
  - NLU Service
+ - [TTS Service](Standalone-Services/TTS/README.md)
+   - [Synthesize](Standalone-Services/TTS/Synthesize)
+   - [Custom-Speaker](Standalone-Services/TTS/Custom-Speaker)
 
 Features
  - [NLU Intents (simple)](Features/NLU%20Intents%20(simple))

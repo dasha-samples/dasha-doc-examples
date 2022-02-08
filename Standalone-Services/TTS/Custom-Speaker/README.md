@@ -6,6 +6,9 @@ The [TTS API](https://docs.dasha.ai/en-us/default/sdk/node-js/modules/tts) allow
 The created custom speakers are connected to your account and saved on our server.
 
 To create your own custom speaker, you need to provide sample of speaker voice (wav or mp3 file).
+> Note: the longer file means the better voice cloning so you should provide long enough sample.
+The same goes for sample quality - you should provide sample with 16khz frequency or higher.
+
 The `file contents` have to be read as bytes and provded to `addOrUpdateCustomSpeakerByName` function (along with the speaker's identifying `name`).
 
 That's it. 
