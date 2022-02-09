@@ -62,19 +62,20 @@ Features
    - input
    - output
    - audio record
+   - transcription
  - SDK conversation config
    - Audio
    - Noise volume
    - Call records
- - SDK web
- - Text To Speech
+ - SDK Text To Speech
    - pre-recorded
    - emotions control
    - voice cloning
  - Calling application from model
  - Isolation between application
    - Using groups for isolation
-
+ - Web SDK
+ 
 Integrations
  - DB
    - CSV file
