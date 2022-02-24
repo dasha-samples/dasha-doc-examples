@@ -61,7 +61,7 @@ digression dtmf {
         if (data is null) return;
         #log(data);
 
-        # pronounce recieved dtmf signal
+        // pronounce recieved dtmf signal
         if (data == "#") #sayText("octothorpe");
         else if (data == "*") #sayText("star");
         else #sayText(data);
