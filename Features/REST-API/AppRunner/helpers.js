@@ -27,6 +27,7 @@ async function deploy_app(app_zip) {
     })
     .then((response) => {
       console.log("deploy finished, status:", response.status);
+      console.log(JSON.stringify(response.data,null,2))
       const id = response.data.id;
       console.log("app id:", id);
       return id;

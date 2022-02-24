@@ -16,18 +16,19 @@ async function main() {
   const phone = process.argv[2];
   const application_files = [
     "app/app.dashaapp",
-    "app/data.json",
     "app/main.dsl",
     "app/phrasemap.json",
   ];
+  console.log("z")
   const app_zip = await zip_files(application_files);
+  console.log("zz")
   console.log("Created zip");
-  const id = await deploy(app_zip);
+  const id = await deploy_app(app_zip);
   console.log(id);
-  const description = await get_description(id);
-  console.log(description);
-  const event = await run(id, phone);
-  console.log({ event: event.event, input: event.input });
+  const description = await get_app_description(id);
+  // console.log(description);
+  // const event = await run_app(id, phone);
+  // console.log({ event: event.event, input: event.input });
 }
 
 main().catch((e) => {
