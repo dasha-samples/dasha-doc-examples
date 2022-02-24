@@ -28,6 +28,7 @@ Options:
 To start the example, you need 
 - `phone` - phone number of the conferene (without leading `+`)
 - `m_id` - id of the zoom meeting (without `#` in the end)
+
 Optinally:
 - `p_id` - participant id that will be assigned to you in the meeting
 
