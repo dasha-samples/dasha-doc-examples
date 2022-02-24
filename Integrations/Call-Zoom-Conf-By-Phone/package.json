@@ -1,0 +1,16 @@
+{
+  "name": "dasha-voip-inbound-demo",
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "prettier": "^2.2.1"
+  },
+  "dependencies": {
+    "@dasha.ai/sdk": "^0.7.5",
+    "commander": "^9.0.0"
+  }
+}
