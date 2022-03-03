@@ -2,21 +2,21 @@
 
 ## Description
 
-[Intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)
+<!-- [Intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)
 
 Intents are actions and requests that a user wants to perform (unlike [entities](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-entities) that are rather objects that the user mentions). 
 They are used to extract and handle semantic information from the utterances that the system received from the user. 
 E.g., if your system is learned to extract intent called `"greeting"`, this intent must be extracted from inputs like: "hello", "good day", etc. 
-This makes the system to be able to handle such inputs robustly and efficiently.
+This makes the system to be able to handle such inputs robustly and efficiently. -->
 
 The current example demonstrates using a single intent in a simple application.
 
-The intents are defined in `app/data.json` file.
-The file may be named what ever you want but it has to be connected to the application in `.dashaapp` file (see Connecting to the application the [doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/connecting-to-the-application)).
+<!-- The intents are defined in `app/data.json` file.
+The file may be named what ever you want but it has to be connected to the application in `.dashaapp` file (see Connecting to the application the [doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/connecting-to-the-application)). -->
 
-Every intent specified in the `app/data.json` has following subsections (see [custom intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)):
+<!-- Every intent specified in the `app/data.json` has following subsections (see [custom intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)):
 - `"includes"` (required) that contains phrases where this intent must be extracted
-- `"excludes"` (optional) that contains phrases where this intent must NOT be extracted
+- `"excludes"` (optional) that contains phrases where this intent must NOT be extracted -->
 
 The only intent specified in this demo is `exit`.
 The purpose of this intent is to express user's wish to end the dialogue.
@@ -24,9 +24,9 @@ The only thing needed to define its semantics is phrases specified in `includes`
 All of them should express the desired intention of user.
 Take a look on it in `app/data.json`.
 
-Note that every intent should be independent and atomic as much as possible.
+<!-- Note that every intent should be independent and atomic as much as possible.
 It should not serve for several purposes.
-Consider creating several intents instead of one that has several meanings.
+Consider creating several intents instead of one that has several meanings. -->
 
 ## Installation
 
@@ -36,7 +36,6 @@ Consider creating several intents instead of one that has several meanings.
 ## Running the demo
 
 Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
-
 
 ## Script description
 

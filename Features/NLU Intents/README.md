@@ -2,12 +2,12 @@
 
 ## Description
 
-[Intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)
+<!-- [Intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)
 
 Intents are actions and requests that a user wants to perform (unlike [entities](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-entities) that are rather objects that the user mentions). 
 They are used to extract and handle semantic information from the utterances that the system received from the user. 
 E.g., if your system is learned to extract intent called `"greeting"`, this intent must be extracted from inputs like: "hello", "good day", etc. 
-This makes the system to be able to handle such inputs robustly and efficiently.
+This makes the system to be able to handle such inputs robustly and efficiently. -->
 
 The current example is aimed to demonstrate how the *intents* can be used to implement automatic control over hotel reception service. 
 The application calls a user and asks him about his needs (that will be expressed with intents). 
@@ -19,10 +19,12 @@ This output can be used outside the app by your business application.
 For simplicity the application reactions are hard coded due to make intents logic clear. 
 Note also that this demo is basically simplified version of our demo: https://github.com/dasha-samples/automated-hotel-receptionist.
 
+<!-- TODO remove or reformulate the following -->
+
 The main file of the demo to be discussed here is `app/data.json`. 
 The `app/main.dsl` contains dialogue logic and the `index.js` is the sdk part of the application.
 
-To connect your custom intents and Dasha system intents to the application they must be configured in `.dashaapp` file (see [Connecting to the application](https://docs.dasha.ai/en-us/default/natural-language-understanding/connecting-to-the-application)).
+<!-- To connect your custom intents and Dasha system intents to the application they must be configured in `.dashaapp` file (see [Connecting to the application](https://docs.dasha.ai/en-us/default/natural-language-understanding/connecting-to-the-application)). -->
 
 Let's take a look at `app/data.json` file. 
 The following intents are specified there:
@@ -34,17 +36,17 @@ The following intents are specified there:
 - `"agreement#neg"` - denotes user's disagreement (intent `agreement` with `negative` state)
 - `"nothing"` - extracted if user says that he don't want anything
 
-Every intent specified in the `data.json` has following subsections (see [custom intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)):
+<!-- Every intent specified in the `data.json` has following subsections (see [custom intents doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/custom-intents)):
 - `"includes"` (required) that contains phrases where this intent must be extracted
-- `"excludes"` (optional) that contains phrases where this intent must NOT be extracted
+- `"excludes"` (optional) that contains phrases where this intent must NOT be extracted -->
 
-To handle the intents in dialogue script [DSL](https://docs.dasha.ai/en-us/default/dasha-script-language/) provides functions like: [#messageHasIntent](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasintent), [#messageHasAnyIntent](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasanyintent). 
+<!-- To handle the intents in dialogue script [DSL](https://docs.dasha.ai/en-us/default/dasha-script-language/) provides functions like: [#messageHasIntent](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasintent), [#messageHasAnyIntent](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions/#messagehasanyintent). 
 They allow you to understand whether such intent was extracted or not.
-See also [DSL NLU control documentation](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#nlu-control).
+See also [DSL NLU control documentation](https://docs.dasha.ai/en-us/default/dasha-script-language/built-in-functions#nlu-control). -->
 
-Note that if you need to extract some intent with particular `state` the `#messageHasIntent` function provides corresponding parameter, i.e. if you want to extract user's *disagreement* you must do it like this `#messageHasIntent("agreement", "negative")`.
+<!-- Note that if you need to extract some intent with particular `state` the `#messageHasIntent` function provides corresponding parameter, i.e. if you want to extract user's *disagreement* you must do it like this `#messageHasIntent("agreement", "negative")`. -->
 
-When building your own custom intents, it will probably require testing, debugging and improving your model. See [Improving NLU model doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/improving-models) for the tips and instuctions.
+<!-- When building your own custom intents, it will probably require testing, debugging and improving your model. See [Improving NLU model doc](https://docs.dasha.ai/en-us/default/natural-language-understanding/improving-models) for the tips and instuctions. -->
 
 ## Installation
 
