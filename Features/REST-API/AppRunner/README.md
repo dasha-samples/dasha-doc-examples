@@ -187,7 +187,34 @@ return await axios.post(`http://app.us.dasha.ai/api/v1/apprunner/${id}/run`, run
 
 ### Response example
 
-
+```json
+{
+  "event": "Completed",
+  "input": { "endpoint": "79513628606" },
+  "output": { "success": true },
+  "transciption": [
+    {
+      "speaker": "ai",
+      "text": "Hello, Bob! Can you hear me?",
+      "startTime": "2022-03-11T13:06:40.220Z",
+      "endTime": "2022-03-11T13:06:42.337Z"
+    },
+    {
+      "speaker": "human",
+      "text": "Yes.",
+      "startTime": "2022-03-11T13:06:46.000Z",
+      "endTime": "2022-03-11T13:06:46.920Z"
+    },
+    {
+      "speaker": "ai",
+      "text": "And I can hear you too. Goodbye",
+      "startTime": "2022-03-11T13:06:47.077Z",
+      "endTime": "2022-03-11T13:06:49.612Z"
+    }
+  ],
+  "recordingUrl": "https://app.us.dasha.ai/api/v1/records/5c88646d-bb25-4e04-a96e-6413ac888255"
+}
+```
 
 ## Installation and pre-steps
 
