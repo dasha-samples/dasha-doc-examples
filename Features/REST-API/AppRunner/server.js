@@ -4,7 +4,7 @@ const _ = require("lodash");
 const axios = require("axios");
 const http = require("http");
 
-const PORT = process.env.PORT ?? "8080";
+const PORT = "8080";
 
 function checkEnvironment(req, res, next) {
   next();
@@ -33,9 +33,11 @@ function createApp() {
     return res.sendStatus(200);
   });
 
-  app.post("/myfunc_external_impl", (req, res) => {
+  app.post("/get_user_name_by_phone_impl", (req, res) => {
     console.log("Got post external", req.body);
-    return res.status(200).send("1122");
+    // some calculations
+    const result = "Bob";
+    return res.status(200).send(result);
   });
 
   return app;

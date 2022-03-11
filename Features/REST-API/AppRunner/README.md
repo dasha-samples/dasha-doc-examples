@@ -6,14 +6,18 @@ The current example demonstrates using the Dasha AppRunner API for application c
 
 The abilities of the current API:
 - deploy applicaiton
-- get application descrtiption
+- get application descrtiption by id
 - run the deployed applicaiton with provided settings
 
-API URL: `http://app.us.dasha.ai/api/v1/apprunner`.
+API URL: 
+- RU cluster: `http://app.ru.dasha.ai/api/v1/apprunner`
+- US cluster: `http://app.us.dasha.ai/api/v1/apprunner`
 
-### Deploy
+## Deploy
 
-Method URL: `http://app.us.dasha.ai/api/v1/apprunner/deploy`
+Method URL: 
+- RU cluster: `http://app.ru.dasha.ai/api/v1/apprunner/deploy`
+- US cluster: `http://app.us.dasha.ai/api/v1/apprunner/deploy`
 
 The `deploy` method of AppRunner API is the `POST` method that receives your application, deploys it on our server and returns basic information about deployed app.
 
@@ -32,10 +36,10 @@ Created `zip` is sent via `post` request as a byte string.
 > - "Content-Type": "application/zip"
 > - Authorization: `Bearer {your_dasha_apikey}`
 
-### Example via axios:
+### Http request example via `axios`:
 
-```
-await axios.post(`${APPRUNNER_URL}/deploy`, app_zip, {
+```js
+await axios.post(`http://app.us.dasha.ai/api/v1/apprunner/deploy`, app_zip, {
       headers: {
         "Content-Type": "application/zip",
         Authorization: `Bearer ${process.env.DASHA_APIKEY}`,
@@ -44,7 +48,7 @@ await axios.post(`${APPRUNNER_URL}/deploy`, app_zip, {
 ```
 
 ### Response example:
-```
+```json
 {
   "id": "xxx",
   "name": "dasha-apprunner-demo",
@@ -76,13 +80,114 @@ await axios.post(`${APPRUNNER_URL}/deploy`, app_zip, {
 }
 ```
 
-### Get application description
+## Get the application description
 
-`${id}/description`
+Method URL: 
+- RU cluster: `http://app.ru.dasha.ai/api/v1/apprunner/${id}/description`
+- US cluster: `http://app.us.dasha.ai/api/v1/apprunner/${id}/description`
+
+You can use this method to get description of deployed application.
+
+### Http request example via axios
+```js
+await axios.get(`http://app.us.dasha.ai/api/v1/apprunner/${id}/description`, {
+      headers: {
+        Authorization: `Bearer ${process.env.DASHA_APIKEY}`,
+      },
+    })
+```
+
+### Response example
+
+```json
+{
+  "id": "xxx",
+  "name": "dasha-apprunner-demo",
+  "description": "",
+  "inputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "required": ["endpoint"],
+    "properties": { "endpoint": { "type": "string" } }
+  },
+  "outputSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["success"],
+    "properties": { "success": { "type": "boolean" } }
+  }
+}
+```
 
 ### Run the application
 
-`${id}/run`
+Method URL:
+- RU cluster: `http://app.ru.dasha.ai/api/v1/apprunner/${id}/run`
+- US cluster: `http://app.us.dasha.ai/api/v1/apprunner/${id}/run`
+
+This `POST` method triggers application to execute some actual conversation with specific settings.
+
+
+The request body contains
+- `input:object` - input data for the dialogue script (*required*)
+- `before:string` - date of the deadline for the application to start
+- `webhooks:object` - webhooks where to send application lifecycle events (*required*)
+  - `headers:object` - headers to send along with events
+  - `completed:string` - webhook url to send `completed` event
+  - `failed:string` - webhook url to send `failed` event
+  - `timedout:string` - webhook url to send `timedout` event
+  - `external:object` - object that maps `external function` names to `url` to `POST` methods with their implementation
+- `settings:object`
+  - `channel:string` - conversaton channel (for now only `sip` values is available) (*required*)
+  - `sip:object` - SIP configuration
+    - `config:string` - SIP config name (*required*)
+  - `audio:object`
+    - `tts:string` - TTS provider to use
+    - `stt:string` - STT provider to use
+
+### Request example
+
+```js
+const run_request_body = {
+  /* input data for the application */
+  input: { endpoint },
+  /* deadline for the application to start */
+  before: "2022-02-10:11:12.613Z",
+  /* webhooks to send application lifecycle events to */
+  webhooks: {
+    /* headers to send along with events */
+    headers: {},
+    /* webhook for completion events */
+    completed: `${process.env.WEBHOOK_SERVER_URL}/completed`,
+    /* webhook for failure events */
+    failed: `${process.env.WEBHOOK_SERVER_URL}/failed`,
+    /* webhook for timedout events */
+    timedout: `${process.env.WEBHOOK_SERVER_URL}/failed`,
+    /* mapping: external function name to url which implements this function (method post) */
+    external: {
+      getUserNameByPhone: `${process.env.WEBHOOK_SERVER_URL}/get_user_name_by_phone_impl`,
+    },
+  },
+  settings: {
+    channel: "sip",
+    audio: {
+      /* tts provider */
+      tts: "dasha",
+      /* stt provider */
+      stt: "default",
+    },
+  },
+};
+return await axios.post(`http://app.us.dasha.ai/api/v1/apprunner/${id}/run`, run_request_body, {
+    headers: {
+      Authorization: `Bearer ${process.env.DASHA_APIKEY}`,
+    },
+})
+```
+
+### Response example
+
+
 
 ## Installation and pre-steps
 

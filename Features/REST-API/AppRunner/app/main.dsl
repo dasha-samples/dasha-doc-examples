@@ -3,14 +3,14 @@ context {
     output success: boolean = false;
 }
 
-external function myfunc():string;
+external function getUserNameByPhone(endpoint: string):string;
 
 start node hello {
     do {
         #connectSafe($endpoint);
         #log("connected");
-        #sayText("Yo! Can you hear me?");
-        #sayText("function returned " + external myfunc());
+        var name = external getUserNameByPhone($endpoint);
+        #sayText("Hello, " + name + "! Can you hear me?");
         wait *;
     }
     transitions {

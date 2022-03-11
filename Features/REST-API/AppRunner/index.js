@@ -19,16 +19,14 @@ async function main() {
     "app/main.dsl",
     "app/phrasemap.json",
   ];
-  console.log("z")
   const app_zip = await zip_files(application_files);
-  console.log("zz")
   console.log("Created zip");
   const id = await deploy_app(app_zip);
   console.log(id);
   const description = await get_app_description(id);
-  // console.log(description);
-  // const event = await run_app(id, phone);
-  // console.log({ event: event.event, input: event.input });
+  console.log(JSON.stringify(description));
+  const event = await run_app(id, phone);
+  console.log({ event: event.event, input: event.input });
 }
 
 main().catch((e) => {

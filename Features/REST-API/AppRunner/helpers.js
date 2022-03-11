@@ -73,7 +73,7 @@ async function run_app(id, endpoint) {
       timedout: `${process.env.WEBHOOK_SERVER_URL}/failed`,
       /* mapping: external function name to url which implements this function (method post) */
       external: {
-        myfunc: `${process.env.WEBHOOK_SERVER_URL}/myfunc_external_impl`,
+        getUserNameByPhone: `${process.env.WEBHOOK_SERVER_URL}/get_user_name_by_phone_impl`,
       },
     },
     settings: {
