@@ -1,0 +1,22 @@
+{
+  "formatVersion": "2",
+  "name": "dasha-voip-inbound-demo",
+  "dialogue": {
+    "file": "main.dsl"
+  },
+  "nlu": {
+    "language": "en-US",
+    "skills": [
+      "common_phrases",
+      "sentiment"
+    ],
+    "customIntents": {
+      "file": "data.json"
+    }
+  },
+  "nlg": {
+    "type": "phrases",
+    "file": "phrasemap.json",
+    "signatureFile": "phrasemap.json"
+  }
+}
