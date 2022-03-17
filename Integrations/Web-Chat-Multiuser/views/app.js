@@ -40,9 +40,7 @@ class Chatbox {
       socket.emit("system-start-conv", { convId: this.actualConvId });
       chatBox.classList.add("chatbox--active");
     } else {
-      document
-        .querySelector(".chatbox__support")
-        .classList.remove("chatbox--active");
+      chatBox.classList.remove("chatbox--active");
       /** If user closes chatbox, close the conversation and clear output */
       socket.emit("system-interrupt-conv");
       this.clearChatMessages();
