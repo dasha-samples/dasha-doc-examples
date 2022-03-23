@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Lambda application that invokes DashaAI application.
+Resources:
+  function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      CodeUri: dasha-function/.
+      Description: Call the AWS Lambda API
+      Timeout: 900
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Environment:
+        Variables:
+          DASHA_SERVER: app.us.dasha.ai
+          DASHA_APIKEY: <your_apikey>
+          DASHA_CONCURRENCY: 1
+      Layers:
+        - !Ref libs
+      Tracing: Active
+  libs:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: dasha-aws-lambda-demo-lib
+      Description: Dependencies for the blank sample app.
+      ContentUri: lib/.
+      CompatibleRuntimes:
+        - nodejs12.x
