@@ -1,0 +1,19 @@
+{
+  "version": "v2",
+  "intents": {
+    "agreement#pos": {
+      "includes": [
+        "yes",
+        "yeah",
+        "yes I confirm",
+        "confirm",
+        "correct",
+        "yes thats correct",
+        "thats correct"
+      ]
+    },
+    "agreement#neg": {
+      "includes": ["no", "nope", "there is mistake", "thats wrong"]
+    }
+  }
+}
