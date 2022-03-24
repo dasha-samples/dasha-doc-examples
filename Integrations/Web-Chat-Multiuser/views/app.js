@@ -104,17 +104,37 @@ class Chatbox {
     const chatmessage = chatbox.querySelector(".chatbox__messages");
     chatmessage.innerHTML = "";
   }
+
+  addZombieMessage(message) {
+    console.log(`Got zombie message ${JSON.stringify(message)}`);
+    const {author, text, convId} = message;
+    let html;
+    html = `<div>zombie:${convId}:${author}: '${text}'</div>`;
+    const chatbox = this.components.chatBox;
+    const chatmessage = chatbox.querySelector(".chatbox__messages");
+    chatmessage.innerHTML = html + chatmessage.innerHTML;
+  }
 }
 
 const chatBox = new Chatbox();
 
 socket.on("ai-message", (data) => {
   const { text, convId } = data;
+  
+  if (convId != chatBox.actualConvId)
+    chatBox.addZombieMessage({convId, text, author: "AI"});
+
+  
   chatBox.addAiMessage(text, convId);
 });
 
 socket.on("system-conv-completed", (data) => {
   const { result, convId } = data;
+  
+  if (convId != chatBox.actualConvId)
+    chatBox.addZombieMessage({convId, text: `output: ${JSON.stringify(result.output, null, 2)}`, author: "system"});
+
+  
   chatBox.addSystemMessage(
     `output: ${JSON.stringify(result.output, null, 2)}`,
     convId
@@ -123,12 +143,28 @@ socket.on("system-conv-completed", (data) => {
 
 socket.on("system-conv-closed", (data) => {
   const { convId } = data;
+  
+  if (convId != chatBox.actualConvId)
+    chatBox.addZombieMessage({convId, text: "Conversation is completed", author: "system"});
+
+  
   chatBox.addSystemMessage("Conversation is completed", convId);
 });
 
 socket.on("system-conv-interrupted", (data) => {
   const { convId } = data;
+  
+  if (convId != chatBox.actualConvId)
+    chatBox.addZombieMessage({convId, text: "Conversation is interrupted", author: "system"});
+
+
+  
   chatBox.addSystemMessage("Conversation is interrupted", convId);
+});
+
+socket.on("system", (data) => {
+  const { text, convId } = data;
+  chatBox.addZombieMessage({convId, text, author: "system"});
 });
 
 chatBox.display();
