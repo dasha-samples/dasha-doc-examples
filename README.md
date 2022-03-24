@@ -80,6 +80,9 @@ Features
  - Web SDK
  
 Integrations
+ - [Join Zoom Conference By Phone](Integrations/Call-Zoom-Conf-By-Phone)
+ - [Use Dasha application in AWS Lambda](Integrations/AWS-Lambda)
+ - [Create in-browser chat with several users](Integrations/Web-Chat-Multiuser)
  - DB
    - CSV file
    - Postgresql
