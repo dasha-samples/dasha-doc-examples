@@ -55,6 +55,12 @@ class DashaApplication {
       await conv.off();
       socket.emit("system-conv-interrupted", {convId})
     });
+    socket.on("disconnect", async (s) => {
+      console.log(`closing conversation for user '${socket.id}'`);
+      await chat.close();
+      await conv.removeAllListeners();
+      await conv.off();
+    });
     conv.on("debugLog", async (debugLog) => {
       if (debugLog?.msg?.msgId === "OpenedSessionChannelMessage") {
         isOpened = true;
