@@ -25,6 +25,7 @@ Features
    - Random phrase
    - Repeat phrase
    - Passing args to the phrase
+ - [DSL Interrupt exiting dialogue](Features/DSL-Interrupt-exiting-dialogue)
  - DSL Blocks
  - DSL Context and local variables, digression properties
  - DSL NLU control
