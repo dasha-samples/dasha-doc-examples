@@ -1,5 +1,7 @@
 # DSL example: Interrupt exiting dialogue example
 
+(Work on the description is in progress)
+
 <!-- ## Description
 
 [Feature doc link](https://docs.dasha.ai/en-us/default/current-feature-doc)
