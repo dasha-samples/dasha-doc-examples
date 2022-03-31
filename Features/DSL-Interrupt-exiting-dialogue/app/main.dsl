@@ -85,7 +85,7 @@ node interrupt_hangup {
         // avoid endless loops in dialogue
         if ($num_interrupts >= $max_num_interrupts) {
             set $status = "Hangup interrupt count limit exceeded";
-            #sayText("We reached " + $num_interrupts.toString() + "interrupts which is maximum number. Bye!");
+            #sayText("We reached " + $num_interrupts.toString() + " interrupts which is maximum number. Bye!");
             goto hangup;
         }
         // in current example we simply return to the last node

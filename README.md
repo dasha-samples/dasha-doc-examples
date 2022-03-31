@@ -27,6 +27,7 @@ Features
    - Passing args to the phrase
  - [DSL Interrupt exiting dialogue](Features/DSL-Interrupt-exiting-dialogue)
  - [DSL Handle voicemail, answering machine and operator messages](Features/DSL-Handle-voicemail-answering-machine)
+ - [DSL Complex logic in digression](Features/DSL-Complex-digression)
  - DSL Blocks
  - DSL Context and local variables, digression properties
  - DSL NLU control

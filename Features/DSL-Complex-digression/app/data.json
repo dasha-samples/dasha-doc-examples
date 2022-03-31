@@ -1,0 +1,22 @@
+{
+  "version": "v2",
+  "intents": {
+    "what_poem": {
+      "includes": [
+        "what is this poem?",
+        "which poem is that?",
+        "who is the author?",
+        "what is the name of this poem",
+        "name of the poem",
+        "what poem"
+      ]
+    },
+    "nothing": {
+      "includes": [
+        "nothing",
+        "don't want anything",
+        "do not need anything"
+      ]
+    }
+  }
+}
