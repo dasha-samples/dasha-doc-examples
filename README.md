@@ -15,12 +15,12 @@ Standalone services
    - [Custom-Speaker](Standalone-Services/TTS/Custom-Speaker)
 
 Features
- - [NLU Intents (simple)](Features/NLU%20Intents%20(simple))
- - [NLU Intents](Features/NLU%20Intents)
- - [NLU Entities (simple)](Features/NLU%20Entities%20(simple))
- - [NLU Entities](Features/NLU%20Entities)
- - [NLU Sentence Types](Features/NLU%20Sentence%20Types)
- - [NLU Full example](Features/NLU%20Full)
+ - [NLU Intents (simple)](Features/NLU-Intents-(simple))
+ - [NLU Intents](Features/NLU-Intents)
+ - [NLU Entities (simple)](Features/NLU-Entities-(simple))
+ - [NLU Entities](Features/NLU-Entities)
+ - [NLU Sentence Types](Features/NLU-Sentence-Types)
+ - [NLU Full example](Features/NLU-Full)
  - NLG phrasemaps
    - Random phrase
    - Repeat phrase
@@ -55,14 +55,14 @@ Features
    - special
  - DSL HTTP requests
  - DSL External functions
- - [Voice over IP](Features/VoIP%20overview)
-   - [outbound calls](Features/VoIP%20outbounds)
-   - [inbound calls](Features/VoIP%20inbounds)
-   - [working with DTMF](Features/VoIP%20working%20with%20DTMF)
-   - [WebRTC](Features/VoIP%20WebRTC)
- - [SDK overview](Features/SDK%20overview)
+ - [Voice over IP](Features/VoIP-overview)
+   - [outbound calls](Features/VoIP-outbounds)
+   - [inbound calls](Features/VoIP-inbounds)
+   - [working with DTMF](Features/VoIP-working-with-DTMF)
+   - [WebRTC](Features/VoIP-WebRTC)
+ - [SDK overview](Features/SDK-overview)
  - SDK start single call
- - [SDK conversation data](Features/SDK%20conversation%20data)
+ - [SDK conversation data](Features/SDK-conversation-data)
    - input
    - output
    - audio record

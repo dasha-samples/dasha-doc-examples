@@ -34,12 +34,12 @@ If you want to explore SIP deeply, read the [SIP documentation](https://datatrac
 By default, Dasha applications use inbound or outbound telephony.
 The telephony can be useful for you when you build applicaitons like [automatic call centers](https://github.com/dasha-samples/automated-hotel-receptionist), [customer feedback surveys](https://github.com/dasha-samples/customer-feedback-survey), etc.
 
-See the [VoIP inbounds](../VoIP%20inbounds) and [VoIP outbounds](../VoIP%20outbounds) demos to learn how to configure telephony in your app.
+See the [VoIP inbounds](../VoIP-inbounds) and [VoIP outbounds](../VoIP-outbounds) demos to learn how to configure telephony in your app.
 
 Also, using the telephony may require using DTMF signals for purposes like forwarding, etc.
 You can handle the DTMF signals directly in the DSL files of your application.
-See the [VoIP DTMF example](../VoIP%20Using%20DTMF) for the details.
+See the [VoIP DTMF example](../VoIP-Using-DTMF) for the details.
 
 The other important case of using Dasha is creating web and mobile applications.
 For these purposes there is an ability of using Dasha via [WebRTC](https://en.wikipedia.org/wiki/WebRTC).
-Take a look at our [VoIP WebRTC](../VoIP%20WebRTC) example to learn how you can create your application.
+Take a look at our [VoIP WebRTC](../VoIP-WebRTC) example to learn how you can create your application.

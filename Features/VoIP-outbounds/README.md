@@ -19,7 +19,7 @@ Also, see our another [demo](https://github.com/dasha-samples/dasha-sip-test) th
 
 ### Create SIP trunk
 
-To test this demo you need a SIP trunk (see [VoIP overview](../VoIP%20overview/README.md) to learn what SIP trunk is) aquired from some SIP provider.
+To test this demo you need a SIP trunk (see [VoIP overview](../VoIP-overview/README.md) to learn what SIP trunk is) aquired from some SIP provider.
 E.g. you can follow [this instruciton](https://docs.dasha.ai/en-us/default/tutorials/sip-outbound-calls) to learn how to create a SIP trunk in [twillio](https://www.twilio.com/).
 
 The following steps require information about your SIP trunk:
@@ -54,7 +54,7 @@ Where
 - `transport` - lower-level transport protocol, that will be used for transferring SIP messages (TCP or UDP, by default the UDP is used)
 - `<config_name>` - the name of the configuration that **will be used later** when configuring the conversation in the SDK code.
 
-(See the [VoIP overview](../VoIP%20overview/README.md) to learn basic SIP terms.)
+(See the [VoIP overview](../VoIP-overview/README.md) to learn basic SIP terms.)
 
 The current example's SDK code expects that `<config_name>` is set to `dasha-voip-outbound-demo`.
 
