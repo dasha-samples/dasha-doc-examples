@@ -1,4 +1,4 @@
-# Topic: Example name
+# DSL example: Complex logic inside the digression
 
 ## Description
 
