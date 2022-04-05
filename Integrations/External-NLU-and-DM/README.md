@@ -8,7 +8,7 @@ Some common information about the feature. What is it? How do we handle it, i.e.
 
 Overall example description. What is it about? What does current example contain? What files should user look at?
 
-Please, see our [some-important-link](https://docs.dasha.ai/en-us/default/current-feature-doc) for more details. 
+Please, see our [some-important-link](https://docs.dasha.ai/en-us/default/current-feature-doc) for more details. -->
 
 ## Installation
 
@@ -17,9 +17,10 @@ Please, see our [some-important-link](https://docs.dasha.ai/en-us/default/curren
 
 ## Running the demo
 
-Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
+1. Update conversation inputs - `testConversations` objects in `index.js`: use your phone as `endpoint`
+2. `npm start` 
 
-
+<!--
 ## Detailed script description
 
 This section is needed to make code example clear to user. What exactly is going on in the example? How current feature is related to this example?

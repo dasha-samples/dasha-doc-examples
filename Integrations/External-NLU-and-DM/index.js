@@ -6,7 +6,7 @@ const DASHA_CONCURRENCY = 2;
 
 // test conversation inputs
 const testConversations = [
-  { endpoint: "79513628606" },
+  { endpoint: "xxx" },
 ];
 
 async function main() {
