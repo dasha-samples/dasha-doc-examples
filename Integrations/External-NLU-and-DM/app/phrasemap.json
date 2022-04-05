@@ -1,0 +1,12 @@
+{
+  "default": {
+    "voiceInfo": {
+      "lang": "en-US",
+      "speaker": "Kate",
+      "speed": 0.8
+    },
+    "phrases": {},
+    "types": {},
+    "macros": {}
+  }
+}
