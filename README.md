@@ -86,6 +86,7 @@ Integrations
  - [Join Zoom Conference By Phone](Integrations/Call-Zoom-Conf-By-Phone)
  - [Use Dasha application in AWS Lambda](Integrations/AWS-Lambda)
  - [Create in-browser chat with several users](Integrations/Web-Chat-Multiuser)
+ - [Use External NLU and Dialogue Model](Integrations/External-NLU-and-DM)
  - DB
    - CSV file
    - Postgresql
