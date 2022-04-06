@@ -5,16 +5,12 @@ class DashaApplication {
 
   async start(concurrency) {
     const app = await dasha.deploy("./app");
-
     await app.start({ concurrency: concurrency });
-
     this.app = app;
   }
-
   async stop() {
     await this.app.stop();
   }
-
   async dispose() {
     await this.app.dispose();
   }
