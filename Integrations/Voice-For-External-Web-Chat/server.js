@@ -23,7 +23,6 @@ externalService = new ExternalService();
 const SocketToConversation = {};
 const ConversationToEventQueue = {};
 const ConversationToInput = {};
-// omg
 const ConversationToSocket = {};
 
 function closeConversation(convId) {
@@ -99,13 +98,23 @@ async function main() {
   await dashaApplication.start(DASHA_CONCURRENCY);
   await externalService.start();
 
-  dashaApplication.app.setExternal("check_new_events", (args) => {
+  dashaApplication.app.setExternal("get_chatbot_input", (args) => {
     const { conversation_id } = args;
-    return getNewEvents(conversation_id);
+    const aiResponse = ConversationToEventQueue[conversation_id].shift();
+    const socket = ConversationToSocket[conversation_id];
+    socket.emit("dasha-transcript", {speaker: "ai", text: aiResponse});
+    return aiResponse;
   });
   dashaApplication.app.setExternal("close_conversation", (args) => {
     const { conversation_id } = args;
     closeConversation(conversation_id);
+  });
+  dashaApplication.app.setExternal("send_user_input", (args) => {
+    const { conversation_id, user_input } = args;
+    const response = externalService.processUserMessage(conversation_id, user_input);
+    const socket = ConversationToSocket[conversation_id];
+    socket.emit("dasha-transcript", {speaker: "human", text: user_input});
+    ConversationToEventQueue[conversation_id].push(response);
   });
   /* configure conversation execution handler */
   dashaApplication.app.queue.on("ready", async (conversationId, conv, info) => {
@@ -114,14 +123,6 @@ async function main() {
 
     conv.on("transcription", (transcription) => {
       console.log(transcription);
-      socket.emit("dasha-transcript", transcription);
-      if (transcription.speaker == "human") {
-        console.log("EMITTING")
-
-        const responseEvent = externalService.processUserMessage(conversationId, transcription.text);
-        console.log(`Sending ai event ${JSON.stringify(responseEvent)}`);
-        ConversationToEventQueue[conversationId].push(responseEvent);
-      }
     });
 
     // pass same input to Dasha along with conversation_id which is used to differ conversations in external service
@@ -173,22 +174,23 @@ async function main() {
       // call async function
       externalService.createConversation(input, convId);
       await dashaApplication.enqueue(convId);
+
       externalService.executeConversation(convId);
+      // ConversationToEventQueue[convId].push(responseEvent);
+      
       console.log(`conversation '${convId}' created`);
     })
 
-    socket.on("user-text-message", (e) => {
-      console.log(`GOT USER MESSAGE ${JSON.stringify(e)}`)
-      // send text in external service, get response and emit answer
-      const convId = SocketToConversation[socket.id];
-      if (convId === undefined) return;
+    // socket.on("user-text-message", (e) => {
+    //   console.log(`got user message ${JSON.stringify(e)}`)
+    //   // send text in external service, get response and emit answer
+    //   const convId = SocketToConversation[socket.id];
+    //   const { text } = e;
 
-      const { text } = e;
-
-      const responseEvent = externalService.processUserMessage(convId, text);
-      console.log(`Sending ai event ${JSON.stringify(responseEvent)}`);
-      ConversationToEventQueue[convId].push(responseEvent);
-    });
+    //   const responseEvent = externalService.processUserMessage(convId, text);
+    //   console.log(`Sending ai event ${JSON.stringify(responseEvent)}`);
+    //   ConversationToEventQueue[convId].push(responseEvent);
+    // });
 
     socket.on("disconnect", function (s) {
       console.log(
@@ -197,7 +199,7 @@ async function main() {
       const convId = SocketToConversation[socket.id];
       const queue = ConversationToEventQueue[convId]
       queue?.splice(0,queue?.length);
-      queue?.push({messages: [], exit_dialogue: true});
+      queue?.push(null);
       externalService.closeConversation(convId);
       delete SocketToConversation[socket.id];
     });

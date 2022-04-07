@@ -8,14 +8,6 @@ const responses = [
   `I have no more facts for you. Thank you for your attention. Have a nice day! Bye!`,
 ];
 
-/*
-event structure:
-{
-    messages: string[];
-    exit_dialogue: boolean?;
-};
-*/
-
 class ExternalService {
   constructor() {
     /* Maps conversation id to available responses (used to mock working of dialogue model) */
@@ -48,13 +40,7 @@ class ExternalService {
     // );
     let response = responses.shift();
 
-    let event = { messages: [response] };
-    if (responses.length === 0) {
-      /* no more messages */
-      event.exit_dialogue = true;
-    }
-
-    return event;
+    return response;
   }
 
   closeConversation(conversationId) {

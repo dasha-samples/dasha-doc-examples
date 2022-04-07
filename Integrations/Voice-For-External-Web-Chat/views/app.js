@@ -24,7 +24,7 @@ class Chatbox {
     this.components = {
       openButton: document.querySelector(".chatbox__button"),
       chatBox: document.querySelector(".chatbox__support"),
-      sendButton: document.querySelector(".send__button"),
+      // sendButton: document.querySelector(".send__button"),
     };
 
     this.state = false;
@@ -35,19 +35,19 @@ class Chatbox {
   }
 
   display() {
-    const { openButton, chatBox, sendButton } = this.components;
+    const { openButton, chatBox/*, sendButton*/ } = this.components;
     openButton.addEventListener("click", () => {
       this.toggleState(chatBox);
     });
-    sendButton.addEventListener("click", () => {
-      this.onSendButton(chatBox);
-    });
-    const node = chatBox.querySelector("input");
-    node.addEventListener("keyup", ({ key }) => {
-      if (key == "Enter") {
-        this.onSendButton(chatBox);
-      }
-    });
+    // sendButton.addEventListener("click", () => {
+    //   this.onSendButton(chatBox);
+    // });
+    // const node = chatBox.querySelector("input");
+    // node.addEventListener("keyup", ({ key }) => {
+    //   if (key == "Enter") {
+    //     this.onSendButton(chatBox);
+    //   }
+    // });
   }
 
   createConversation(input, aor) {
@@ -86,21 +86,21 @@ class Chatbox {
     }
   }
 
-  async onSendButton(chatbox) {
-    const textField = chatbox.querySelector("input");
-    let userText = textField.value;
-    if (userText == "") {
-      return;
-    }
-    this.addUserMessage(userText, this.actualConvId);
-    textField.value = "";
-    if (this.actualConvId)
-      console.log("EMITTING")
-      socket.emit("user-text-message", {
-        convId: this.actualConvId,
-        text: userText,
-      });
-  }
+  // async onSendButton(chatbox) {
+  //   const textField = chatbox.querySelector("input");
+  //   let userText = textField.value;
+  //   if (userText == "") {
+  //     return;
+  //   }
+  //   this.addUserMessage(userText, this.actualConvId);
+  //   textField.value = "";
+  //   if (this.actualConvId)
+  //     console.log("EMITTING")
+  //     socket.emit("user-text-message", {
+  //       convId: this.actualConvId,
+  //       text: userText,
+  //     });
+  // }
 
   addMessage(message) {
     const { author, text, convId } = message;
