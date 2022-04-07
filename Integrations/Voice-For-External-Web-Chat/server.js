@@ -23,7 +23,6 @@ externalService = new ExternalService();
 const SocketToConversation = {};
 const ConversationToEventQueue = {};
 const ConversationToInput = {};
-// const SocketToSipConfig = {};
 // omg
 const ConversationToSocket = {};
 
@@ -36,16 +35,11 @@ function closeConversation(convId) {
 }
 
 function getNewEvents(convId) {
-  // const eventQueue = this._getEventQueue(conversationId);
-  // const newEvents = [...eventQueue];
-  // eventQueue.splice(0,newEvents.length);
-  // return newEvents;
   const eventQueue = ConversationToEventQueue[convId];
   if (eventQueue === undefined) throw new Error("Event queue was not found");
   newEvents = [...eventQueue];
   eventQueue.splice(0, newEvents.length);
   return newEvents;
-  // const eventQueue = this._getEventQueue(conversationId);
 }
 
 function createExpressApp() {
@@ -83,33 +77,6 @@ function createExpressApp() {
     return res.json(SocketToConversation);
   });
 
-  app.post("/create-conversation", async (req, res) => {
-    const convId = uuidv4();
-    const { socketId, input } = req.body;
-    console.log(`got request to create conversation from user '${convId}'`);
-
-    SocketToConversation[socketId] = convId;
-    ConversationToInput[convId] = input;
-    ConversationToEventQueue[convId] = [];
-    // call async function
-    externalService.createConversation(input, convId);
-    await dashaApplication.enqueue(convId);
-    externalService.executeConversation(convId);
-    console.log(`conversation '${convId}' created`);
-
-    res.json({ convId });
-  });
-
-  // app.delete("/close-conversation/:conv_id", (req, res) => {
-  //   const convId = req.params.conv_id;
-  //   const { socketId } = req.body;
-
-  //   console.log(`got request to close conversation from user '${convId}'`);
-  //   delete SocketToConversation[socketId];
-  //   externalService.closeConversation(convId);
-  //   res.status(200);
-  // });
-
   app.get("/sip", async (req, res) => {
     const domain = dashaApplication.app.account.server.replace("app.", "sip.");
     const sipServerEndpoint = `wss://${domain}/sip/connect`;
@@ -136,14 +103,6 @@ async function main() {
     const { conversation_id } = args;
     return getNewEvents(conversation_id);
   });
-  dashaApplication.app.setExternal("send_user_input", (args) => {
-    const { conversation_id, user_input } = args;
-    // externalService.processUserInput(conversation_id, user_input);
-    socket.emit("user-text-message", {
-      convId: conversation_id,
-      text: user_input,
-    });
-  });
   dashaApplication.app.setExternal("close_conversation", (args) => {
     const { conversation_id } = args;
     closeConversation(conversation_id);
@@ -158,23 +117,14 @@ async function main() {
       socket.emit("dasha-transcript", transcription);
       if (transcription.speaker == "human") {
         console.log("EMITTING")
-        // socket.emit("user-text-message", {
-        //   convId: conversationId,
-        //   text: transcription.text,
-        // });
 
         const responseEvent = externalService.processUserMessage(conversationId, transcription.text);
         console.log(`Sending ai event ${JSON.stringify(responseEvent)}`);
         ConversationToEventQueue[conversationId].push(responseEvent);
-        // socket.emit("external-service-event", {
-        //   ...responseEvent,
-        //   conversationId,
-        // });
-        // externalService.processUserInput(conversationId, transcription.text);
       }
     });
 
-    // pass same input to Dasha along with conversation_id which is used to discern conversations in external service
+    // pass same input to Dasha along with conversation_id which is used to differ conversations in external service
     const input = ConversationToInput[conversationId];
     conv.input = { ...input, conversation_id: conversationId };
     conv.audio.noiseVolume = 0;
@@ -183,10 +133,7 @@ async function main() {
       socket.emit("system-close-conv");
     });
     
-    // externalService.closeConversation(conversationId);
   });
-
-
 
   const httpServer = http.createServer(app);
 
@@ -194,7 +141,6 @@ async function main() {
   io.on("connection", (socket) => {
     console.log("user connected, socket id:", socket.id);
     // register user
-    // SocketToConversation[socket.id] = undefined;
     ConversationToEventQueue[socket.id] = [];
 
     // for debugging
@@ -202,14 +148,6 @@ async function main() {
       console.log(`[debug:${socket.id}] ${msg}`);
     });
 
-    /* @todo make creating with sockets and return convId with promise
-    socket.on("system-create-conv", () => {
-      // const convId = SocketToConversation[socket.id];
-      // externalService.closeConversation(convId);
-      // delete SocketToConversation[socket.id];
-      console.log(`conversation ${convId} created`);
-    });
-    */
     socket.on("system-interrupt-conv", () => {
       const convId = SocketToConversation[socket.id];
       closeConversation(convId);
@@ -221,13 +159,7 @@ async function main() {
       console.log(`conversation ${convId} closed`);
     });
 
-    // omg
-    socket.on("system-reg-socket", (e) => {
-      console.log(`REGISTRATING SOCKET ${socket} for ${convId}`)
-      const { socket, convId } = e;
-      ConversationToSocket[convId] = socket;
-    });
-
+    /* @todo generate convId here and return it to client within Promise */
     socket.on("system-create-conv", async (e) => {
       const { socketId, convId, input} = e;
 
@@ -255,10 +187,6 @@ async function main() {
 
       const responseEvent = externalService.processUserMessage(convId, text);
       console.log(`Sending ai event ${JSON.stringify(responseEvent)}`);
-      // socket.emit("external-service-event", {
-      //   ...responseEvent,
-      //   convId,
-      // });
       ConversationToEventQueue[convId].push(responseEvent);
     });
 

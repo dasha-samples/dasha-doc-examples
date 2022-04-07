@@ -50,24 +50,6 @@ class Chatbox {
     });
   }
 
-  // createConversation(input, aor) {
-  //   fetch(`${api}/create-conversation`, {
-  //     method: "POST",
-  //     body: JSON.stringify({ socketId: socket.id, input: {...input, endpoint: aor} }),
-  //     mode: "cors",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   })
-  //     .then((r) => r.json())
-  //     .then((r) => {
-  //       const { convId } = r;
-  //       this.actualConvId = convId;
-  //       socket.emit("system-reg-socket", { socket, convId });
-  //       console.log("!!!!!!!!!!!!!!!!!REGISTRATED")
-  //     });
-  // }
-
   createConversation(input, aor) {
     const convId = `${new Date().getTime()}`;
     socket.emit("system-create-conv", { socketId: socket.id, convId, input: {...input, endpoint: aor} });
@@ -82,16 +64,10 @@ class Chatbox {
     
     this.addSystemMessage("Starting the conversation...", this.actualConvId);
     chatBox.classList.add("chatbox--active");
-    // runCall(aor, "Peter").catch(() => {
-    //   runButton.disabled = false;
-    //   waitButton.hidden = true;
-    // });
   }
 
   async closeChatBox() {
-    await this.user.hangup().catch(() => {
-
-    });
+    await this.user.hangup().catch(() => {});
 
     const chatBox = this.components.chatBox;
     chatBox.classList.remove("chatbox--active");
@@ -182,11 +158,7 @@ async function main() {
   user.delegate = {
     onCallReceived: async () => {
       await user.answer();
-      // await delay(2000);
       audio.srcObject = user.remoteMediaStream;
-      console.log("AUDIO", audio)
-      console.log("AUDIO SRC", audio.srcObject)
-      console.log("USER REMOTE AUDIO", user.remoteMediaStream)
       audio.play();
       chatBox.addSystemMessage("Voice call started", chatBox.actualConvId);
     },
@@ -221,10 +193,6 @@ async function main() {
     // @todo fix conv id
     chatBox.addSystemMessage("Conversation is complete", chatBox.actualConvId);
   })
-
-  // socket.on("dasha-event", (transcription) => {
-
-  // })
 
   chatBox.display();
 }

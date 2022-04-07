@@ -11,7 +11,6 @@ type Event = {
 };
 
 external function check_new_events(conversation_id: string): Event[];
-external function send_user_input(conversation_id: string, user_input: string): empty;
 external function close_conversation(conversation_id: string): empty;
 
 start node root {
