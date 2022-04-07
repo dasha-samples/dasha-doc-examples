@@ -17,7 +17,7 @@ The request contains conversation input parameters:
 - name - name of the user (hardcoded to `Peter`)
 
 When client is being created, it requests the following data from the http server:
-- [`aor`](https://en.wiktionary.org/wiki/address_of_record) - sip uri that will used as an endpoint in our app
+- [`aor`](https://en.wiktionary.org/wiki/address_of_record) - sip uri that will be used as an endpoint in our app
 - `sipServerEndpoint` - address that will be used for creating [sip.js](https://sipjs.com/) server (establishes voice communications with the app)
 
 Client's `aor` (sip uri address) should:

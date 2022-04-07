@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node index.js",
-    "server-nv": "node no-voice/server.js",
-    "client-nv": "parcel no-voice/views/base.html",
-    "no-voice": "concurrently --kill-others \"npm:server-nv\" \"npm:client-nv\""
+    "start": "node server.js",
+    "voice": "node server.js",
+    "no-voice": "node no-voice/server.js"
   },
   "author": "Vladimir Kuyantsev",
   "license": "ISC",
@@ -22,7 +21,7 @@
     "express-jwt-permissions": "^1.3.3",
     "jwks-rsa": "^2.0.3",
     "parcel": "^2.4.1",
-    "sip.js": "^0.20.0",
+    "sip.js": "^0.16.0",
     "socket.io": "^4.4.1",
     "uuidv4": "^6.2.7"
   },

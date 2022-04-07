@@ -1,10 +1,4 @@
-// import { Web } from "sip.js";
-// import { v4 } from "uuid";
-// import { SimpleUser, SimpleUserOptions } from "sip.js/lib/platform/web";
-
 var socket = io();
-
-console.log("su", new SIP.Web.SimpleUser())
 
 class Chatbox {
   constructor() {

@@ -158,10 +158,10 @@ async function main() {
       socket.emit("dasha-transcript", transcription);
       if (transcription.speaker == "human") {
         console.log("EMITTING")
-        socket.emit("user-text-message", {
-          convId: conversationId,
-          text: transcription.text,
-        });
+        // socket.emit("user-text-message", {
+        //   convId: conversationId,
+        //   text: transcription.text,
+        // });
 
         const responseEvent = externalService.processUserMessage(conversationId, transcription.text);
         console.log(`Sending ai event ${JSON.stringify(responseEvent)}`);
@@ -177,7 +177,9 @@ async function main() {
     // pass same input to Dasha along with conversation_id which is used to discern conversations in external service
     const input = ConversationToInput[conversationId];
     conv.input = { ...input, conversation_id: conversationId };
-    conv.execute().then(r => {
+    conv.audio.noiseVolume = 0;
+    conv.audio.tts = "dasha";
+    conv.execute({channel: "audio"}).then(r => {
       socket.emit("system-close-conv");
     });
     
@@ -265,6 +267,9 @@ async function main() {
         `user '${socket.id}' disconnected, closing all conversations`
       );
       const convId = SocketToConversation[socket.id];
+      const queue = ConversationToEventQueue[convId]
+      queue?.splice(0,queue?.length);
+      queue?.push({messages: [], exit_dialogue: true});
       externalService.closeConversation(convId);
       delete SocketToConversation[socket.id];
     });

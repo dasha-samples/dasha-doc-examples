@@ -35,26 +35,22 @@ class ExternalService {
   processUserMessage(conversationId, userInput) {
     console.debug("got user input", userInput);
 
-    // mock processing userInput with external NLU and external Dialogue Model
+    /* mock processing userInput with external NLU and external Dialogue Model */
     const responses = this.ConversationToResponses[conversationId];
-    if (responses === undefined) return
-      // throw new Error(
-      //   `Could not find responses for conversation '${conversationId}'`
-      // );
-
-    // console.debug("got responses");
+    if (responses === undefined) return;
+    // throw new Error(
+    //   `Could not find responses for conversation '${conversationId}'`
+    // );
 
     if (responses.length === 0) return;
-      // throw new Error(
-      //   `Unexpected request for finished conversation ${conversationId}`
-      // );
+    // throw new Error(
+    //   `Unexpected request for finished conversation ${conversationId}`
+    // );
     let response = responses.shift();
-
-    // console.debug("got response");
 
     let event = { messages: [response] };
     if (responses.length === 0) {
-      // no more messages
+      /* no more messages */
       event.exit_dialogue = true;
     }
 

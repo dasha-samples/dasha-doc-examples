@@ -1,6 +1,11 @@
 var socket = io();
 const api = "http://localhost:8080"
 
+
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
 const getAccount = async () => {
   const response = await fetch(`${api}/sip`);
   const { aor, sipServerEndpoint } = await response.json();
@@ -64,7 +69,7 @@ class Chatbox {
   // }
 
   createConversation(input, aor) {
-    const convId = "12345";
+    const convId = `${new Date().getTime()}`;
     socket.emit("system-create-conv", { socketId: socket.id, convId, input: {...input, endpoint: aor} });
   }
 
@@ -114,6 +119,7 @@ class Chatbox {
     this.addUserMessage(userText, this.actualConvId);
     textField.value = "";
     if (this.actualConvId)
+      console.log("EMITTING")
       socket.emit("user-text-message", {
         convId: this.actualConvId,
         text: userText,
@@ -176,7 +182,11 @@ async function main() {
   user.delegate = {
     onCallReceived: async () => {
       await user.answer();
+      // await delay(2000);
       audio.srcObject = user.remoteMediaStream;
+      console.log("AUDIO", audio)
+      console.log("AUDIO SRC", audio.srcObject)
+      console.log("USER REMOTE AUDIO", user.remoteMediaStream)
       audio.play();
       chatBox.addSystemMessage("Voice call started", chatBox.actualConvId);
     },
@@ -199,14 +209,17 @@ async function main() {
   socket.on("dasha-transcript", (transcription) => {
     console.log("GOT TRANSCRIPT", transcription)
     if (transcription.speaker == "human") {
+      // todo fix conv id
       chatBox.addUserMessage(transcription.text, chatBox.actualConvId);
     } else {
+      // todo fix conv id
       chatBox.addAiMessage(transcription.text, chatBox.actualConvId);
     }
   })
   socket.on("system-close-conv", () => {
     console.log("COMPELTE");
-    chatBox.addSystemMessage("Conversation is complete", convId);
+    // @todo fix conv id
+    chatBox.addSystemMessage("Conversation is complete", chatBox.actualConvId);
   })
 
   // socket.on("dasha-event", (transcription) => {

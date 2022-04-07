@@ -15,8 +15,13 @@ DASHA_SERVER=app.us.dasha.ai
 DASHA_APIKEY=xxxx
 ```
 
-# RUN
+# Running the demo
 
-1. `node server.js`
+1. start server. You have two options here:
+   - run `npm start` or `npm run voice` to start server for web text chat supported *with voice* provided by Dasha
+   - run `npm run no-voice` to start server with web text chat only
 2. goto `http://localhost:8080/` in browser
 3. open chatbox
+4. enable microphone (if you started voice chat)
+
+Both `npm run voice` and `npm run no-voice` provide the same dialogue provided by mocked external service.
