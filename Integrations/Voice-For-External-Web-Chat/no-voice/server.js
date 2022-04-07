@@ -2,19 +2,14 @@ require("dotenv").config({ path: ".env" });
 const express = require("express");
 const _ = require("lodash");
 const http = require("http");
-// const DashaApplication = require("./dasha-application");
 const ExternalService = require("../external-service");
 const { Server } = require("socket.io");
 const { v4: uuidv4 } = require("uuid");
 const cors = require("cors");
 
-// const DASHA_SERVER = process.env.DASHA_SERVER;
-// const DASHA_APIKEY = process.env.DASHA_APIKEY;
-// const DASHA_CONCURRENCY = process.env.DASHA_CONCURRENCY;
 
 const PORT = "8080";
 
-// let dashaApp;
 let externalService;
 
 const SocketToConversation = {};
@@ -31,15 +26,6 @@ function createExpressApp() {
     express.json({ type: ["application/json", "application/json-patch+json"] })
   );
   app.use(cors());
-
-  // app.use((req, res, next) => {
-  //   // if (_.isNil(DASHA_SERVER))
-  //   //   throw new Error("Variable DASHA_SERVER is not set in the environment");
-  //   // if (_.isNil(DASHA_APIKEY))
-  //   //   throw new Error("Variable DASHA_APIKEY is not set in the environment");
-  //   next();
-  // });
-
 
   app.get("/", (req, res) => {
     res.render("base.html");
@@ -69,29 +55,14 @@ function createExpressApp() {
     res.json({ convId });
   });
 
-  app.delete("/close-conversation/:conv_id", (req, res) => {
-    const convId = req.params.conv_id;
-    const { socketId } = req.body;
-
-    console.log(`got request to close conversation from user '${convId}'`);
-    delete SocketToConversation[socketId];
-    externalService.closeConversation(convId);
-    res.status(200);
-  });
-
   return app;
 }
 
 async function main() {
   const app = createExpressApp();
 
-  // dashaApp = new DashaApplication(
-  //   DASHA_SERVER,
-  //   DASHA_APIKEY
-  // );
   externalService = new ExternalService();
 
-  // await dashaApp.start(DASHA_CONCURRENCY ?? 2);
   await externalService.start();
 
   const httpServer = http.createServer(app);
@@ -99,8 +70,6 @@ async function main() {
   const io = new Server(httpServer);
   io.on("connection", (socket) => {
     console.log("user connected, socket id:", socket.id);
-    // register user
-    SocketToConversation[socket.id] = undefined;
 
     // for debugging
     socket.on("debug", (msg) => {
@@ -128,23 +97,16 @@ async function main() {
       console.log(`conversation ${convId} closed`);
     });
 
-    // socket.on("client-closed-chat", ()=> {
-    //   // client closed chatbox
-    //   // close conversation in external service
-    //   // maybe make it with delete request
-    // })
-
     socket.on("user-text-message", (e) => {
       // send text in external service, get response and emit answer
       const convId = SocketToConversation[socket.id];
       if (convId === undefined) return;
 
       const { text } = e;
-
-      const responseEvent = externalService.processUserMessage(convId, text);
-      console.log(`Sending ai event ${JSON.stringify(responseEvent)}`);
+      const response = externalService.processUserMessage(convId, text);
+      console.log(`Sending ai event ${JSON.stringify(response)}`);
       socket.emit("external-service-event", {
-        ...responseEvent,
+        message: response,
         convId,
       });
     });

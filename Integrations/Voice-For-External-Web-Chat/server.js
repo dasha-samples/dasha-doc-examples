@@ -26,19 +26,11 @@ const ConversationToInput = {};
 const ConversationToSocket = {};
 
 function closeConversation(convId) {
-  const socket = ConversationToSocket[convId]
+  const socket = ConversationToSocket[convId];
   externalService.closeConversation(convId);
   delete SocketToConversation[socket.id];
   ConversationToEventQueue[convId] = [];
   delete ConversationToInput[convId];
-}
-
-function getNewEvents(convId) {
-  const eventQueue = ConversationToEventQueue[convId];
-  if (eventQueue === undefined) throw new Error("Event queue was not found");
-  newEvents = [...eventQueue];
-  eventQueue.splice(0, newEvents.length);
-  return newEvents;
 }
 
 function createExpressApp() {
@@ -102,7 +94,7 @@ async function main() {
     const { conversation_id } = args;
     const aiResponse = ConversationToEventQueue[conversation_id].shift();
     const socket = ConversationToSocket[conversation_id];
-    socket.emit("dasha-transcript", {speaker: "ai", text: aiResponse});
+    socket.emit("dasha-transcript", { speaker: "ai", text: aiResponse });
     return aiResponse;
   });
   dashaApplication.app.setExternal("close_conversation", (args) => {
@@ -111,9 +103,12 @@ async function main() {
   });
   dashaApplication.app.setExternal("send_user_input", (args) => {
     const { conversation_id, user_input } = args;
-    const response = externalService.processUserMessage(conversation_id, user_input);
+    const response = externalService.processUserMessage(
+      conversation_id,
+      user_input
+    );
     const socket = ConversationToSocket[conversation_id];
-    socket.emit("dasha-transcript", {speaker: "human", text: user_input});
+    socket.emit("dasha-transcript", { speaker: "human", text: user_input });
     ConversationToEventQueue[conversation_id].push(response);
   });
   /* configure conversation execution handler */
@@ -130,10 +125,9 @@ async function main() {
     conv.input = { ...input, conversation_id: conversationId };
     conv.audio.noiseVolume = 0;
     conv.audio.tts = "dasha";
-    conv.execute({channel: "audio"}).then(r => {
+    conv.execute({ channel: "audio" }).then((r) => {
       socket.emit("system-close-conv");
     });
-    
   });
 
   const httpServer = http.createServer(app);
@@ -162,8 +156,7 @@ async function main() {
 
     /* @todo generate convId here and return it to client within Promise */
     socket.on("system-create-conv", async (e) => {
-      const { socketId, convId, input} = e;
-
+      const { socketId, convId, input } = e;
       console.log(`got request to create conversation from user '${convId}'`);
 
       SocketToConversation[socketId] = convId;
@@ -171,34 +164,19 @@ async function main() {
       ConversationToEventQueue[convId] = [];
       ConversationToSocket[convId] = socket;
 
-      // call async function
       externalService.createConversation(input, convId);
       await dashaApplication.enqueue(convId);
-
       externalService.executeConversation(convId);
-      // ConversationToEventQueue[convId].push(responseEvent);
-      
       console.log(`conversation '${convId}' created`);
-    })
-
-    // socket.on("user-text-message", (e) => {
-    //   console.log(`got user message ${JSON.stringify(e)}`)
-    //   // send text in external service, get response and emit answer
-    //   const convId = SocketToConversation[socket.id];
-    //   const { text } = e;
-
-    //   const responseEvent = externalService.processUserMessage(convId, text);
-    //   console.log(`Sending ai event ${JSON.stringify(responseEvent)}`);
-    //   ConversationToEventQueue[convId].push(responseEvent);
-    // });
+    });
 
     socket.on("disconnect", function (s) {
       console.log(
         `user '${socket.id}' disconnected, closing all conversations`
       );
       const convId = SocketToConversation[socket.id];
-      const queue = ConversationToEventQueue[convId]
-      queue?.splice(0,queue?.length);
+      const queue = ConversationToEventQueue[convId];
+      queue?.splice(0, queue?.length);
       queue?.push(null);
       externalService.closeConversation(convId);
       delete SocketToConversation[socket.id];

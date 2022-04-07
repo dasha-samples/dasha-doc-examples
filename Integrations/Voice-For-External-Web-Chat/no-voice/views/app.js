@@ -134,10 +134,9 @@ class Chatbox {
 const chatBox = new Chatbox();
 
 socket.on("external-service-event", async (e) => {
-  const {messages, exit_dialogue, convId} = e;
-  for (const text of messages)
-    chatBox.addAiMessage(text, convId);
-  if (exit_dialogue === true) {
+  const {message, convId} = e;
+  if (message) chatBox.addAiMessage(message, convId);
+  else {
     console.log("COMPELTE")
     chatBox.addSystemMessage("Conversation is complete", convId);
     socket.emit("system-close-conv")
