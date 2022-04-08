@@ -87,7 +87,7 @@ Integrations
  - [Use Dasha application in AWS Lambda](Integrations/AWS-Lambda)
  - [Create in-browser chat with several users](Integrations/Web-Chat-Multiuser)
  - [Use External NLU and Dialogue Model](Integrations/External-NLU-and-DM)
- - [Use Dasha for existing text chat as voice provider](Integrations/Voice-For-External-Web-Chat)
+ - [Use Dasha as voice provider for existing text chat](Integrations/Voice-For-External-Web-Chat)
  - DB
    - CSV file
    - Postgresql
