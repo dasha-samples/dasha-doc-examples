@@ -1,80 +1,87 @@
 var socket = io();
-const api = "http://localhost:8080"
+const api = "http://localhost:8080";
 
+let aor;
+let sipUser;
 
-function delay(time) {
-  return new Promise(resolve => setTimeout(resolve, time));
-}
-
-const getAccount = async () => {
+const getSipData = async () => {
   const response = await fetch(`${api}/sip`);
   const { aor, sipServerEndpoint } = await response.json();
   return { aor, sipServerEndpoint };
 };
 
-const createUser = async (aor, server) => {
+const createSipUser = async (aor, server) => {
   const user = new SIP.Web.SimpleUser(server, { aor });
   await user.connect();
   await user.register();
   return user;
 };
 
+const hangupSipUser = async (user) => {
+  await user.hangup().catch(() => {});
+};
+
 class Chatbox {
-  constructor(aor, user) {
+  constructor() {
     this.components = {
       openButton: document.querySelector(".chatbox__button"),
       chatBox: document.querySelector(".chatbox__support"),
-      // sendButton: document.querySelector(".send__button"),
+      sendButton: document.querySelector(".send__button"),
     };
 
     this.state = false;
     this.messages = [];
     this.actualConvId = undefined;
-    this.aor = aor;
-    this.user = user;
   }
 
   display() {
-    const { openButton, chatBox/*, sendButton*/ } = this.components;
+    const { openButton, chatBox, sendButton } = this.components;
     openButton.addEventListener("click", () => {
       this.toggleState(chatBox);
     });
-    // sendButton.addEventListener("click", () => {
-    //   this.onSendButton(chatBox);
-    // });
-    // const node = chatBox.querySelector("input");
-    // node.addEventListener("keyup", ({ key }) => {
-    //   if (key == "Enter") {
-    //     this.onSendButton(chatBox);
-    //   }
-    // });
+
+    sendButton.addEventListener("click", () => {
+      this.onSendButton(chatBox);
+    });
+    const node = chatBox.querySelector("input");
+    node.addEventListener("keyup", ({ key }) => {
+      if (key == "Enter") {
+        this.onSendButton(chatBox);
+      }
+    });
   }
 
-  createConversation(input, aor) {
-    const convId = `${new Date().getTime()}`;
-    socket.emit("system-create-conv", { socketId: socket.id, convId, input: {...input, endpoint: aor} });
+  async createConversation(input) {
+    const response = await fetch(`${api}/create_conversation`, {
+      method: "POST",
+      body: JSON.stringify({ aor, socketId: socket.id, input }),
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const {convId} = await response.json();
+    console.log(`Conversation "${convId}" was created`);
+    return convId;
   }
 
-  openChatBox() {
+  async openChatBox() {
+    /* If user opens chatbox, init the conversation on server with some input data */
     const chatBox = this.components.chatBox;
     this.clearChatMessages();
-    /** If user opens chatbox, init the conversation in Dasha application */
     const mockConversationInput = {};
-    this.createConversation(mockConversationInput, this.aor);
-    
+    this.actualConvId = await this.createConversation(mockConversationInput);
     this.addSystemMessage("Starting the conversation...", this.actualConvId);
     chatBox.classList.add("chatbox--active");
   }
 
   async closeChatBox() {
-    await this.user.hangup().catch(() => {});
-
+    /* If user closes chatbox, close current sip connection, close the conversation, clear output */
+    await hangupSipUser(sipUser);
     const chatBox = this.components.chatBox;
     chatBox.classList.remove("chatbox--active");
-    /** If user closes chatbox, close the conversation and clear output */
     socket.emit("system-interrupt-conv");
     this.clearChatMessages();
-    
   }
 
   toggleState() {
@@ -86,21 +93,23 @@ class Chatbox {
     }
   }
 
-  // async onSendButton(chatbox) {
-  //   const textField = chatbox.querySelector("input");
-  //   let userText = textField.value;
-  //   if (userText == "") {
-  //     return;
-  //   }
-  //   this.addUserMessage(userText, this.actualConvId);
-  //   textField.value = "";
-  //   if (this.actualConvId)
-  //     console.log("EMITTING")
-  //     socket.emit("user-text-message", {
-  //       convId: this.actualConvId,
-  //       text: userText,
-  //     });
-  // }
+  /** HAS NO EFFECT BECAUSE OF VOICE COMMUNICATION */
+  async onSendButton(chatbox) {
+    const textField = chatbox.querySelector("input");
+    textField.value = "";
+    return;
+    // const textField = chatbox.querySelector("input");
+    // let userText = textField.value;
+    // if (userText == "") {
+    //   return;
+    // }
+    // this.addUserMessage(userText, this.actualConvId);
+    // textField.value = "";
+    // socket.emit("user-text-message", {
+    //   convId: this.actualConvId,
+    //   text: userText,
+    // });
+  }
 
   addMessage(message) {
     const { author, text, convId } = message;
@@ -151,14 +160,18 @@ class Chatbox {
 }
 
 async function main() {
-  const { aor, sipServerEndpoint } = await getAccount();
-  const user = await createUser(aor, sipServerEndpoint);
+  const chatBox = new Chatbox();
 
+  // configure sip connection
+  const sipData = await getSipData();
+  aor = sipData.aor;
+  sipUser = await createSipUser(sipData.aor, sipData.sipServerEndpoint);
+  // configure web page multimedia and sipUser handlers
   const audio = new Audio();
-  user.delegate = {
+  sipUser.delegate = {
     onCallReceived: async () => {
-      await user.answer();
-      audio.srcObject = user.remoteMediaStream;
+      await sipUser.answer();
+      audio.srcObject = sipUser.remoteMediaStream;
       audio.play();
       chatBox.addSystemMessage("Voice call started", chatBox.actualConvId);
     },
@@ -167,32 +180,22 @@ async function main() {
       chatBox.addSystemMessage("Voice call is over", chatBox.actualConvId);
     },
   };
-  const chatBox = new Chatbox(aor, user);
 
-  socket.on("external-service-event", (e) => {
-    const { messages, exit_dialogue, convId } = e;
-    for (const text of messages) chatBox.addAiMessage(text, convId);
-    if (exit_dialogue === true) {
-      
-      socket.emit("system-close-conv");
-    }
-  });
-
-  socket.on("dasha-transcript", (transcription) => {
-    console.log("GOT TRANSCRIPT", transcription)
-    if (transcription.speaker == "human") {
-      // todo fix conv id
-      chatBox.addUserMessage(transcription.text, chatBox.actualConvId);
-    } else {
-      // todo fix conv id
-      chatBox.addAiMessage(transcription.text, chatBox.actualConvId);
-    }
-  })
   socket.on("system-close-conv", () => {
-    console.log("COMPELTE");
     // @todo fix conv id
     chatBox.addSystemMessage("Conversation is complete", chatBox.actualConvId);
-  })
+  });
+
+  socket.on("user-text", (e)=>{
+    console.log(`Got user message ${JSON.stringify(e)}`)
+    const {user_text,conversation_id} = e;
+    chatBox.addUserMessage(user_text, conversation_id);
+  });
+  socket.on("ai-text", (e) => {
+    console.log(`Got ai message ${JSON.stringify(e)}`)
+    const {ai_response,conversation_id} = e;
+    chatBox.addAiMessage(ai_response,conversation_id);
+  });
 
   chatBox.display();
 }

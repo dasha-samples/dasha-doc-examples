@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
 <link rel="stylesheet" href="style.css">
 
 <head>
@@ -23,25 +22,20 @@
             <div class="chatbox__messages">
                 <div></div>
             </div>
-            <!-- <div class="chatbox__footer">
-                <input type="text" placeholder="Write a message...">
+            <div class="chatbox__footer">
+                <input type="text" placeholder="Has no effect">
                 <button class="chatbox__send--footer send__button">Send</button>
-            </div> -->
+            </div>
         </div>
         <div class="chatbox__button">
             <button><img src="images/chatbox-icon.svg" /></button>
-            <!-- {{ url_for('static', filename='images/chatbox-icon.svg') }} -->
         </div>
     </div>
 </div>
 
-    <!-- <script>
-        $SCRIPT_ROOT = {{ request.script_root|tojson }};
-    </script> -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://github.com/onsip/SIP.js/releases/download/0.20.0/sip-0.20.0.min.js"></script>
     <script type="text/javascript" src="app.js"></script>
-    <!-- {{ url_for('static', filename='app.js') }} -->
 
 </body>
 </html>
