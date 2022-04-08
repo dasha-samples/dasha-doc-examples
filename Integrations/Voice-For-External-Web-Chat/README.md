@@ -1,4 +1,6 @@
-# Integration example: Use Dasha for existing text chat as voice provider
+# DEPRECATED
+
+<!-- # Integration example: Use Dasha for existing text chat as voice provider
 
 ## Motivation
 
@@ -67,4 +69,4 @@ DASHA_APIKEY=xxxx
 3. open chatbox
 4. enable microphone (if you started voice chat)
 
-Both `npm run voice` and `npm run no-voice` provide the same dialogue provided by mocked external service.
+Both `npm run voice` and `npm run no-voice` provide the same dialogue provided by mocked external service. -->
