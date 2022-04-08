@@ -1,6 +1,4 @@
-# DEPRECATED
-
-<!-- # Integration example: Use Dasha for existing text chat as voice provider
+# Integration example: Use Dasha for existing text chat as voice provider
 
 ## Motivation
 
@@ -12,31 +10,11 @@ That means that user communicates with the same chat bot (on the same web page) 
 
 This demo shows how this could possibly be implemented.
 
-## Implementation details
+<!-- ## Implementation details
 
-There is a mocked external service (`external-service.js`) that imitates the work of some NLU and Dialogue model.
+There is a mocked external service (`external-service.js`) that imitates the work of some NLU and Dialogue model as independent service.
 
-There are two versions of web-chat implemented:
-1. Text chat
-2. Voice chat (using Dasha)
-
-Both versions use the same Dasha application and the same mocked external service.
-
-Those chats are made with express server that renders html page with the chat-box.
-
-When the chat-box button is clicked, the chat-box opens and the dialogue begins.
-
-Since the dialogue is provided by simple mock service, any user input will trigger next phrase in a fixed sequence of phrases. The dialogue is finished when there are no more new phrases in a sequence.
-
-### Text chat
-
-In this version the client communicates with the backend external service directly (via `socket.io`).
-
-When the chat-box is triggered, the server creates conversation in mock service. Then every human input triggers ai response.
-
-### Voice chat
-
-This version uses Dasha as a provider for stt, tts and all other necessary services.
+The Dasha is used as a provider for stt, tts and all other necessary services.
 
 The server runs Dasha application and mock service and controls the communication between them. It also acts like a `SIP` server.
 
@@ -45,16 +23,20 @@ When the client is created, the necessary `SIP` credentials are requested from t
 When the chat-box is triggered, the server creates Dasha conversation along with mock conversation.
 
 The pipeline is as follows:
-- the user voice is passed from client to server side dasha app via WebRTC.
-- Dasha converts it to text and pases this text to mock service via `socket.io` (just like it was done previously in Text chat).
-- user input is processed in mock, the result is voiced by Dasha TTS and sent to the chat-box to visualize it in text
-
+- the user voice is passed from client to dasha application via WebRTC.
+- Dasha converts user voice to a text and pases it to the server via http request.
+- user input is processed on server
+- the bot response is sent back to Dasha and to the client's chatbox
+- at the same time the response is voiced by Dasha TTS and is streamed to the client via WebRTC -->
 
 
 ## Installation
 
-1. `npm i`
-2. create `.env` with Dasha credentials, example:
+1. Setup the environment (see [doc](https://docs.dasha.ai/en-us/default/setup-enviroment/))
+2. Run `npm i` in a current folder.
+3. Create `.env` with Dasha credentials (you need dasha apikey that corresponds to your account)
+ 
+`.env` example:
 ```
 DASHA_SERVER=app.us.dasha.ai
 DASHA_APIKEY=xxxx
@@ -62,11 +44,8 @@ DASHA_APIKEY=xxxx
 
 ## Running the demo
 
-1. start server. You have two options here:
-   - run `npm start` or `npm run voice` to start server for web text chat supported *with voice* provided by Dasha
-   - run `npm run no-voice` to start server with web text chat only
+1. start server: run `npm start` to start server
 2. goto `http://localhost:8080/` in browser
 3. open chatbox
 4. enable microphone (if you started voice chat)
-
-Both `npm run voice` and `npm run no-voice` provide the same dialogue provided by mocked external service. -->
+5. talk to Dasha

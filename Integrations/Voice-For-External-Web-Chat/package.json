@@ -4,9 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "voice": "node server.js",
-    "no-voice": "node no-voice/server.js"
+    "start": "node external-service.js"
   },
   "author": "Vladimir Kuyantsev",
   "license": "ISC",
