@@ -12,6 +12,12 @@ This demo shows how this could possibly be implemented.
 
 <!-- ## Implementation details
 
+The mock of external service is implemented as an http-server in `external-service.js`. The server provides methods for getting simple html pages with chatboxes and the api to control the conversation.
+
+
+
+
+
 There is a mocked external service (`external-service.js`) that imitates the work of some NLU and Dialogue model as independent service.
 
 The Dasha is used as a provider for stt, tts and all other necessary services.
@@ -22,8 +28,8 @@ When the client is created, the necessary `SIP` credentials are requested from t
 
 When the chat-box is triggered, the server creates Dasha conversation along with mock conversation.
 
-The pipeline is as follows:
-- the user voice is passed from client to dasha application via WebRTC.
+The communication pipeline is as follows:
+- the user voice is streamed from client to dasha application (on server) via WebRTC.
 - Dasha converts user voice to a text and pases it to the server via http request.
 - user input is processed on server
 - the bot response is sent back to Dasha and to the client's chatbox

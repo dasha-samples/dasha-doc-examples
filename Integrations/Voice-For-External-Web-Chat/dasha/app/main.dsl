@@ -27,6 +27,7 @@ node step {
             #sayText(response);
             wait *;
         } else {
+            #log("Received empty response, closing conversation");
             exit;
         }
         wait*;

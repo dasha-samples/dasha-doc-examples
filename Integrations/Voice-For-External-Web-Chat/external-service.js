@@ -1,20 +1,20 @@
 require("dotenv").config({ path: ".env" });
 const express = require("express");
-const _ = require("lodash");
+// const _ = require("lodash");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
-const { v4: uuidv4 } = require("uuid");
+
 
 const ExternalServiceConversation = require("./external-service-conversation");
-const DashaApplication = require("./dasha-application");
+// const DashaApplication = require("./dasha-application");
 
 const PORT = "8080";
-const API_URL = `http://localhost:${PORT}`;
+// const API_URL = `http://localhost:${PORT}`;
 
-const DASHA_SERVER = process.env.DASHA_SERVER;
-const DASHA_APIKEY = process.env.DASHA_APIKEY;
-const DASHA_CONCURRENCY = process.env.DASHA_CONCURRENCY ?? 2;
+// const DASHA_SERVER = process.env.DASHA_SERVER;
+// const DASHA_APIKEY = process.env.DASHA_APIKEY;
+// const DASHA_CONCURRENCY = process.env.DASHA_CONCURRENCY ?? 2;
 
 const Conversations = {};
 const Sockets = {};
@@ -28,20 +28,20 @@ function closeConversation(convId) {
   const socketId = ConversationToSocket[convId];
   const socket = Sockets[socketId];
   // send request to close conversation to client
-  socket.emit("system-close-conv");
+  socket.emit("system-close-conv", { conversation_id: conversation.id });
   conversation.close();
   delete Conversations[convId];
   delete ConversationToSocket[convId];
 }
 
-let dashaApp;
+// let dashaApp;
 
 function createApp() {
   function checkEnvironment(req, res, next) {
-    if (_.isNil(DASHA_SERVER))
-      throw new Error("Variable DASHA_SERVER is not set in the environment");
-    if (_.isNil(DASHA_APIKEY))
-      throw new Error("Variable DASHA_APIKEY is not set in the environment");
+    // if (_.isNil(DASHA_SERVER))
+    //   throw new Error("Variable DASHA_SERVER is not set in the environment");
+    // if (_.isNil(DASHA_APIKEY))
+    //   throw new Error("Variable DASHA_APIKEY is not set in the environment");
     next();
   }
 
@@ -59,7 +59,7 @@ function createApp() {
   app.use(checkEnvironment);
 
   app.get("/", (req, res) => {
-    res.render("base.html");
+    res.render("index.html");
   });
 
   app.get("/health", (req, res) => {
@@ -67,18 +67,18 @@ function createApp() {
     return res.status(200).send("OK");
   });
 
-  app.get("/sip", async (req, res) => {
-    const domain = DASHA_SERVER.replace("app.", "sip.");
-    const sipServerEndpoint = `wss://${domain}/sip/connect`;
+  // app.get("/sip", async (req, res) => {
+  //   const domain = DASHA_SERVER.replace("app.", "sip.");
+  //   const sipServerEndpoint = `wss://${domain}/sip/connect`;
 
-    // client sip address should:
-    // 1. start with `sip:reg`
-    // 2. to be unique
-    // 3. use the domain as the sip server
-    const aor = `sip:reg-${uuidv4()}@${domain}`;
+  //   // client sip address should:
+  //   // 1. start with `sip:reg`
+  //   // 2. to be unique
+  //   // 3. use the domain as the sip server
+  //   const aor = `sip:reg-${uuidv4()}@${domain}`;
 
-    res.send({ aor, sipServerEndpoint: sipServerEndpoint });
-  });
+  //   res.send({ aor, sipServerEndpoint: sipServerEndpoint });
+  // });
 
   app.post("/create_conversation", (req, res) => {
     console.log("Got post 'create_conversation'", req.body);
@@ -90,7 +90,7 @@ function createApp() {
     ConversationToSocket[conversation.id] = socketId;
     SocketToConversation[socketId] = conversation.id;
     // execute dasha conv (async)
-    dashaApp.execute(conversation.id, aor, input);
+    // dashaApp.execute(conversation.id, aor, input);
 
     res.json({ convId: conversation.id });
   });
@@ -99,7 +99,7 @@ function createApp() {
     const conversation_id = req.params.conversation_id;
     const { user_text } = req.body;
     console.log(
-      "Got post (external func) 'send_user_input'",
+      "Got post 'process_user_input'",
       conversation_id,
       req.body
     );
@@ -115,14 +115,14 @@ function createApp() {
     const ai_response = conversation.processUserText(user_text);
     // send ai response to client
     socket.emit("ai-text", { ai_response, conversation_id });
-
+    console.log("Returning ", {ai_response})
     return res.status(200).send({ai_response});
   });
 
   app.post("/close_conversation/:conversation_id", (req, res) => {
     const conversation_id = req.params.conversation_id;
     console.log(
-      "Got post (external func) 'close_conversation'",
+      "Got post 'close_conversation'",
       conversation_id
     );
     closeConversation(conversation_id);
@@ -134,8 +134,8 @@ function createApp() {
 
 async function main() {
   const app = createApp();
-  dashaApp = new DashaApplication(DASHA_SERVER, DASHA_APIKEY, API_URL);
-  await dashaApp.start(DASHA_CONCURRENCY);
+  // dashaApp = new DashaApplication(DASHA_SERVER, DASHA_APIKEY, API_URL);
+  // await dashaApp.start(DASHA_CONCURRENCY);
 
   const httpServer = http.createServer(app);
 
