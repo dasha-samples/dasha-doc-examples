@@ -116,5 +116,3 @@ export class Chatbox extends EventEmitter {
     chatmessage.innerHTML = "";
   }
 }
-
-// modules.exports = Chatbox

@@ -2,12 +2,11 @@ context {
     // input parameters (provided outside)
     // phone to call
     input endpoint: string;
-    input conversation_id: string;
+    input conversationId: string;
 }
 
-// external function get_chatbot_input(conversation_id: string): string?;
-external function close_conversation(conversation_id: string): empty;
-external function process_user_text(conversation_id: string, user_text: string): string?;
+external function close_conversation(conversationId: string): empty;
+external function process_user_text(conversationId: string, userText: string): string?;
 
 start node root {
     do {
@@ -22,7 +21,7 @@ start node root {
 
 node step {
     do {
-        var response = external process_user_text($conversation_id,#getMessageText());
+        var response = external process_user_text($conversationId,#getMessageText());
         if(response is not null) {
             #sayText(response);
             wait *;
@@ -45,7 +44,7 @@ digression user_hangup {
     }
     do {
         #log("digression 'user_hangup'");
-        external close_conversation($conversation_id);
+        external close_conversation($conversationId);
         exit;
     }
 }

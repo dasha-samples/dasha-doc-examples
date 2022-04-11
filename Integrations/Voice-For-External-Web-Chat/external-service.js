@@ -20,7 +20,7 @@ function closeConversation(convId) {
   const socketId = ConversationToSocket[convId];
   const socket = Sockets[socketId];
   // send request to close conversation to client
-  socket?.emit("system-close-conv", { conversation_id: conversation.id });
+  socket?.emit("system-close-conv", { conversationId: conversation.id });
   conversation?.close();
   delete Conversations[convId];
   delete ConversationToSocket[convId];
@@ -50,7 +50,7 @@ function createApp() {
 
   app.post("/create_conversation", (req, res) => {
     console.log("Got post 'create_conversation'", req.body);
-    const { aor, socketId, input } = req.body;
+    const { socketId, input } = req.body;
 
     // initialize conversation in external service
     const conversation = new ExternalServiceConversation(input);
@@ -61,37 +61,37 @@ function createApp() {
     res.json({ convId: conversation.id });
   });
 
-  app.post("/process_user_input/:conversation_id", (req, res) => {
-    const conversation_id = req.params.conversation_id;
-    const { user_text } = req.body;
+  app.post("/process_user_input/:conversationId", (req, res) => {
+    const conversationId = req.params.conversationId;
+    const { userText } = req.body;
     console.log(
       "Got post 'process_user_input'",
-      conversation_id,
+      conversationId,
       req.body
     );
 
     // get socket by convId
-    const conversation = Conversations[conversation_id];
+    const conversation = Conversations[conversationId];
     if (conversation === undefined) return undefined;
-    const socketId = ConversationToSocket[conversation_id];
+    const socketId = ConversationToSocket[conversationId];
+    if (SocketToConversation[socketId] !== conversationId) return undefined;
     const socket = Sockets[socketId];
-    // send user_text to client
-    socket.emit("user-text", { user_text, conversation_id });
+    // send userText to client
+    socket.emit("user-text", { userText, conversationId });
     // some calculations
-    const ai_response = conversation.processUserText(user_text);
+    const aiResponse = conversation.processUserText(userText);
     // send ai response to client
-    socket.emit("ai-text", { ai_response, conversation_id });
-    console.log("Returning ", {ai_response})
-    return res.status(200).send({ai_response});
+    socket.emit("ai-text", { aiResponse, conversationId });
+    return res.status(200).send({aiResponse});
   });
 
-  app.post("/close_conversation/:conversation_id", (req, res) => {
-    const conversation_id = req.params.conversation_id;
+  app.post("/close_conversation/:conversationId", (req, res) => {
+    const conversationId = req.params.conversationId;
     console.log(
       "Got post 'close_conversation'",
-      conversation_id
+      conversationId
     );
-    closeConversation(conversation_id);
+    closeConversation(conversationId);
     return res.status(200);
   });
 

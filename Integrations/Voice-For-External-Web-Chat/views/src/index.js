@@ -24,7 +24,6 @@ async function main() {
 
   chatBox.on("open-chatbox", async (conversationInput) => {
     /* If user opens chatbox, init the conversation on server with some input data */
-    chatBox.addSystemMessage("Creating the conversation...");
     const actualConvId = await createConversation(conversationInput);
     chatBox.setActualConversationId(actualConvId);
     chatBox.addSystemMessage("Text conversation started.", actualConvId);
@@ -44,7 +43,7 @@ async function main() {
     await axios.post(
       `${DIALOGUE_SERVICE_API_URL}/process_user_input/${chatBox.actualConvId}`,
       {
-        user_text: userText,
+        userText,
       }
     );
   });
@@ -58,20 +57,20 @@ async function main() {
   });
 
   socket.on("system-close-conv", (e) => {
-    const { conversation_id } = e;
-    chatBox.addSystemMessage("Conversation is complete", conversation_id);
+    const { conversationId } = e;
+    chatBox.addSystemMessage("Conversation is complete", conversationId);
   });
 
   socket.on("user-text", (e) => {
     console.log(`Got user message`, e);
-    const { user_text, conversation_id } = e;
-    chatBox.addUserMessage(user_text, conversation_id);
+    const { userText, conversationId } = e;
+    chatBox.addUserMessage(userText, conversationId);
   });
 
   socket.on("ai-text", (e) => {
     console.log(`Got ai message`, e);
-    const { ai_response, conversation_id } = e;
-    chatBox.addAiMessage(ai_response, conversation_id);
+    const { aiResponse, conversationId } = e;
+    chatBox.addAiMessage(aiResponse, conversationId);
   });
 
   chatBox.display();
