@@ -8,18 +8,8 @@ const DIALOGUE_SERVICE_API_URL = "http://localhost:8080";
 const DASHA_VOICE_SERVER_API_URL = "http://localhost:8090";
 
 async function createConversation(input) {
-  const response = await fetch(
-    `${DIALOGUE_SERVICE_API_URL}/create_conversation`,
-    {
-      method: "POST",
-      body: JSON.stringify({ socketId: socket.id, input }),
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  const { convId } = await response.json();
+  const res = await axios.post(`${DIALOGUE_SERVICE_API_URL}/create_conversation`, { socketId: socket.id, input });
+  const { convId } = await res.data;
   console.log(`Conversation "${convId}" was created`);
   return convId;
 }
@@ -34,10 +24,11 @@ async function main() {
 
   chatBox.on("open-chatbox", async (conversationInput) => {
     /* If user opens chatbox, init the conversation on server with some input data */
-    chatBox.addSystemMessage("Starting the conversation...", actualConvId);
+    chatBox.addSystemMessage("Creating the conversation...");
     const actualConvId = await createConversation(conversationInput);
     chatBox.setActualConversationId(actualConvId);
     chatBox.addSystemMessage("Text conversation started.", actualConvId);
+
     chatBox.addSystemMessage("Starting the voice call...", actualConvId);
     await dashaVoiceWidget.initSession(actualConvId);
   });

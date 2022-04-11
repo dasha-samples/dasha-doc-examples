@@ -1,17 +1,9 @@
 import EventEmitter from "eventemitter3";
-// import { Web } from "sip.js";
 import axios from "axios";
 
-// 
-
-// const api = "http://localhost:8080";
-
-// let aor;
-// let sipUser;
-
 const getSipData = async (api) => {
-  const response = await fetch(`${api}/sip_connection`);
-  const { aor, sipServerEndpoint } = await response.json();
+  const response = await axios.get(`${api}/sip_connection`);
+  const { aor, sipServerEndpoint } = await response.data;
   return { aor, sipServerEndpoint };
 };
 
@@ -21,30 +13,6 @@ const createSipUser = async (aor, server) => {
   await user.register();
   return user;
 };
-
-// const hangupSipUser = async (user) => {
-//   await user.hangup().catch(() => {});
-// };
-
-// // configure sip connection
-// const sipData = await getSipData();
-// console.log("sipData", sipData);
-// aor = sipData.aor;
-// sipUser = await createSipUser(sipData.aor, sipData.sipServerEndpoint);
-// // configure web page multimedia and sipUser handlers
-// const audio = new Audio();
-// sipUser.delegate = {
-//   onCallReceived: async () => {
-//     await sipUser.answer();
-//     audio.srcObject = sipUser.remoteMediaStream;
-//     audio.play();
-//     chatBox.addSystemMessage("Voice call started", chatBox.actualConvId);
-//   },
-//   onCallHangup: () => {
-//     audio.srcObject = null;
-//     chatBox.addSystemMessage("Voice call is over", chatBox.actualConvId);
-//   },
-// };
 
 export class DashaVoiceWidget extends EventEmitter {
   constructor() {
