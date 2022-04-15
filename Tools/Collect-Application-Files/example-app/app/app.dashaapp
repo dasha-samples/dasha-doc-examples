@@ -1,0 +1,19 @@
+{
+  "formatVersion": "2",
+  "name": "import-files-outside",
+  "dialogue": {
+    "file": "main.dsl"
+  },
+  "nlu": {
+    "language": "en-US",
+    "skills": [
+      "common_phrases",
+      "sentiment"
+    ]
+  },
+  "nlg": {
+    "type": "phrases",
+    "file": "phrasemap.json",
+    "signatureFile": "phrasemap.json"
+  }
+}
