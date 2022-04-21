@@ -1,9 +1,11 @@
-const path = require('path');
+const path = require("path");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = {
-  entry: './views/src/index.js',
+  entry: "./views/src/index.js",
+  plugins: [new Dotenv()],
   output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'views/dist'),
+    filename: "index.js",
+    path: path.resolve(__dirname, "views/dist"),
   },
 };
