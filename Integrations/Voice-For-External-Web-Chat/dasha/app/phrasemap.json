@@ -1,0 +1,12 @@
+{
+  "default": {
+    "voiceInfo": {
+      "lang": "en-US",
+      "speaker": "default",
+      "speed": 1.0
+    },
+    "phrases": {},
+    "types": {},
+    "macros": {}
+  }
+}
