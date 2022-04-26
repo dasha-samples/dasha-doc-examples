@@ -2,7 +2,7 @@ require("dotenv").config({ path: ".env" });
 const DashaVoiceServer = require("./dasha/dasha-voice-server");
 const axios = require("axios");
 
-const EXTERNAL_API_URL = `http://localhost:8080`
+const DIALOGUE_SERVICE_API_URL = `http://localhost:8080`
 const DASHA_VOICE_SERVER_PORT = "8090";
 
 const DASHA_SERVER = process.env.DASHA_SERVER;
@@ -15,7 +15,7 @@ async function main() {
     // Sends what user said into your NLU.
     // Return your NLU's response text to be pronounced back to user
     async function processUserText(conversationId, userText) {
-        const res = await axios.post(`${EXTERNAL_API_URL}/process_user_input/${conversationId}`, {userText});
+        const res = await axios.post(`${DIALOGUE_SERVICE_API_URL}/process_user_input/${conversationId}`, {userText});
         const {aiResponse} = res.data;
         console.log("Got ai response", aiResponse)
         return aiResponse;
@@ -25,7 +25,7 @@ async function main() {
     
     dashaServer.on("close-dasha-conversation", async (e) => {
         const {conversationId} = e;
-        await axios.post(`${EXTERNAL_API_URL}/close_conversation/${conversationId}`);
+        await axios.post(`${DIALOGUE_SERVICE_API_URL}/close_conversation/${conversationId}`);
     })
 
     dashaServer.run(DASHA_VOICE_SERVER_PORT, DASHA_CONCURRENCY);
