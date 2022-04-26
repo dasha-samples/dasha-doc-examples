@@ -14,6 +14,12 @@ Standalone services
    - [Synthesize](Standalone-Services/TTS/Synthesize)
    - [Custom-Speaker](Standalone-Services/TTS/Custom-Speaker)
 
+Examples
+ - [DSL Interrupt exiting dialogue](Examples/DSL-Interrupt-exiting-dialogue)
+ - [DSL Handle voicemail, answering machine and operator messages](Examples/DSL-Handle-voicemail-answering-machine)
+ - [DSL Complex logic in digression](Examples/DSL-Complex-digression)
+ - [DSL Slotfilling](Examples/DSL-Slotfilling)
+
 Features
  - [NLU Intents (simple)](Features/NLU-Intents-(simple))
  - [NLU Intents](Features/NLU-Intents)
@@ -25,9 +31,6 @@ Features
    - Random phrase
    - Repeat phrase
    - Passing args to the phrase
- - [DSL Interrupt exiting dialogue](Features/DSL-Interrupt-exiting-dialogue)
- - [DSL Handle voicemail, answering machine and operator messages](Features/DSL-Handle-voicemail-answering-machine)
- - [DSL Complex logic in digression](Features/DSL-Complex-digression)
  - DSL Blocks
  - DSL Context and local variables, digression properties
  - DSL NLU control
