@@ -41,7 +41,7 @@ type Slot = {
     value: string?;  // stores first parsed value
     values: string[];  // stores all parsed values
     entities: string[]; // defines entities' names and tags
-    askPhrases: string[]; // phrases that will be addressed to user to ask this slot
+    askPhrases: <{phraseId: Phrases;}|{text: string;}>[]; // phrases that will be addressed to user to ask this slot
     required: boolean; // if false we can skip this slot and not fullfill
 };
 
@@ -205,7 +205,15 @@ block SlotFilling(slots: {[x:string]:Slot;},
             if (currentSlotName is not null){
                 set digression.slot_parser.currentSlotName = currentSlotName;
                 for (var phrase in (slots[currentSlotName]?.askPhrases ?? [])) {
-                    #sayText(phrase);
+                    var p = phrase as {[x:string]:string;} ?? {};
+                    var phraseId = p["phraseId"] as Phrases;
+                    if (phraseId is not null){
+                        #say(phraseId);
+                    } else {
+                        var text = p["text"];
+                        if (text is null) {#log("asking phrase is invalid"); goto unexpected_error;}
+                        #sayText(text);
+                    }
                 }
             }
             wait *;

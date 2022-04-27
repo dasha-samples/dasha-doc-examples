@@ -6,6 +6,8 @@
       "speed": 0.9
     },
     "phrases": {
+      "ask_target_account": [{"text": "What is your target account?"}],
+      "ask_amount": [{"text": "How much money would you like to transfer?"}],
       "slotfilling_confirmation_phrase": [
         { "text": "Transferring " },
         { "id": "amount", "type": "dynamic" },
@@ -17,6 +19,6 @@
       ]
     },
     "types": {},
-    "macros": {"slotfilling_confirmation_phrase": {}}
+    "macros": {"slotfilling_confirmation_phrase": {}, "ask_amount": {}, "ask_target_account": {}}
   }
 }

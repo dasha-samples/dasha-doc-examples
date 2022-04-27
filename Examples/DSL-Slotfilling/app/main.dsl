@@ -9,7 +9,7 @@ context {
             value: null,
             values: [],
             entities: ["account:source", "bank:source", "account", "bank"],
-            askPhrases: ["From which account you would like to transfer?"],
+            askPhrases: [{text:"From which account you would like to transfer?"}],
             required: true
         },
         target_account: {
@@ -17,7 +17,7 @@ context {
             value: null,
             values: [],
             entities: ["account:target", "bank:target", "account", "bank"], 
-            askPhrases: ["What is your target account?"],
+            askPhrases: [{phraseId:"ask_target_account"}],
             required: true
         },
         amount: {
@@ -25,7 +25,7 @@ context {
             value: null,
             values: [],
             entities: ["numberword"], 
-            askPhrases: ["How much money would you like to transfer?"],
+            askPhrases: [{phraseId:"ask_amount"}],
             required: true
         }
     };
@@ -34,7 +34,6 @@ context {
 start node root {
     do {
         #log("node 'root'");
-        // digression disable slot_parser;
         #setVadPauseLength(1.2);
         #connectSafe($endpoint);
         #waitForSpeech(1000);
@@ -48,13 +47,7 @@ start node root {
 
 node hub {
     do {
-        // we need to enable preprocessor when we expect slot filling
-        // digression enable slot_parser;
         #sayText("How can I help you?");
-
-        // TODO: multiple slot filling
-
-        // set digression.slot_parser.slots = $money_transfer_slots;
         wait *;
     }
     transitions {
@@ -64,7 +57,7 @@ node hub {
 
 node transfer_money {
     do {
-        var options = {tryFillOnEnter: true, confirmationPhrase:"slotfilling_confirmation_phrase"};
+        var options = {tryFillOnEnter: true, confirmationPhrase: "slotfilling_confirmation_phrase"};
         var filledSlots = blockcall SlotFilling($moneyTransferSlots, options);
         #log("got filled slots:");
         #log(filledSlots);
@@ -72,6 +65,7 @@ node transfer_money {
     }
 }
 
+/** works in slot filling */
 global digression global_robot {
     conditions {
         on #messageHasIntent("are_you_a_robot") priority 1;
@@ -83,6 +77,7 @@ global digression global_robot {
     }
 }
 
+/** does not work in slot filling */
 digression local_robot {
     conditions {
         on #messageHasIntent("are_you_a_robot") priority 1000;
