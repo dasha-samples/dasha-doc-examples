@@ -17,7 +17,7 @@ type Slot = {
     entities: string[]; // defines entities' names and tags
     askPhrases: <{phraseId: Phrases;}|{text: string;}>[]; // phrases that will be addressed to user to ask this slot
     required: boolean; // if false we can skip this slot and not fullfill
-    resetTrigger: string?;
+    resetTrigger: string?; // intent that triggers resetting this slot
 };
 
 type Slots = {[x:string]:Slot;};
@@ -149,6 +149,7 @@ block SlotFilling(slots: Slots,
                     var values = #messageGetData(eName, filter);
                     parsedData.push(values);
                 }
+                // TODO what if 
                 set slot.value = slot.value ?? blockcall GetFirst(parsedData);
                 if (slot.values.length() == 0)
                     set slot.values = blockcall GetAll(parsedData);
@@ -223,6 +224,8 @@ block SlotFilling(slots: Slots,
             #log("Confirming slot values...");
             var values: {[x:string]:string;} = {};
             for (var key in digression.slot_parser.slots.keys()) {
+                // TODO handle required
+                // TODO handle value arrays
                 set values[key] = digression.slot_parser.slots[key]?.value ?? "";
             }
             #say($options.confirmationPhrase, values);
@@ -290,7 +293,6 @@ block SlotFilling(slots: Slots,
                 set slots[slotName] = slot;
             }
             set digression.slot_parser.slots = slots;
-
             goto slot_filler;
         }
         transitions {
