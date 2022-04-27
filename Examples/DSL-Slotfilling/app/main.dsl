@@ -10,7 +10,8 @@ context {
             values: [],
             entities: ["account:source", "bank:source", "account", "bank"],
             askPhrases: [{text:"From which account you would like to transfer?"}],
-            required: true
+            required: true,
+            resetTrigger: null
         },
         target_account: {
             name: "target account",
@@ -18,7 +19,8 @@ context {
             values: [],
             entities: ["account:target", "bank:target", "account", "bank"], 
             askPhrases: [{phraseId:"ask_target_account"}],
-            required: true
+            required: true,
+            resetTrigger: null
         },
         amount: {
             name: "amount",
@@ -26,7 +28,8 @@ context {
             values: [],
             entities: ["numberword"], 
             askPhrases: [{phraseId:"ask_amount"}],
-            required: true
+            required: true,
+            resetTrigger: "differentamt"
         }
     };
 }

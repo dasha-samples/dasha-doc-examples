@@ -5,36 +5,10 @@ NO custom parsing logic!
 NO values validation!
 NO paraphrases and repeat variations!
 NO multiple slot filling forms!
+
+ATTENTION
+This block uses intent "agreement"
 */
-
-/**
-if we fullfill concrete slot (currentSlot), then we consider only entities that has no conflicts with currentSlot
-But anyway, we fullfill all slots, but we filter allowed entities for others and skip entities with the same name
-
-For example:
-source_account: {
-    entities: ["account:source", "bank:source", "account", "bank"],
-},
-target_account: {
-    entities: ["account:target", "bank:target", "account", "bank"],
-},
-amount: {
-    entities: ["numberword"],
-}
-
-currentSlot == source_account
-Then allowed entities are:
-source_account: {
-    entities: ["account:source", "bank:source", "account", "bank"],
-},
-target_account: {
-    entities: ["account:target", "bank:target"],
-},
-amount: {
-    entities: ["numberword"],
-}
-*/
-
 
 type Slot = {
     name: string?;  // name used for generating validation phrase
@@ -43,21 +17,45 @@ type Slot = {
     entities: string[]; // defines entities' names and tags
     askPhrases: <{phraseId: Phrases;}|{text: string;}>[]; // phrases that will be addressed to user to ask this slot
     required: boolean; // if false we can skip this slot and not fullfill
+    resetTrigger: string?;
 };
+
+type Slots = {[x:string]:Slot;};
 
 type SlotFillingOptions = {
     tryFillOnEnter: boolean;
     confirmationPhrase: Phrases?;
 };
 
+type SlotFillingResult = {
+    slots: Slots;
+    success: boolean;
+};
 
-block SlotFilling(slots: {[x:string]:Slot;}, 
+block SlotFilling(slots: Slots, 
                   options: SlotFillingOptions={tryFillOnEnter: true, confirmationPhrase:null}
-                ): {[x:string]:Slot;} {
+                ): SlotFillingResult {
     type Filter = {[x:string]:string|boolean;};
     type Data = {[x:string]:string;};
 
-    context {}
+    context {
+        resetTriggers: string[] = [];
+    }
+
+    block GetResetTriggers(slots: {[x:string]:Slot;}): string[] {
+        start node root {
+            do {
+                var result: string[] = [];
+                for (var key in $slots.keys()) {
+                    var trigger = ($slots[key])?.resetTrigger;
+                    if (trigger is not null) {
+                        result.push(trigger);
+                    }
+                }
+                return result;
+            }
+        }
+    }
 
     block GetFirst(dataArrays: Data[][]): string? {
         start node root {
@@ -92,6 +90,7 @@ block SlotFilling(slots: {[x:string]:Slot;},
         }
         start node root {
             do {
+                
                 var result: string[] = [];
                 for (var s in $minuend) {
                     var includes = blockcall IsInArray(s, $subtrahend);
@@ -102,20 +101,14 @@ block SlotFilling(slots: {[x:string]:Slot;},
             }
         }
     }
-
-    // external function getObjectKeys(obj: unknown): string[];
-    // external function setSlotsProperty(slots: {[x:string]:Slot;}, slotName: string, slotValue: Slot):{[x:string]:Slot;};
-    // external function stringify(obj: unknown): string;
     
     start node root {
         do {
             #log("in slotfilling, slots: " + $slots.keys().join(","));
             set digression.slot_parser.slots = $slots;
             if ($options.tryFillOnEnter) {
-                // TODO implement
                 goto initial_filling;
             }
-            // wait*;
             goto slot_filler;
         }
         transitions {
@@ -123,7 +116,6 @@ block SlotFilling(slots: {[x:string]:Slot;},
             slot_filler: goto slot_filler;
         }
     }
-
 
     preprocessor digression slot_parser {
         conditions {on true priority 5000;}
@@ -136,7 +128,6 @@ block SlotFilling(slots: {[x:string]:Slot;},
             var currentSlotName = digression.slot_parser.currentSlotName;
             
             var slotNames = slots.keys();
-            // var slotNames = external getObjectKeys(slots);
             for (var slotName in slotNames) {
                 var parsedData: Data[][] = [];
                 var slot = slots[slotName];
@@ -163,7 +154,6 @@ block SlotFilling(slots: {[x:string]:Slot;},
                     set slot.values = blockcall GetAll(parsedData);
 
                 set slots[slotName] = slot;
-                // set digression.slot_parser.slots = external setSlotsProperty(digression.slot_parser.slots, slotName, slot);
             }
             set digression.slot_parser.slots = slots;
             return;
@@ -217,8 +207,7 @@ block SlotFilling(slots: {[x:string]:Slot;},
                 }
             }
             wait *;
-        }
-        transitions {
+        } transitions {
             loop: goto slot_filler on true;
             slot_confirmation: goto slot_confirmation;
             unexpected_error: goto unexpected_error;
@@ -226,8 +215,7 @@ block SlotFilling(slots: {[x:string]:Slot;},
     }
 
     node slot_confirmation {
-        do
-        {
+        do {
             #log("Slots are fullfilled");
             if ($options.confirmationPhrase is null) {
                 goto finish_slot_filling;
@@ -240,29 +228,34 @@ block SlotFilling(slots: {[x:string]:Slot;},
             #say($options.confirmationPhrase, values);
             wait *;
         }
-        transitions
-        {
+        transitions {
             positive: goto finish_slot_filling on #messageHasIntent("agreement", "positive");
-            negative: goto drop_parsed_slots on #messageHasIntent("agreement", "negative");
+            drop_all_slots: goto slot_filler on #messageHasIntent("agreement", "negative");
+            drop_some_slots: goto slot_filler on #messageHasAnyIntent(blockcall GetResetTriggers($slots));
             finish_slot_filling: goto finish_slot_filling;
         }
-        onexit 
-        {
-        }
-    }
-
-    node drop_parsed_slots {
-        do {
-            // TODO implement
-            #log("DROP PARSED SLOTS");
-            exit;
+        onexit {
+            drop_some_slots: do {
+                #log("Dropping some parsed slots...");
+                for (var key in $slots.keys()) {
+                    var trigger = ($slots[key])?.resetTrigger;
+                    if (#messageHasIntent(trigger ?? "")) {
+                        #log("Dropping slot '" + key + "'...");
+                        set digression.slot_parser.slots[key] = $slots[key];
+                    }
+                }
+            }
+            drop_all_slots: do {
+                #log("Dropping all parsed slots...");
+                set digression.slot_parser.slots = $slots;
+            }
         }
     }
 
     node finish_slot_filling{
         do {
             #log("finish_slot_filling");
-            return digression.slot_parser.slots;
+            return {slots: digression.slot_parser.slots, success: true};
         }
     }
 
@@ -272,7 +265,6 @@ block SlotFilling(slots: {[x:string]:Slot;},
             var slots = digression.slot_parser.slots;
             
             var slotNames = slots.keys();
-            // var slotNames = external getObjectKeys(slots);
             for (var slotName in slotNames) {
                 var parsedData: Data[][] = [];
                 var slot = slots[slotName];
@@ -310,3 +302,31 @@ block SlotFilling(slots: {[x:string]:Slot;},
 }
 
 
+
+/**
+if we fullfill concrete slot (currentSlot), then we consider only entities that has no conflicts with currentSlot
+But anyway, we fullfill all slots, but we filter allowed entities for others and skip entities with the same name
+
+For example:
+source_account: {
+    entities: ["account:source", "bank:source", "account", "bank"],
+},
+target_account: {
+    entities: ["account:target", "bank:target", "account", "bank"],
+},
+amount: {
+    entities: ["numberword"],
+}
+
+currentSlot == source_account
+Then allowed entities are:
+source_account: {
+    entities: ["account:source", "bank:source", "account", "bank"],
+},
+target_account: {
+    entities: ["account:target", "bank:target"],
+},
+amount: {
+    entities: ["numberword"],
+}
+*/
