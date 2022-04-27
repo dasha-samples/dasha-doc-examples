@@ -37,7 +37,6 @@ amount: {
 
 
 type Slot = {
-    // TODO remove property 'name'
     name: string?;  // name used for generating validation phrase
     value: string?;  // stores first parsed value
     values: string[];  // stores all parsed values
@@ -48,13 +47,12 @@ type Slot = {
 
 type SlotFillingOptions = {
     tryFillOnEnter: boolean;
-    needConfirmation: boolean;
     confirmationPhrase: Phrases?;
 };
 
 
 block SlotFilling(slots: {[x:string]:Slot;}, 
-                  options: SlotFillingOptions={tryFillOnEnter: false, needConfirmation: false, confirmationPhrase:null}
+                  options: SlotFillingOptions={tryFillOnEnter: true, confirmationPhrase:null}
                 ): {[x:string]:Slot;} {
     type Filter = {[x:string]:string|boolean;};
     type Data = {[x:string]:string;};
@@ -107,7 +105,7 @@ block SlotFilling(slots: {[x:string]:Slot;},
 
     // external function getObjectKeys(obj: unknown): string[];
     // external function setSlotsProperty(slots: {[x:string]:Slot;}, slotName: string, slotValue: Slot):{[x:string]:Slot;};
-    external function stringify(obj: unknown): string;
+    // external function stringify(obj: unknown): string;
     
     start node root {
         do {
@@ -115,13 +113,13 @@ block SlotFilling(slots: {[x:string]:Slot;},
             set digression.slot_parser.slots = $slots;
             if ($options.tryFillOnEnter) {
                 // TODO implement
-                // goto initial_filling;
+                goto initial_filling;
             }
             // wait*;
             goto slot_filler;
         }
         transitions {
-            // initial_filling: goto initial_filling;
+            initial_filling: goto initial_filling;
             slot_filler: goto slot_filler;
         }
     }
@@ -145,7 +143,6 @@ block SlotFilling(slots: {[x:string]:Slot;},
                 if (slot is null) { #log("slot is null"); goto unexpected_error; }
     
                 var entities = slot.entities;
-                // TODO make it only if question was asked
                 if (currentSlotName is not null && currentSlotName != slotName){
                     set entities = blockcall GetArrayDiff(slot.entities, slots[currentSlotName]?.entities ?? []);
                 }
@@ -165,9 +162,10 @@ block SlotFilling(slots: {[x:string]:Slot;},
                 if (slot.values.length() == 0)
                     set slot.values = blockcall GetAll(parsedData);
 
-                set digression.slot_parser.slots[slotName] = slot;
+                set slots[slotName] = slot;
                 // set digression.slot_parser.slots = external setSlotsProperty(digression.slot_parser.slots, slotName, slot);
             }
+            set digression.slot_parser.slots = slots;
             return;
         }
         transitions {
@@ -177,7 +175,7 @@ block SlotFilling(slots: {[x:string]:Slot;},
     // TODO get rid of unexpected error
     node unexpected_error {
         do {
-            #log("Some unexpected behaviour occurred, exiting dialogue");
+            #log("Unexpected behaviour occurred, exiting dialogue");
             exit;
         }
     }
@@ -186,24 +184,23 @@ block SlotFilling(slots: {[x:string]:Slot;},
         do {
             var slots = digression.slot_parser.slots;
             var slotNames = slots.keys();
-            // var slotNames = external getObjectKeys(slots);
-            // log state of slots
+            /** log state of slots */
             for (var slotName in slotNames) {
                 var slot = slots[slotName];
                 #log((slot?.name??"") + " -> " + (slot?.value??""));
             }
-            // find not filled slots
+            /** find not filled slots */
             var unfilledSlotsNames: string[] = [];
             for (var slotName in slotNames) {
                 var slot = slots[slotName];
                 if (slot is null) {#log("slot is null"); goto unexpected_error;}
                 if (slot.value is null and slot.required) unfilledSlotsNames.push(slotName);
             }
-            // if all slots are filled
+            /** if all slots are filled */
             if (unfilledSlotsNames.length() == 0) {
                 goto slot_confirmation;
             }
-            // ask not filled slots one by one in loop
+            /** ask not filled slots one by one in loop */
             var currentSlotName = unfilledSlotsNames[0];
             if (currentSlotName is not null){
                 set digression.slot_parser.currentSlotName = currentSlotName;
@@ -224,7 +221,7 @@ block SlotFilling(slots: {[x:string]:Slot;},
         do
         {
             #log("Slots are fullfilled");
-            if (!$options.needConfirmation) {
+            if ($options.confirmationPhrase is null) {
                 goto finish_slot_filling;
             }
             #log("Confirming slot values...");
@@ -232,17 +229,7 @@ block SlotFilling(slots: {[x:string]:Slot;},
             for (var key in digression.slot_parser.slots.keys()) {
                 set values[key] = digression.slot_parser.slots[key]?.value ?? "";
             }
-            if ($options.confirmationPhrase is not null) {
-                #say($options.confirmationPhrase, values);
-            } else {
-                #sayText("Let's summarize.");
-                for (var key in values.keys()) {
-                    #sayText(key + " : " + (values[key] ?? ""));
-                }
-                #sayText("Is everything correct?");
-            }
-            // TODO use provided confirmation phrase
-            // #say("dynamic_transit_from", { name: account?.name, num: account?.num }, repeatMode: "complement");
+            #say($options.confirmationPhrase, values);
             wait *;
         }
         transitions
@@ -266,31 +253,51 @@ block SlotFilling(slots: {[x:string]:Slot;},
 
     node finish_slot_filling{
         do {
-            // money_transfer_slots stay unchanged. Only digression.slot_parser.slots is modified.
-            // Do we need modify money_transfer_slots?
-            
-    
-            // set $result.source_account = digression.slot_parser.slots.source_account?.value??"";
-            // set $result.target_account = digression.slot_parser.slots.target_account?.value??"";
-            // set $result.amount = digression.slot_parser.slots.amount?.value??"";
-    
-            // TODO: reset slot values
-    
-            // digression disable slot_parser;
             #log("finish_slot_filling");
-            // #log($slots);
             return digression.slot_parser.slots;
         }
     }
 
-    // node initial_filling {
-    //     do {
+    node initial_filling {
+        do {
+            #log("initial filing");
+            var slots = digression.slot_parser.slots;
+            
+            var slotNames = slots.keys();
+            // var slotNames = external getObjectKeys(slots);
+            for (var slotName in slotNames) {
+                var parsedData: Data[][] = [];
+                var slot = slots[slotName];
+                if (slot is null) { #log("slot is null"); goto unexpected_error; }
+    
+                var entities = slot.entities;
+                for (var e in entities) {
+                    var split = e.split(":");
+                    var eName = split[0];
+                    if (eName is null) { #log("eName is null"); goto unexpected_error; }
+                    var eTag = split[1];
+    
+                    var filter: Filter = {value: true, tag: false};
+                    if (eTag is not null) set filter.tag = eTag;
+    
+                    var values = #messageGetData(eName, filter);
+                    parsedData.push(values);
+                }
+                set slot.value = slot.value ?? blockcall GetFirst(parsedData);
+                if (slot.values.length() == 0)
+                    set slot.values = blockcall GetAll(parsedData);
 
-    //     }
-    //     transitions {
-    //         unexpected_error: goto unexpected_error;
-    //     }
-    // }
+                set slots[slotName] = slot;
+            }
+            set digression.slot_parser.slots = slots;
+
+            goto slot_filler;
+        }
+        transitions {
+            slot_filler: goto slot_filler;
+            unexpected_error: goto unexpected_error;
+        }
+    }
 
 }
 

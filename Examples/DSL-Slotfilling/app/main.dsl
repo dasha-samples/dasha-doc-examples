@@ -35,6 +35,7 @@ start node root {
     do {
         #log("node 'root'");
         // digression disable slot_parser;
+        #setVadPauseLength(1.2);
         #connectSafe($endpoint);
         #waitForSpeech(1000);
         #sayText("Hello!");
@@ -63,10 +64,11 @@ node hub {
 
 node transfer_money {
     do {
-        var options = {tryFillOnEnter: false, needConfirmation: false, confirmationPhrase:null};
+        var options = {tryFillOnEnter: true, confirmationPhrase:"slotfilling_confirmation_phrase"};
         var filledSlots = blockcall SlotFilling($moneyTransferSlots, options);
         #log("got filled slots:");
         #log(filledSlots);
+        #sayText("Ok, bye");
     }
 }
 

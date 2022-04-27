@@ -13,7 +13,7 @@
         { "id": "source_account", "type": "dynamic" },
         { "text": " to " },
         { "id": "target_account", "type": "dynamic" },
-        { "text": " is that correct?" }
+        { "text": ". Is that correct?" }
       ]
     },
     "types": {},
