@@ -1,6 +1,4 @@
-import "slotfilling.dsl";
-
-
+import "slot-filling.dsl";
 
 context {
     input  endpoint: string;
@@ -52,9 +50,9 @@ node hub {
         // we need to enable preprocessor when we expect slot filling
         // digression enable slot_parser;
         #sayText("How can I help you?");
-​
+
         // TODO: multiple slot filling
-​
+
         // set digression.slot_parser.slots = $money_transfer_slots;
         wait *;
     }
@@ -65,6 +63,31 @@ node hub {
 
 node transfer_money {
     do {
-        var filledSlots = blockcall SlotFilling($moneyTransferSlots);
+        var options = {tryFillOnEnter: false, needConfirmation: false, confirmationPhrase:null};
+        var filledSlots = blockcall SlotFilling($moneyTransferSlots, options);
+        #log("got filled slots:");
+        #log(filledSlots);
+    }
+}
+
+global digression global_robot {
+    conditions {
+        on #messageHasIntent("are_you_a_robot") priority 1;
+    }
+    do {
+        #sayText("I am global robot", repeatMode:"ignore");
+        #repeat();
+        return;
+    }
+}
+
+digression local_robot {
+    conditions {
+        on #messageHasIntent("are_you_a_robot") priority 1000;
+    }
+    do {
+        #sayText("I am local robot", repeatMode:"ignore");
+        #repeat();
+        return;
     }
 }

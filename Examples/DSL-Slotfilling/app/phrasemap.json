@@ -5,8 +5,18 @@
       "speaker": "Kate",
       "speed": 0.9
     },
-    "phrases": {},
+    "phrases": {
+      "slotfilling_confirmation_phrase": [
+        { "text": "Transferring " },
+        { "id": "amount", "type": "dynamic" },
+        { "text": " from " },
+        { "id": "source_account", "type": "dynamic" },
+        { "text": " to " },
+        { "id": "target_account", "type": "dynamic" },
+        { "text": " is that correct?" }
+      ]
+    },
     "types": {},
-    "macros": {}
+    "macros": {"slotfilling_confirmation_phrase": {}}
   }
 }

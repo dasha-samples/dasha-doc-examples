@@ -38,7 +38,7 @@ amount: {
 
 type Slot = {
     // TODO remove property 'name'
-    name: string?;  // unique name
+    name: string?;  // name used for generating validation phrase
     value: string?;  // stores first parsed value
     values: string[];  // stores all parsed values
     entities: string[]; // defines entities' names and tags
@@ -46,10 +46,16 @@ type Slot = {
     required: boolean; // if false we can skip this slot and not fullfill
 };
 
-type SlotFillingOptions = {};
+type SlotFillingOptions = {
+    tryFillOnEnter: boolean;
+    needConfirmation: boolean;
+    confirmationPhrase: Phrases?;
+};
 
 
-block SlotFilling(slots: {[x:string]:Slot;}, options: SlotFillingOptions={}): {[x:string]:Slot;} {
+block SlotFilling(slots: {[x:string]:Slot;}, 
+                  options: SlotFillingOptions={tryFillOnEnter: false, needConfirmation: false, confirmationPhrase:null}
+                ): {[x:string]:Slot;} {
     type Filter = {[x:string]:string|boolean;};
     type Data = {[x:string]:string;};
 
@@ -98,31 +104,41 @@ block SlotFilling(slots: {[x:string]:Slot;}, options: SlotFillingOptions={}): {[
             }
         }
     }
+
+    // external function getObjectKeys(obj: unknown): string[];
+    // external function setSlotsProperty(slots: {[x:string]:Slot;}, slotName: string, slotValue: Slot):{[x:string]:Slot;};
+    external function stringify(obj: unknown): string;
     
     start node root {
         do {
+            #log("in slotfilling, slots: " + $slots.keys().join(","));
             set digression.slot_parser.slots = $slots;
-            
+            if ($options.tryFillOnEnter) {
+                // TODO implement
+                // goto initial_filling;
+            }
+            // wait*;
+            goto slot_filler;
         }
         transitions {
-            instant_slot_filler: goto slot_filler;
-            slot_filler: goto slot_filler on true;
+            // initial_filling: goto initial_filling;
+            slot_filler: goto slot_filler;
         }
     }
+
 
     preprocessor digression slot_parser {
         conditions {on true priority 5000;}
 
         var slots: {[x:string]:Slot;} = {};
-        // TODO make it just a string (slot key)
-        var currentSlot: Slot? = null;
+        var currentSlotName: string? = null;
     
         do {
             var slots = digression.slot_parser.slots;
-            var currentSlot = digression.slot_parser.currentSlot;
-            // var slotNames = external getObjectKeys(digression.slot_parser.slots);
+            var currentSlotName = digression.slot_parser.currentSlotName;
             
             var slotNames = slots.keys();
+            // var slotNames = external getObjectKeys(slots);
             for (var slotName in slotNames) {
                 var parsedData: Data[][] = [];
                 var slot = slots[slotName];
@@ -130,8 +146,8 @@ block SlotFilling(slots: {[x:string]:Slot;}, options: SlotFillingOptions={}): {[
     
                 var entities = slot.entities;
                 // TODO make it only if question was asked
-                if (currentSlot is not null && currentSlot.name != slot.name){
-                    set entities = blockcall GetArrayDiff(slot.entities, currentSlot.entities);
+                if (currentSlotName is not null && currentSlotName != slotName){
+                    set entities = blockcall GetArrayDiff(slot.entities, slots[currentSlotName]?.entities ?? []);
                 }
                 for (var e in entities) {
                     var split = e.split(":");
@@ -148,10 +164,10 @@ block SlotFilling(slots: {[x:string]:Slot;}, options: SlotFillingOptions={}): {[
                 set slot.value = slot.value ?? blockcall GetFirst(parsedData);
                 if (slot.values.length() == 0)
                     set slot.values = blockcall GetAll(parsedData);
+
                 set digression.slot_parser.slots[slotName] = slot;
                 // set digression.slot_parser.slots = external setSlotsProperty(digression.slot_parser.slots, slotName, slot);
             }
-            
             return;
         }
         transitions {
@@ -168,29 +184,30 @@ block SlotFilling(slots: {[x:string]:Slot;}, options: SlotFillingOptions={}): {[
 
     node slot_filler {
         do {
-            var slotNames = digression.slot_parser.slots.keys();
+            var slots = digression.slot_parser.slots;
+            var slotNames = slots.keys();
+            // var slotNames = external getObjectKeys(slots);
             // log state of slots
             for (var slotName in slotNames) {
-                var slot = digression.slot_parser.slots[slotName];
+                var slot = slots[slotName];
                 #log((slot?.name??"") + " -> " + (slot?.value??""));
             }
-    
             // find not filled slots
-            var notFilledSlots: Slot[] = [];
+            var unfilledSlotsNames: string[] = [];
             for (var slotName in slotNames) {
-                var slot = digression.slot_parser.slots[slotName];
+                var slot = slots[slotName];
                 if (slot is null) {#log("slot is null"); goto unexpected_error;}
-                if (slot.value is null and slot.required) notFilledSlots.push(slot);
+                if (slot.value is null and slot.required) unfilledSlotsNames.push(slotName);
             }
             // if all slots are filled
-            if (notFilledSlots.length() == 0) {
+            if (unfilledSlotsNames.length() == 0) {
                 goto slot_confirmation;
             }
             // ask not filled slots one by one in loop
-            var currentSlot = notFilledSlots[0];
-            if (currentSlot is not null){
-                set digression.slot_parser.currentSlot = currentSlot;
-                for (var phrase in currentSlot.askPhrases) {
+            var currentSlotName = unfilledSlotsNames[0];
+            if (currentSlotName is not null){
+                set digression.slot_parser.currentSlotName = currentSlotName;
+                for (var phrase in (slots[currentSlotName]?.askPhrases ?? [])) {
                     #sayText(phrase);
                 }
             }
@@ -203,18 +220,36 @@ block SlotFilling(slots: {[x:string]:Slot;}, options: SlotFillingOptions={}): {[
         }
     }
 
-    node slot_confirmation{
+    node slot_confirmation {
         do
         {
             #log("Slots are fullfilled");
-            // TODO use provided validation phrase
-            #sayText("Is everything correct?");
+            if (!$options.needConfirmation) {
+                goto finish_slot_filling;
+            }
+            #log("Confirming slot values...");
+            var values: {[x:string]:string;} = {};
+            for (var key in digression.slot_parser.slots.keys()) {
+                set values[key] = digression.slot_parser.slots[key]?.value ?? "";
+            }
+            if ($options.confirmationPhrase is not null) {
+                #say($options.confirmationPhrase, values);
+            } else {
+                #sayText("Let's summarize.");
+                for (var key in values.keys()) {
+                    #sayText(key + " : " + (values[key] ?? ""));
+                }
+                #sayText("Is everything correct?");
+            }
+            // TODO use provided confirmation phrase
+            // #say("dynamic_transit_from", { name: account?.name, num: account?.num }, repeatMode: "complement");
             wait *;
         }
         transitions
         {
             positive: goto finish_slot_filling on #messageHasIntent("agreement", "positive");
             negative: goto drop_parsed_slots on #messageHasIntent("agreement", "negative");
+            finish_slot_filling: goto finish_slot_filling;
         }
         onexit 
         {
@@ -233,7 +268,7 @@ block SlotFilling(slots: {[x:string]:Slot;}, options: SlotFillingOptions={}): {[
         do {
             // money_transfer_slots stay unchanged. Only digression.slot_parser.slots is modified.
             // Do we need modify money_transfer_slots?
-            #log($slots);
+            
     
             // set $result.source_account = digression.slot_parser.slots.source_account?.value??"";
             // set $result.target_account = digression.slot_parser.slots.target_account?.value??"";
@@ -241,11 +276,22 @@ block SlotFilling(slots: {[x:string]:Slot;}, options: SlotFillingOptions={}): {[
     
             // TODO: reset slot values
     
-            digression disable slot_parser;
+            // digression disable slot_parser;
             #log("finish_slot_filling");
-            return $slots;
+            // #log($slots);
+            return digression.slot_parser.slots;
         }
     }
+
+    // node initial_filling {
+    //     do {
+
+    //     }
+    //     transitions {
+    //         unexpected_error: goto unexpected_error;
+    //     }
+    // }
+
 }
 
 

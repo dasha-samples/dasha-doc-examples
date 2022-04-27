@@ -15,6 +15,10 @@ async function main() {
     const {slots, slotName, slotValue} = args;
     slots[slotName] = slotValue;
     return slots;
+  });
+  app.setExternal("stringify", (args) => {
+    const {obj} = args;
+    return JSON.stringify(obj);
   })
 
   // create conversation with provided phone
@@ -36,5 +40,5 @@ async function main() {
 }
 
 main().catch((e) => {
-  console.log(`Error: ${e.message}`);
+  console.log(e);
 });
