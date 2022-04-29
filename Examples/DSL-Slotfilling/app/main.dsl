@@ -1,35 +1,35 @@
-import "slot-filling.dsl";
+import "slot-filling-lib/slot-filling.dsl";
 
 context {
     input  endpoint: string;
 
     moneyTransferSlots: {[x:string]:Slot;} = {
         source_account: {
-            name: "source account",
-            value: null,
-            values: [],
-            entities: ["account:source", "bank:source", "account", "bank"],
             askPhrases: [{text:"From which account you would like to transfer?"}],
             required: true,
-            resetTrigger: null
+            triggers: {
+                setEntities: ["account:source", "bank:source", "account", "bank"],
+                dropEntities: [],
+                dropIntents: []
+            }
         },
         target_account: {
-            name: "target account",
-            value: null,
-            values: [],
-            entities: ["account:target", "bank:target", "account", "bank"], 
             askPhrases: [{phraseId:"ask_target_account"}],
             required: true,
-            resetTrigger: null
+            triggers: {
+                setEntities: ["account:target", "bank:target", "account", "bank"],
+                dropEntities: [],
+                dropIntents: []
+            }
         },
         amount: {
-            name: "amount",
-            value: null,
-            values: [],
-            entities: ["numberword"], 
             askPhrases: [{phraseId:"ask_amount"}],
             required: true,
-            resetTrigger: "differentamt"
+            triggers: {
+                setEntities: ["numberword"],
+                dropEntities: [],
+                dropIntents: ["differentamt"]
+            }
         }
     };
 }
