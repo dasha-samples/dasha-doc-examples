@@ -8,7 +8,10 @@ NO values validation!
 NO multiple slot filling forms!
 
 ATTENTION
-This block uses intent "agreement"
+This block uses intent "agreement" and sentiment "negative"
+
+NOTE:
+    I will remove "negative" sentiment ASA there will be good "agreement" intent
 */
 
 
@@ -116,6 +119,7 @@ block SlotFilling(slots: Slots,
             finish_slot_filling: goto finish_slot_filling;
             positive: goto finish_slot_filling on #messageHasIntent("agreement", "positive");
             drop_all_slots: goto slot_asker on #messageHasIntent("agreement", "negative");
+            drop_some_slots_neg: goto slot_asker on #messageHasSentiment("negative") and digression.mentioned.someSlots == true priority 100;
             drop_some_slots: goto slot_asker on digression.slot_filler.droppedSomeSlots == true;
         }
         onexit {
@@ -232,6 +236,12 @@ block SlotFilling(slots: Slots,
                     set slot = {value: null, values: []};
                     set digression.slot_filler.droppedSomeSlots = true;
                 }
+                /** "negative" + saved value */
+                if (#messageHasSentiment("negative") and ((digression.mentioned.saved[key])?.value is not null)) {
+                    #log("Dropping slot '" + key + "'...");
+                    set slot = {value: null, values: []};
+                    set digression.slot_filler.droppedSomeSlots = true;
+                }
                 set $slotValues[key] = slot;
             }
             /** set if setting entity is parsed */
@@ -256,7 +266,9 @@ block SlotFilling(slots: Slots,
         conditions { on true priority 10000; }
         /** stores values that are mentioned */
         var saved: SlotOutputs = {};
+        var someSlots: boolean = false;
         do {
+            set digression.mentioned.someSlots = false;
             #log("preprocessor 'mentioned'");
             var saved: SlotOutputs = {};
             for (var key in $slots.keys()) {
@@ -275,6 +287,7 @@ block SlotFilling(slots: Slots,
                     if (s is null) { #log("s is null"); goto unexpected_error; }
                     set s.value = $slotValues[key]?.value ?? "";
                     set saved[key] = s;
+                    set digression.mentioned.someSlots = true;
                 }
             }
             set digression.mentioned.saved = saved;

@@ -7,6 +7,7 @@
   "nlu": {
     "language": "en-US",
     "skills": [
+      "sentiment",
       "common_phrases",
       "common-numbers"
     ],
