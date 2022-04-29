@@ -17,15 +17,8 @@ NOTE:
 */
 
 
-/*
-TODO
-терминировать слот филлинг по интенту. то есть например интент "я передумал переводить деньги"
-*/
-
-
-
 block SlotFilling(slots: Slots, 
-                  options: SlotFillingOptions={tryFillOnEnter: true, confirmationPhrase:null}
+                  options: SlotFillingOptions={tryFillOnEnter: true, confirmationPhrase:null, exitIntent: null}
                 ): SlotFillingResult {
     
     import "slot-filling-helpers.dsl";
@@ -159,6 +152,13 @@ block SlotFilling(slots: Slots,
         transitions {
             slot_asker: goto slot_asker;
             unexpected_error: goto unexpected_error;
+        }
+    }
+
+    digression exit_slot_filling {
+        conditions { on #messageHasIntent($options.exitIntent??""); }
+        do {
+            return {slots: null, success: false};
         }
     }
 

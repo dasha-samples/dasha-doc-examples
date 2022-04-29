@@ -30,7 +30,7 @@ node hub {
 
 node transfer_money {
     do {
-        var options = {tryFillOnEnter: true, confirmationPhrase: "slotfilling_confirmation_phrase"};
+        var options = {tryFillOnEnter: true, confirmationPhrase: "slotfilling_confirmation_phrase", exitIntent: null};
         var slots: {[x:string]:Slot;} = {
             source_account: {
                 askPhrases: [{text:"From which account you would like to transfer?"}],

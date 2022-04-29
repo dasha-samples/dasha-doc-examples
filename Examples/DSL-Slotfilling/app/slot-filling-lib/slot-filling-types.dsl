@@ -19,6 +19,7 @@ type Slots = {[x:string]:Slot;};
 type SlotFillingOptions = {
     tryFillOnEnter: boolean;
     confirmationPhrase: Phrases?;
+    exitIntent: string?;
 };
 
 type SlotOutput = {
