@@ -10,15 +10,49 @@ ATTENTION
 This block uses intent "agreement"
 */
 
+/*
+TODO
+1. нужен rollback (reset) slots в середине сбора слотов,  не только на confirmation. видимо через дигрессии
+2. для reset в будущем делать более по умному, с сущностями сразу + с интентами это одновременно работало. потому что если
+- нам сразу скажут новое значение
+- нам скажут новое значение сразу двух слотов
+- будут говорить что то в духе "не 50 а 500". тут видимо тэги понадобятся
+*/
+
+/*
+TODO
+терминировать слот филлинг по интенту. то есть например интент "я передумал переводить деньги"
+*/
+
+/*
+TODO
+разделить слоты на входное и выходное значение
+*/
+
 type Slot = {
-    name: string?;  // name used for generating validation phrase
     value: string?;  // stores first parsed value
     values: string[];  // stores all parsed values
     entities: string[]; // defines entities' names and tags
     askPhrases: <{phraseId: Phrases;}|{text: string;}>[]; // phrases that will be addressed to user to ask this slot
     required: boolean; // if false we can skip this slot and not fullfill
     resetTrigger: string?; // intent that triggers resetting this slot
+    /** TODO add property isArray 
+    
+    */
 };
+
+type Slot2 = {
+    value: string?;  // stores first parsed value
+    values: string[];  // stores all parsed values
+    entities: string[]; // defines entities' names and tags
+    askPhrases: <{phraseId: Phrases;}|{text: string;}>[]; // phrases that will be addressed to user to ask this slot
+    required: boolean; // if false we can skip this slot and not fullfill
+    resetTrigger: string?; // intent that triggers resetting this slot
+    /** TODO add property isArray 
+    
+    */
+};
+
 
 type Slots = {[x:string]:Slot;};
 
@@ -27,10 +61,18 @@ type SlotFillingOptions = {
     confirmationPhrase: Phrases?;
 };
 
+
+/** TODO implement */
+type OutputSlot = {};
+
+
 type SlotFillingResult = {
-    slots: Slots;
+    slots: Slots?;
     success: boolean;
 };
+
+/** TODO implement */
+type InnerSlot = {};
 
 block SlotFilling(slots: Slots, 
                   options: SlotFillingOptions={tryFillOnEnter: true, confirmationPhrase:null}
@@ -56,7 +98,6 @@ block SlotFilling(slots: Slots,
             }
         }
     }
-
     block GetFirst(dataArrays: Data[][]): string? {
         start node root {
             do {
@@ -90,7 +131,6 @@ block SlotFilling(slots: Slots,
         }
         start node root {
             do {
-                
                 var result: string[] = [];
                 for (var s in $minuend) {
                     var includes = blockcall IsInArray(s, $subtrahend);
@@ -101,7 +141,33 @@ block SlotFilling(slots: Slots,
             }
         }
     }
-    
+    block GetSlotValues(slots: {[x:string]:Slot;}): string[] {
+        start node root {
+            do {
+                var values: string[] = [];
+                for (var key in $slots.keys()) {
+                    var v = ($slots[key])?.value;
+                    if (v is not null) {
+                        values.push(v);
+                    }
+                    return values;
+                }
+            }
+        }
+    }
+    block GetSlotEntities(slots: {[x:string]:Slot;}): string[] {
+        start node root {
+            do {
+                var entities: string[] = [];
+                for (var key in $slots.keys()) {
+                    var es = ($slots[key])?.entities;
+                    if (es is not null)
+                        entities.append(es);
+                }
+                return entities;
+            }
+        }
+    }
     start node root {
         do {
             #log("in slotfilling, slots: " + $slots.keys().join(","));
@@ -117,57 +183,12 @@ block SlotFilling(slots: Slots,
         }
     }
 
-    preprocessor digression slot_parser {
-        conditions {on true priority 5000;}
-
-        var slots: {[x:string]:Slot;} = {};
-        var currentSlotName: string? = null;
     
-        do {
-            var slots = digression.slot_parser.slots;
-            var currentSlotName = digression.slot_parser.currentSlotName;
-            
-            var slotNames = slots.keys();
-            for (var slotName in slotNames) {
-                var parsedData: Data[][] = [];
-                var slot = slots[slotName];
-                if (slot is null) { #log("slot is null"); goto unexpected_error; }
-    
-                var entities = slot.entities;
-                if (currentSlotName is not null && currentSlotName != slotName){
-                    set entities = blockcall GetArrayDiff(slot.entities, slots[currentSlotName]?.entities ?? []);
-                }
-                for (var e in entities) {
-                    var split = e.split(":");
-                    var eName = split[0];
-                    if (eName is null) { #log("eName is null"); goto unexpected_error; }
-                    var eTag = split[1];
-    
-                    var filter: Filter = {value: true, tag: false};
-                    if (eTag is not null) set filter.tag = eTag;
-    
-                    var values = #messageGetData(eName, filter);
-                    parsedData.push(values);
-                }
-                // TODO what if 
-                set slot.value = slot.value ?? blockcall GetFirst(parsedData);
-                if (slot.values.length() == 0)
-                    set slot.values = blockcall GetAll(parsedData);
-
-                set slots[slotName] = slot;
-            }
-            set digression.slot_parser.slots = slots;
-            return;
-        }
-        transitions {
-            unexpected_error: goto unexpected_error;
-        }
-    }
     // TODO get rid of unexpected error
     node unexpected_error {
         do {
             #log("Unexpected behaviour occurred, exiting dialogue");
-            exit;
+            return {slots: null, success: false};
         }
     }
 
@@ -178,7 +199,7 @@ block SlotFilling(slots: Slots,
             /** log state of slots */
             for (var slotName in slotNames) {
                 var slot = slots[slotName];
-                #log((slot?.name??"") + " -> " + (slot?.value??""));
+                #log(slotName + " -> " + (slot?.value??""));
             }
             /** find not filled slots */
             var unfilledSlotsNames: string[] = [];
@@ -197,8 +218,9 @@ block SlotFilling(slots: Slots,
                 set digression.slot_parser.currentSlotName = currentSlotName;
                 for (var phrase in (slots[currentSlotName]?.askPhrases ?? [])) {
                     var p = phrase as {[x:string]:string;} ?? {};
+                    var pp = phrase as {phraseId: Phrases;};
                     var phraseId = p["phraseId"] as Phrases;
-                    if (phraseId is not null){
+                    if (phraseId is not null) {
                         #say(phraseId);
                     } else {
                         var text = p["text"];
@@ -300,7 +322,111 @@ block SlotFilling(slots: Slots,
             unexpected_error: goto unexpected_error;
         }
     }
+    // preprocessors
+    preprocessor digression slot_parser {
+        conditions {on true priority 5000;}
 
+        var slots: {[x:string]:Slot;} = {};
+        var currentSlotName: string? = null;
+    
+        do {
+            var slots = digression.slot_parser.slots;
+            var currentSlotName = digression.slot_parser.currentSlotName;
+            
+            var slotNames = slots.keys();
+            for (var slotName in slotNames) {
+                var parsedData: Data[][] = [];
+                var slot = slots[slotName];
+                if (slot is null) { #log("slot is null"); goto unexpected_error; }
+    
+                var entities = slot.entities;
+                if (currentSlotName is not null && currentSlotName != slotName){
+                    set entities = blockcall GetArrayDiff(slot.entities, slots[currentSlotName]?.entities ?? []);
+                }
+                for (var e in entities) {
+                    var split = e.split(":");
+                    var eName = split[0];
+                    if (eName is null) { #log("eName is null"); goto unexpected_error; }
+                    var eTag = split[1];
+    
+                    var filter: Filter = {value: true, tag: false};
+                    if (eTag is not null) set filter.tag = eTag;
+    
+                    var values = #messageGetData(eName, filter);
+                    parsedData.push(values);
+                }
+                // TODO move filling to slot_filler
+                set slot.value = slot.value ?? blockcall GetFirst(parsedData);
+                if (slot.values.length() == 0)
+                    set slot.values = blockcall GetAll(parsedData);
+
+                set slots[slotName] = slot;
+            }
+            set digression.slot_parser.slots = slots;
+            return;
+        }
+        transitions {
+            unexpected_error: goto unexpected_error;
+        }
+    }
+    
+    // preprocessor digression mentioned {
+    //     conditions { on true priority 10000; }
+    //     // var savedValues: string[] = []; // or savedSlots
+    //     // var newValues: string[] = [];
+    //     var slots: string[] = [];
+    //     var saved: {} = {}; // TODO make type right
+    //     var someSaved: boolean = false;
+    //     // var new: boolean = false;
+    //     do {
+    //         /*
+    //         в этой ноде
+    //             сбросить свои значения
+    //             пройти по слотам
+    //             спарсить их entity
+    //             если в слоте уже указано спарсенное entity, то:
+    //                 добавить в slots: 
+    //                     ключ - ключ этого слота, 
+    //                     значение - ДРУГОЙ спарсенный элемент, т.е. 1-й или 2-й эл-тт массива (или null)
+    //                 добавить в saved:
+    //                     ключ - ключ этого слота, 
+    //                     значение - совпавший элемент
+    //                 выставить someSaved = true
+
+    //         дальше мы попадаем в slot_parser
+    //             там делаем все как обычно, только игнорируем mentioned.saved.slot.value
+
+    //         тогда в вызывающей ноде (slot_confirmation или slot_filler):
+    //             сделать условие 'negative'+saved
+    //             в onexit по этому условию:
+    //                 сбросить  слот  // -----(+засеттить)
+                    
+    //         */
+
+
+
+    //         // var currentSlotValues = blockcall GetSlotValues(digression.slot_parser.slots);
+    //         // var entities = blockcall GetSlotEntities(digression.slot_parser.slots);
+    //         // for (var e in entities) {
+    //         //     var split = e.split(":");
+    //         //     var eName = split[0];
+    //         //     if (eName is null) { #log("eName is null"); goto unexpected_error; }
+    //         //     var eTag = split[1];
+
+    //         //     var filter: Filter = {value: true, tag: false};
+    //         //     if (eTag is not null) set filter.tag = eTag;
+
+    //         //     var values = #messageGetData(eName, filter);
+
+    //         //     parsedData.push(values);
+    //         // }
+    //     }
+        
+    //     transitions {
+    //         unexpected_error: goto unexpected_error;
+    //     }
+    // }
+    
 }
 
 
