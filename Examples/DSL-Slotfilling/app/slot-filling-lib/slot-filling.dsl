@@ -11,7 +11,9 @@ ATTENTION
 This block uses intent "agreement" and sentiment "negative"
 
 NOTE:
+    tomita "negative" would not be necessary if the were system intent
     I will remove "negative" sentiment ASA there will be good "agreement" intent
+
 */
 
 
