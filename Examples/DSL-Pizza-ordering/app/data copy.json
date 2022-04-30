@@ -1,0 +1,205 @@
+{
+  "version": "v2",
+  "intents": {
+    "agreement#pos": {
+      "includes": [
+        "yes",
+        "yeah",
+        "yes I confirm",
+        "confirm",
+        "correct",
+        "yes thats correct",
+        "thats correct"
+      ]
+    },
+    "agreement#neg": {
+      "includes": ["no", "nope", "there is mistake", "thats wrong"]
+    },
+    "order_pizza": {
+      "includes": [
+        "I would like to order pizza (pepperoni)[pizza_kind]",
+        "order pizza",
+        "I want to order a pizza (pepperoni)[pizza_kind]",
+        "I'd like to have a pizza (pepperoni)[pizza_kind]"
+      ]
+    },
+    "different_ingredient": {
+      "includes": [
+        "I want another ingredient",
+        "I want another extra",
+        "I want another extra ingredient",
+        "I want diffrent ingredient"
+      ]
+    }
+  },
+  "entities": {
+    "pizza_kind": {
+      "open_set": false,
+      "values": [
+        {
+          "value": "pepperoni"
+        },
+        {
+          "value": "margarita",
+          "synonyms": ["margherita"]
+        },
+        {
+          "value": "hawaiian"
+        },
+        {
+          "value": "manhattan"
+        }
+      ],
+      "includes": [
+        "replace pizza (pepperoni)[pizza_kind:remove] with (margarita)[pizza_kind:add] in the order",
+        "change pizza (pepperoni)[pizza_kind:remove] to (margarita)[pizza_kind:add] in the order",
+        "change pizza (pepperoni)[pizza_kind:remove] to (margarita)[pizza_kind:add]"
+      ]
+    },
+    "pizza_base": {
+      "open_set": false,
+      "values": [
+        {
+          "value": "thin",
+          "synonyms": ["slim"]
+        },
+        {
+          "value": "thick"
+        }
+      ],
+      "includes": [
+        "(thin)[pizza_base] crust",
+        "(thin)[pizza_base] dough",
+        "change (thin)[pizza_base:remove] crust to (thick)[pizza_base:add]",
+        "change (thin)[pizza_base:remove] crust to (thick)[pizza_base:add] in the order"
+      ]
+    },
+    "pizza_ingredient": {
+      "open_set": false,
+      "values": [
+        {
+          "value": "bacon"
+        },
+        {
+          "value": "cheddar"
+        },
+        {
+          "value": "chicken"
+        },
+        {
+          "value": "onion"
+        },
+        {
+          "value": "pineapple"
+        },
+        {
+          "value": "chilli",
+          "synonyms": ["chilli sauce"]
+        }
+      ],
+      "includes": [
+        "add (bacon)[pizza_ingredient:add]",
+        "extra (bacon)[pizza_ingredient:add] instead of (pineapple)[pizza_ingredient:remove]",
+        "additional (onion)[pizza_ingredient:add]",
+        "change extra (cheddar)[pizza_ingredient:remove] to extra (chicken)[pizza_ingredient:add]",
+        "change extra (cheddar)[pizza_ingredient:remove] to extra (chicken)[pizza_ingredient:add] in the order"
+      ]
+    },
+    "street": {
+      "open_set": true,
+      "values": [
+        {
+          "value": "Washington Avenue",
+          "synonyms": [
+            "Washington Ave"
+          ]
+        },
+        {
+          "value": "Baum Boulevard",
+          "synonyms": [
+            "Baum Blvd"
+          ]
+        },
+        {
+          "value": "Grant Street"
+        },
+        {
+          "value": "Parkway North"
+        },
+        {
+          "value": "Penn Avenue",
+          "synonyms": [
+            "Penn ave"
+          ]
+        }
+      ],
+      "includes": [
+        "I live on (Penn avenue)[street]"
+      ]
+    },
+    "house_num": {
+      "open_set": true,
+      "values": [
+        {
+          "value": "762",
+          "synonyms": [
+            "seven six two",
+            "seven hundred sixty two",
+            "seven six two"
+          ]
+        },
+        {
+          "value": "7",
+          "synonyms": [
+            "seven"
+          ]
+        },
+        {
+          "value": "317",
+          "synonyms": [
+            "three hundred seventeen",
+            "three seventeen",
+            "three one seven"
+          ]
+        },
+        {
+          "value": "124",
+          "synonyms": [
+            "hundred twenty four",
+            "one twenty four",
+            "one two four"
+          ]
+        },
+        {
+          "value": "52",
+          "synonyms": [
+            "fifty two"
+          ]
+        },
+        {
+          "value": "16",
+          "synonyms": [
+            "sixteen"
+          ]
+        }
+      ],
+      "includes": [
+        "my building number is (seven)[house_num]",
+        "I live on (seventy five)[house_num] (William Penn Highway)[street]",
+        "my address is (one sixty two)[house_num] (Washington Road)[street]",
+        "deliver my order to (twenty seven)[house_num] (West Carson Street)[street]",
+        "deliver it to (six two one)[house_num] (McKnight Road)[street]",
+        "on (five hundred seventy nine)[house_num] (Centre Avenue)[street]",
+        "live on (Penn Avenue)[street] building number (seventy six)[house_num]",
+        "my address is (Centre ave)[street] building (one three six)[house_num]",
+        "my building number is (eighty three)[house_num]",
+        "house number is (two seventy three)[house_num]",
+        "my building number is (97)[house_num]",
+        "house number is (309)[house_num]",
+        "on (399)[house_num] (Centre Avenue)[street]",
+        "live on (Penn Avenue)[street] building number (598)[house_num]",
+        "my address is (Centre ave)[street] building (876)[house_num]"
+      ]
+    }
+  }
+}

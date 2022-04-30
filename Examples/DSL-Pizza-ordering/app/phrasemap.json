@@ -1,0 +1,38 @@
+{
+  "default": {
+    "voiceInfo": {
+      "lang": "en-US",
+      "speaker": "Kate",
+      "speed": 0.9
+    },
+    "phrases": {
+      "ask_usual_pizza": {
+        "random": [
+          { "text": "Would you like to order a " },
+          { "id": "kind", "type": "dynamic" },
+          { "text": " as usual? " },
+          { "id": "base", "type": "dynamic" },
+          { "text": " base, " },
+          { "id": "add_ingredient", "type": "dynamic" },
+          { "text": "?" }
+
+        ]
+      },
+      "pizza_confirmation_phrase": {
+        "random": [
+          [
+            { "text": "So, " },
+            { "id": "kind", "type": "dynamic" },
+            { "text": " on a " },
+            { "id": "base", "type": "dynamic" },
+            { "text": " base, " },
+            { "id": "add_ingredient", "type": "dynamic" },
+            { "text": ". Is that correct?" }
+          ]
+        ]
+      }
+    },
+    "types": {},
+    "macros": {"slotfilling_confirmation_phrase": {}, "ask_amount": {}, "ask_target_account": {}}
+  }
+}
