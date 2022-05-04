@@ -6,6 +6,7 @@ const cors = require("cors");
 const expressApp = express();
 expressApp.use(express.json());
 expressApp.use(cors());
+expressApp.use(express.static("./dist"))
 
 const main = async () => {
   const app = await dasha.deploy(`${__dirname}/app`);
