@@ -5,11 +5,8 @@
   "description": "Simple demo for testing dasha webrtc",
   "author": "dasha.ai",
   "license": "MIT",
-  "main": "index.js",
   "scripts": {
-    "server": "node index.js",
-    "client": "parcel client/index.html",
-    "start": "concurrently --kill-others \"npm:server\" \"npm:client\""
+    "start": "parcel build client/index.html && node index.js"
   },
   "browserslist": [
     "since 2017-06"

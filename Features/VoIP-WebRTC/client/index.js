@@ -1,12 +1,11 @@
 import { Web } from "sip.js";
 
-const api = "http://localhost:8000";
 const runButton = document.getElementById("runButton");
 const hangupButton = document.getElementById("hangupButton");
 const waitButton = document.getElementById("waitButton");
 
 const getAccount = async () => {
-  const response = await fetch(`${api}/sip`);
+  const response = await fetch(`/sip`);
   const { aor, sipServerEndpoint } = await response.json();
   return { aor, sipServerEndpoint };
 };
@@ -20,7 +19,7 @@ const createUser = async (aor, server) => {
 
 const runCall = async (aor, name) => {
   const data = { aor, name };
-  await fetch(`${api}/call`, {
+  await fetch(`/call`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
