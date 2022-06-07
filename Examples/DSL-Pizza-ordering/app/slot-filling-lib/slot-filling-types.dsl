@@ -9,6 +9,8 @@ type Slot = {
         dropEntities: string[]; // entities' names and tags that trigger dropping the slot value
         dropIntents: string[]; // intents that trigger dropping the slot value
     };
+    initialValue: string?;
+    // initialValues: string[];
     /** TODO add property  
     isArray: boolean;
     */

@@ -21,7 +21,7 @@ start node root {
         // wait for user voice for 2000 ms
         #waitForSpeech(2000);
         #sayText("Hello, I am simple echo bot.");
-        #sayText("Say the you want to exit for exiting this dialog.");
+        #sayText("To exit the dialogue say the phrase ... I want to exit");
         wait*;
     }
     transitions {

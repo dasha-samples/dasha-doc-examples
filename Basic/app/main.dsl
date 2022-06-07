@@ -1,10 +1,10 @@
 context {
     // input parameters (provided outside)
     // phone to call
-    input  endpoint: string;
+    input endpoint: string;
     
     // output parameters (will be set during the dialogue)
-    success: boolean = false;
+    output success: boolean = false;
 }
 
 

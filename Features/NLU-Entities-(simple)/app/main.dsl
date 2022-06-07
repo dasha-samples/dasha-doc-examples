@@ -36,7 +36,7 @@ start node root {
         // wait for user voice for 2000 ms
         #waitForSpeech(2000);
         #sayText("Hello! I will ask you about languages.");
-        #sayText("To stop it, hangup your phone or say 5 languages.");
+        #sayText("To stop it, hangup your phone or say 5 language names you know.");
         #sayText("Otherwise, this conversation will last like forever.");
         #sayText("So, now please tell me. What language do you speak?");
         wait*;

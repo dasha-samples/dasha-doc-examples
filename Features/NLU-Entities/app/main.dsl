@@ -56,7 +56,7 @@ node greeting {
         #log("node 'greeting'");
         #sayText("Hi, this is delivery service quality control department.");
         #sayText("How would you evaluate our service?");
-        // now user asked to evaluate our delivery service
+        // now user is asked to evaluate our delivery service
 
         // wait until any transition can be executed
         // it could be transition 'got_estimation' or digression 'dont_understand'

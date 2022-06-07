@@ -18,6 +18,11 @@ context {
     input menu: string[] = ["pepperoni", "margarita", "hawaiian", "manhattan"];
     input ingredients: string[] = ["bacon", "cheddar", "chicken", "onion", "pineapple", "chilli", "olives"];
 
+    output order: {[x:string]:SlotOutput;} = {
+        kind: { value: null, values: [] },
+        crust: { value: null, values: [] },
+        add_ingredient: { value: null, values: [] }
+    };
     output userStreet: string = "";
     output userHouseNumt: string = "";
 }
@@ -87,7 +92,8 @@ node choose_pizza {
                     setEntities: ["pizza_kind:add", "pizza_kind"],
                     dropEntities: ["pizza_kind:remove"],
                     dropIntents: ["different_kind"]
-                }
+                },
+                initialValue: $order.kind?.value
             },
             base: {
                 askPhrases: [{text:"Would you like base to be thin or thick?"}],
@@ -96,7 +102,8 @@ node choose_pizza {
                     setEntities: ["pizza_base:add", "pizza_base"],
                     dropEntities: ["pizza_base:remove"],
                     dropIntents: ["different_base"]
-                }
+                },
+                initialValue: $order.base?.value
             },
             add_ingredient: {
                 askPhrases: [{text:"Would you like to add some ingredient?"}],
@@ -105,7 +112,8 @@ node choose_pizza {
                     setEntities: ["pizza_ingredient:add", "pizza_ingredient"],
                     dropEntities: ["pizza_ingredient:remove"],
                     dropIntents: ["different_ingredient"]
-                }
+                },
+                initialValue: $order.add_ingredient?.value
             }
         };
         var options = {tryFillOnEnter: true, confirmationPhrase: "pizza_confirmation_phrase", exitIntent: null};

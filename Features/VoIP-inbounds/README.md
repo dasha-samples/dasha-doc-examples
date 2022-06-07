@@ -4,7 +4,7 @@
 
 If you are not familiar with Voice over Internet Protocol, SIP or SIP trunks see the [VoIP overwiev](../VoIP/README.md) to learn about basic terms connected with this technology.
 
-The inbound call is the common way of designing chat bots.
+The inbound call is the frequent way of designing chat bots.
 Like in the case when your are building intelligence information system that is called by user.
 
 Dasha platform provides an ability to configure inbound calls for your application.
@@ -18,7 +18,7 @@ In our example the twillio's [PSTN](https://www.twilio.com/docs/glossary/what-is
 Also, the example shows the way of local testing the inbounds. 
 To do this the [microsip](https://www.microsip.org/downloads) is required.
 
-Also, explore our another [demo](https://github.com/dasha-samples/dasha-sip-test) that uses inbounds.
+Also, explore our another demo [dasha-sip-test](https://github.com/dasha-samples/dasha-sip-test) that uses inbounds.
 
 ### SDK part
 
@@ -122,7 +122,7 @@ Alternatively for local testing:
 ## Running the demo
 
 1. Run `npm start` - this will start the application that await for incoming calls.
-1. Call your application using created phone or microsip (just use sip `uri` from the CLI output as a phone number is microsip)
+2. Call your application using created phone or microsip (if you use microsip, just call the sip `uri` from the CLI output as a phone number)
 
 ## Dialogue example
 
