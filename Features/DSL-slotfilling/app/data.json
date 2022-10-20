@@ -1,0 +1,114 @@
+{
+  "version": "v2",
+  "intents": {
+    "agreement#pos": {
+      "includes": [
+        "yes",
+        "yeah",
+        "yes I confirm",
+        "confirm",
+        "correct",
+        "yes thats correct",
+        "thats correct"
+      ]
+    },
+    "agreement#neg": {
+      "includes": ["no", "nope", "there is mistake", "thats wrong"]
+    },
+    "diff_address": {
+      "includes": [
+        "no, the address is different",
+        "different address"
+      ],
+      "excludes": [
+        "zip", "city", "state"
+      ]
+    },
+    "diff_city": {
+      "includes": [
+        "no, the city is different",
+        "different city",
+        "change city",
+        "i want to change city",
+        "change city from [city] to [city]"
+      ],
+      "excludes": [
+        "address", "zip", "state"
+      ]
+    },
+    "diff_state": {
+      "includes": [
+        "no, the state is different",
+        "different state",
+        "change state",
+        "i want to change state",
+        "change state from [state] to [state]"
+      ],
+      "excludes": [
+        "address", "city", "zip"
+      ]
+    },
+    "diff_zip": {
+      "includes": [
+        "no, the zip is different",
+        "different zip"
+      ],
+      "excludes": [
+        "address", "city", "state"
+      ]
+    }
+  },
+  "entities": {
+    "address": {
+      "open_set": true,
+      "values": [
+        { "value": "13 Langley Rd" },
+        { "value": "937 Inwood Pl" }
+      ],
+      "includes": [
+        "my address is (13 Langley Rd)[address]",
+        "my full address is (13 Langley Rd)[address], (Kendall Park)[city], (New Jersey)[state], (88 24)[zip]",
+        "address (13 Langley Rd)[address]"
+      ]
+    },
+    "city": {
+      "open_set": false,
+      "values": [
+        { "value": "Kendall Park" },
+        { "value": "Rahway" },
+        { "value": "Moscow" }
+      ],
+      "includes": [
+        "city is (Rahway)[city]",
+        "city (Rahway)[city]",
+        "(Rahway)[city]",
+        "(Florida)[state] (Rahway)[city]"
+      ]
+    },
+    "state": {
+      "open_set": false,
+      "values": [
+        { "value": "Florida" },
+        { "value": "Alabama" },
+        { "value": "New Jersey" }
+      ],
+      "includes": [
+        "state is (Florida)[state]",
+        "state (Florida)[state]",
+        "(Florida)[state]"
+      ]
+    },
+    "zip": {
+      "open_set": true,
+      "values": [
+        { "value": "1234", "synonyms": ["1 2 3 4", "12 34"] }
+      ],
+      "includes": [
+        "my zip is (1234)[zip]",
+        "my zip code is (1234)[zip]",
+        "postal code is (1234)[zip]",
+        "(1234)[zip]"
+      ]
+    }
+  }
+}

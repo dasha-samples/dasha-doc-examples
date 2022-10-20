@@ -1,0 +1,67 @@
+{
+  "default": {
+    "voiceInfo": {
+      "lang": "en-US",
+      "speaker": "Kate",
+      "speed": 0.8,
+      "variation": 50
+    },
+    "phrases": {
+      "we_have_your_address": [
+        { "text": "We have your property address on file." }
+      ],
+      "verify_address": {
+        "first": {
+          "random": [
+            [
+              { "id": "address", "type": "dynamic" },
+              { "text": ", " },
+              { "id": "city", "type": "dynamic" },
+              {
+                "text": ". Is that the property we are going to talk about today?"
+              }
+            ],
+            [
+              { "text": "So, your property address is " },
+              { "id": "address", "type": "dynamic" },
+              { "text": ", " },
+              { "id": "city", "type": "dynamic" },
+              { "text": ", " },
+              { "id": "state", "type": "dynamic" },
+              { "text": ", " },
+              { "id": "zip", "type": "dynamic" },
+              {
+                "text": ". Is that the correct property address?"
+              }
+            ]
+          ]
+        },
+        "repeat": [
+          { "text": "Please, verify the current address. " },
+          { "id": "address", "type": "dynamic" },
+          { "text": ", " },
+          { "id": "city", "type": "dynamic" },
+          { "text": ", " },
+          { "id": "state", "type": "dynamic" },
+          { "text": ", " },
+          { "id": "zip", "type": "dynamic" },
+          {
+            "text": ". Is that the correct property address?"
+          }
+        ]
+      },
+      "ask_for_state": [{ "text": "What state do you live in?" }],
+      "ask_for_city": [{ "text": "What city do you live in?" }],
+      "ask_for_address": {
+        "first": [{ "text": "Ok, what is the property Address were working?" }]
+      },
+      "ask_for_zip": [{ "text": "Please, tell me your zip code?" }]
+    },
+    "types": {},
+    "macros": {
+      "slotfilling_confirmation_phrase": {},
+      "ask_amount": {},
+      "ask_target_account": {}
+    }
+  }
+}
