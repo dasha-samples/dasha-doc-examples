@@ -18,14 +18,12 @@ class AudioProvider {
 
   /**
    * Create instance of AudioProvider
-   * @param {undefined|string[]|object[]} audioConfigsOrPaths audio resource configs or paths to files with configs
+   * @param {string[]|object[]} audioConfigsOrPaths audio resource configs or paths to files with configs
    * @returns instance of AudioProvider
    */
   static create(audioConfigsOrPaths){
     const audioProvider = new AudioProvider();
-    if (audioConfigsOrPaths !== undefined) {
-      audioProvider.loadConfigs(audioConfigsOrPaths);
-    }
+    audioProvider.loadConfigs(audioConfigsOrPaths);
     return audioProvider;
   }
 
