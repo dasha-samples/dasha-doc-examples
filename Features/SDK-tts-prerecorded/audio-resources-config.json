@@ -1,0 +1,31 @@
+{
+  "resource_path": "./audio",
+  "voice": {
+      "emotion": "Neutral",
+      "lang": "en-US",
+      "speaker": "Kate",
+      "speed": 0.9
+  },
+  "phrases": [
+    {
+      "audio": "audio/1.mp3",
+      "phrase": "Hello, can you hear me?"
+    },
+    {
+      "audio": "audio/2.mp3",
+      "phrase": "And I can hear you too. Goodbye."
+    },
+    {
+      "audio": "audio/3.mp3",
+      "phrase": "Can you hear me? I can hear you."
+    },
+    {
+      "audio": "audio/4.mp3",
+      "phrase": "You can't hear me. So sorry and goodbye."
+    },
+    {
+      "audio": "audio/5.mp3",
+      "phrase": "I can't hear your. Goodbye."
+    }
+  ]
+}
