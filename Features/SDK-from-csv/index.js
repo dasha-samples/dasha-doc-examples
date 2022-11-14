@@ -1,20 +1,19 @@
-// const dasha = require("@dasha.ai/sdk");
-// const CsvRunner = require("./CsvRunner")
 import dasha from "@dasha.ai/sdk"
 import CsvRunner from "./CsvRunner.js"
 import inputSchema from "./inputSchema.js"
+import outputSchema from "./outputSchema.js"
 
 
 async function main() {  
-  const csvAdapter = CsvRunner.create("./test-input.csv", "output.csv", inputSchema);
+  const csvAdapter = CsvRunner.create("./test-input.csv", "test-output.csv");
   const app = await dasha.deploy("./app");
+  app.queue.push()
 
-  csvAdapter.applyToApp(app);
+  await csvAdapter.applyToApp(app, inputSchema, outputSchema);
   await app.start({ concurrency: 1 });
 
-  const r = await csvAdapter.executeAllConversations()
-  console.log(r)
-  
+  const r = await csvAdapter.executeAllConversations();
+  console.log(r);
 
   await app.stop();
   app.dispose();

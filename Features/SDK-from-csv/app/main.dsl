@@ -2,13 +2,13 @@ context {
     // input parameters (provided outside)
     // phone to call
     input endpoint: string;
-    // input name: {name: string;};
+    // // input name: {name: string;};
     input coins: number[];
 
     some: string?;
-
-    output status: string?;
-    output anotherStatus: string = "None";
+    output answer: number = 42;
+    // output status: string?;
+    // output anotherStatus: string = "None";
     // output parameters (will be set during the dialogue)
 }
 

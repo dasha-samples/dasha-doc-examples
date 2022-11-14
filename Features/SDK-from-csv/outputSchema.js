@@ -1,3 +1,3 @@
-module.exports = {
+export default {
     answer: (answerNumber) => String(answerNumber)
 }
