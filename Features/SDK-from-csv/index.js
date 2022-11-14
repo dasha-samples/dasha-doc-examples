@@ -1,23 +1,24 @@
-import dasha from "@dasha.ai/sdk"
-import CsvRunner from "./CsvRunner.js"
-import inputSchema from "./inputSchema.js"
-import outputSchema from "./outputSchema.js"
+import dasha from "@dasha.ai/sdk";
+import CsvRunner from "./CsvRunner.js";
+import inputSchema from "./inputSchema.js";
+import outputSchema from "./outputSchema.js";
 
-
-async function main() {  
+async function main() {
   const app = await dasha.deploy("./app");
-  
-  const csvAdapter = CsvRunner.create();
-  await csvAdapter.applyToApp(app, inputSchema, outputSchema);
+
+  const csvRunner = new CsvRunner(app, inputSchema, outputSchema);
   await app.start({ concurrency: 1 });
 
-  await csvAdapter.runCsv("./test-input.csv", "test-output.csv");
-  console.log("finished csv");
+  const promises = [
+    csvRunner.runCsv("./test-input.csv", "test-output.csv"),
+    csvRunner.runCsv("./test-input2.csv", "test-output2.csv"),
+  ];
+  await Promise.all(promises);
 
   await app.stop();
   app.dispose();
 }
 
 main().catch((e) => {
-  throw e
+  throw e;
 });
