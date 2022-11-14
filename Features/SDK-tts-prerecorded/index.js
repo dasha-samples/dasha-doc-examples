@@ -1,5 +1,5 @@
 const dasha = require("@dasha.ai/sdk");
-const AudioProvider = require("./audio-provider");
+const AudioProvider = require("./AudioProvider");
 
 async function main() {
   if (process.argv[2] === undefined)

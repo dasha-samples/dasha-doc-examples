@@ -55,6 +55,14 @@ class AudioProvider {
    */
   getResourceKey(text, voiceInfo) {
     voiceInfo = { ...defaultVoiceInfo, ...voiceInfo };
+    for (const prop of Object.keys(defaultVoiceInfo)) {
+      if (voiceInfo[prop] === undefined) {
+        throw new Error(
+          `Could not create resource key for ${JSON.stringify({text, voiceInfo})}: ` + 
+          `provided oice info does not have property '${prop}'`
+        )
+      }
+    }
     return [
       voiceInfo.lang,
       voiceInfo.speaker,
