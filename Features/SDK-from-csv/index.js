@@ -5,15 +5,14 @@ import outputSchema from "./outputSchema.js"
 
 
 async function main() {  
-  const csvAdapter = CsvRunner.create("./test-input.csv", "test-output.csv");
   const app = await dasha.deploy("./app");
-  app.queue.push()
-
+  
+  const csvAdapter = CsvRunner.create();
   await csvAdapter.applyToApp(app, inputSchema, outputSchema);
   await app.start({ concurrency: 1 });
 
-  const r = await csvAdapter.executeAllConversations();
-  console.log(r);
+  await csvAdapter.runCsv("./test-input.csv", "test-output.csv");
+  console.log("finished csv");
 
   await app.stop();
   app.dispose();

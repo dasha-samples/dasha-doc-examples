@@ -4,6 +4,7 @@ context {
     input endpoint: string;
     // // input name: {name: string;};
     input coins: number[];
+    input numOperations: number;
 
     some: string?;
     output answer: number = 42;

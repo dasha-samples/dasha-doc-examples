@@ -5,6 +5,8 @@ import csvParser from "csv-parser";
 import nextChunk from "next-chunk";
 import Ajv from "ajv";
 import moment from "moment";
+import EventEmitter from "eventemitter3";
+import path from "path";
 
 class BadInputError extends Error {
   constructor(message) {
@@ -52,24 +54,41 @@ class AsyncTask {
   }
 }
 
+class RawInputStorage extends EventEmitter {
+  constructor() {
+    super();
+    this.storage = new Map();
+  }
+  save(convId, rawConvInput) {
+    this.storage.set(convId, rawConvInput);
+  }
+  get(convId) {
+    return this.storage.get(convId);
+  }
+  delete(convId) {
+    this.storage.delete(convId);
+    if (this.storage.size === 0) {
+      this.emit("empty");
+    }
+  }
+}
+
 export default class CsvRunner {
-  constructor(pathToInputCsv, pathToOutputCsv) {
+  constructor() {
     /** @TODO check all params to be prvided */
-    this.pathToInputCsv = pathToInputCsv;
-    this.pathToOutputCsv = pathToOutputCsv;
-    /** _lastInputIdx is set in exe */
-    this._lastInputIdx = null;
+    this.pathToInputCsv = null;
+    this.pathToOutputCsv = null;
     /** params below are set in applyToApp */
     this._app = null;
     this._inputValidateFunction = null;
     this.inputTransformSchema = null;
     this.outputTransformSchema = null;
+    this.task = null;
 
-    this.convIdToRawInput = {};
-    this.convIdToOutput = {};
+    this.convIdToRawInput = new RawInputStorage();
   }
-  static create(pathToInputCsv, pathToOutputCsv) {
-    return new CsvRunner(pathToInputCsv, pathToOutputCsv);
+  static create() {
+    return new CsvRunner();
   }
   async applyToApp(app, inputSchema, outputSchema) {
     this._app = app;
@@ -99,26 +118,26 @@ export default class CsvRunner {
       }
     }
     app.queue.on("rejected", (convId, error) => {
-      const rawConvInput = this.convIdToRawInput[convId];
+      const rawConvInput = this.convIdToRawInput.get(convId);
       this._writeOutput(convId, ExecutionStatus.rejected, {
         ...rawConvInput,
         _failReason: error.message,
       });
-      delete this.convIdToRawInput[convId];
+      this.convIdToRawInput.delete(convId);
     });
     app.queue.on("timeout", (convId) => {
-      const rawConvInput = this.convIdToRawInput[convId];
+      const rawConvInput = this.convIdToRawInput.get(convId);
       this._writeOutput(convId, ExecutionStatus.timeout, {
         ...rawConvInput,
         _failReason: "Conversation timed out",
       });
-      delete this.convIdToRawInput[convId];
+      this.convIdToRawInput.delete(convId);
     });
     app.queue.on("ready", async (convId, conv, info) => {
-      const rawConvInput = this.convIdToRawInput[convId];
+      const rawConvInput = this.convIdToRawInput.get(convId);
       conv.input = this._transformData(rawConvInput, this.inputTransformSchema);
       try {
-        await conv.execute();
+        const convResult = await conv.execute();
         this._writeOutput(convId, ExecutionStatus.completed, {
           ...rawConvInput,
           _startTime: convResult.startTime,
@@ -126,79 +145,62 @@ export default class CsvRunner {
           _recordingUrl: convResult.recordingUrl,
           ...convResult.output,
         });
-      } catch (e) {
+      } catch (error) {
         this._writeOutput(convId, ExecutionStatus.failed, {
           ...rawConvInput,
           _failReason: error.message,
         });
       } finally {
-        delete this.convIdToRawInput[convId];
+        this.convIdToRawInput.delete(convId);
       }
     });
   }
-
   async runCsv(pathToInputCsv, pathToOutputCsv) {
+    const task = new AsyncTask();
+    this.convIdToRawInput.on("empty", task.resolve);
     try {
-      this._validateFileExists(pathToInputCsv);
+      this._csvWriter = this._createCsvWriter(pathToOutputCsv);
+      const numConversations = await this.validateAndEnqueueCsv(pathToInputCsv);
+      console.log("numConvs", numConversations);
+      if (numConversations === 0) {
+        task.resolve();
+      }
     } catch (e) {
-      throw new Error(
-        `Could not create input stream from '${pathToInputCsv}': ${e.message}`
-      );
+      task.reject(e);
     }
-    await this.validateAndEnqueueCsv(pathToInputCsv);
-    this._csvWriter = this._createCsvWriter(pathToOutputCsv);
+    await task.promise;
+    this.convIdToRawInput.off("empty", task.resolve);
   }
   async validateAndEnqueueCsv(pathToInputCsv) {
     const inputCsvStream = this._createCsvStream(pathToInputCsv);
+    let inputIdx = 0;
     while (true) {
       const nextData = await this._readNextCsvData(inputCsvStream);
       if (nextData === null) break;
+      const convId = `${pathToInputCsv}#${inputIdx++}`;
 
-      let { convId, rawConvInput, queuePushOptions } = nextData;
+      let { rawConvInput, queuePushOptions } = nextData;
       try {
         /** throws BadInputError */
         this._validateInput(
           this._transformData(rawConvInput, this.inputTransformSchema)
         );
         /** save input to storage */
-        this.convIdToRawInput[convId] = rawConvInput;
-        queuePushOptions = this._transformCsvInput(queuePushOptions);
+        this.convIdToRawInput.save(convId, rawConvInput);
+        queuePushOptions = this._transformData(
+          queuePushOptions,
+          this.inputTransformSchema
+        );
         await this._enqueueConv(convId, queuePushOptions);
       } catch (e) {
         throw new Error(
-          `Could not read ${this._lastInputIdx}-th input ${JSON.stringify(
+          `Could not read ${inputIdx}-th input ${JSON.stringify(
             rawConvInput
           )} of csv '${pathToInputCsv}': ${e.message}`
         );
       }
     }
-  }
-
-  async executeAllConversations() {
-    const jobs = [];
-    while (true) {
-      const nextData = await this._readNextCsvData();
-      try {
-        if (nextData === null) break;
-        const { convId, convInput, rawConvInput, queuePushOptions } =
-          this._transformCsvData(nextData); // throws BadInputError
-
-        const job = this._subscribeToConv(convId, convInput, rawConvInput);
-        await this._enqueueConv(convId, queuePushOptions);
-        jobs.push(job);
-      } catch (e) {
-        if (e instanceof BadInputError) {
-          const convId = this._createPublicConvId(this._lastInputIdx);
-          this._writeOutput(convId, ExecutionStatus.skipped, {
-            ...nextData.rawConvInput,
-            _failReason: e.message,
-          });
-        } else {
-          throw e;
-        }
-      }
-    }
-    return await Promise.all(jobs);
+    return inputIdx;
   }
   _createCsvStream(pathToInputCsv) {
     try {
@@ -210,8 +212,9 @@ export default class CsvRunner {
     }
     return fs.createReadStream(pathToInputCsv).pipe(csvParser());
   }
-
   _createCsvWriter(filePath) {
+    const dirPath = path.dirname(path.resolve(filePath));
+    this._validateDirExists(dirPath);
     let header = Object.keys(this.outputTransformSchema).map((prop) => {
       return { id: prop, title: prop };
     });
@@ -232,7 +235,7 @@ export default class CsvRunner {
       _timestamp,
       ...params,
     };
-    csvOutput = this._transformToCsvOutput(csvOutput);
+    csvOutput = this._transformData(csvOutput, this.outputTransformSchema);
     this._csvWriter.writeRecords([csvOutput]);
   }
   async _enqueueConv(convId, options) {
@@ -242,34 +245,6 @@ export default class CsvRunner {
       priority: options._priority,
     };
     return await this._app.queue.push(convId, options);
-  }
-  async _subscribeToConv(convId, input, rawInput) {
-    const task = new AsyncTask();
-    let convResult = undefined;
-    const onReady = async (_convId, _conv, _info) => {
-      if (_convId != convId) return;
-      _conv.input = input;
-      try {
-        convResult = await _conv.execute();
-        this._writeOutput(convId, ExecutionStatus.completed, {
-          ...rawInput,
-          _startTime: convResult.startTime,
-          _endTime: convResult.endTime,
-          _recordingUrl: convResult.recordingUrl,
-          ...convResult.output,
-        });
-        task.resolve();
-      } catch (error) {
-        this._writeOutput(convId, ExecutionStatus.failed, {
-          ...rawInput,
-          _failReason: error.message,
-        });
-      }
-    };
-    this._app.queue.on("ready", onReady);
-    await task.promise;
-    this._app.queue.off("ready", onReady);
-    return convResult;
   }
   async _readNextCsvData(inputCsvStream) {
     /** read data from csv */
@@ -288,39 +263,19 @@ export default class CsvRunner {
       _after,
       _priority,
     };
-    /** prepare public conversation key */
-    const convId = this._createPublicConvId(this._lastInputIdx++);
-    return { convId, rawConvInput, queuePushOptions };
+    return { rawConvInput, queuePushOptions };
   }
-  _transformCsvData(data) {
-    let { convId, rawConvInput, queuePushOptions } = data;
-    /** prepare and validate input */
-    const convInput = this._transformCsvInput(rawConvInput); // throws BadInputError
-    this._validateInput(convInput); // BadInputError
-    /** prepare queue push options */
-    queuePushOptions = this._transformCsvInput(queuePushOptions);
-    return { convId, convInput, rawConvInput, queuePushOptions };
-  }
-
-  //   /**
-  //    * Transform each param using corresponding transformer defined in input transform schema
-  //    * @param {*} rawInputParams raw input parameters read from file
-  //    * @returns transformed params
-  //    */
-  //   _transformCsvInput(rawInputParams) {
-  //     try {
-  //       return this._transformData(rawInputParams, this.inputTransformSchema);
-  //     } catch (e) {
-  //       throw new BadInputError(`Could not transform input: ${e.message}`);
-  //     }
-  //   }
   _validateInput(inputParams) {
     if (!this._inputValidateFunction(inputParams)) {
-      throw new BadInputError(_appInputSchemaValidator.errors?.join("\n"));
+      // console.log(this._inputValidateFunction.errors.)
+      throw new BadInputError(
+        JSON.stringify(
+          this._inputValidateFunction.errors
+            ?.map(({ message }) => message)
+            .join(",")
+        )
+      );
     }
-  }
-  _transformToCsvOutput(outputParams) {
-    return this._transformData(outputParams, this.outputTransformSchema);
   }
   _transformData(data, schema) {
     const transformedData = {};
@@ -347,7 +302,12 @@ export default class CsvRunner {
       throw new Error(`'${path}' is not a file`);
     }
   }
-  _createPublicConvId(idx) {
-    return `${this.pathToInputCsv}#${idx}`;
+  _validateDirExists(path) {
+    if (!fs.existsSync(path)) {
+      throw new Error(`Path '${path}' does not exist.`);
+    }
+    if (!fs.statSync(path).isDirectory()) {
+      throw new Error(`'${path}' is not a directory`);
+    }
   }
 }
