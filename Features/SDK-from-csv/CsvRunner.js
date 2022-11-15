@@ -2,6 +2,8 @@ import CsvWriter from "./CsvWriter.js";
 import CsvReader from "./CsvReader.js";
 import ConversationStorage from "./ConversationStorage.js";
 import Ajv from "ajv";
+import fs from "fs";
+import path from "path";
 
 class BadInputError extends Error {
   constructor(message) {
@@ -80,9 +82,12 @@ export default class CsvRunner {
       }
     }
   }
-  async runCsv(pathToInputCsv, pathToOutputCsv, options) {
+  async runCsv(pathToInputCsv, pathToOutputCsv, options = {}) {
     /** @TODO */
-    // const { convConfigurer, convLogDir } = options;
+    // const { configureConv, logDirectory } = options;
+    if (options.logDirectory) {
+      this._validateDirExists(options.logDirectory);
+    }
 
     const conversationStorage = await this.readValidateCsv(pathToInputCsv);
     if (conversationStorage.rawInputs.size === 0) return;
@@ -90,7 +95,8 @@ export default class CsvRunner {
     conversationStorage.on("empty", task.resolve);
     await this._subscribeConversationsToApp(
       conversationStorage,
-      pathToOutputCsv
+      pathToOutputCsv,
+      options
     );
     await this._enqueueConversations(conversationStorage);
     await task.promise;
@@ -127,14 +133,17 @@ export default class CsvRunner {
     }
     return conversationStorage;
   }
-  async _subscribeConversationsToApp(conversationStorage, pathToOutputCsv) {
+  async _subscribeConversationsToApp(
+    conversationStorage,
+    pathToOutputCsv,
+    options
+  ) {
     const transformData = (data) =>
       this._transformData(data, this.outputTransformSchema);
-    const csvWriter = new CsvWriter(
-      pathToOutputCsv,
-      transformData,
-      this.outputTransformSchema
-    );
+    const csvHeaders = Object.keys(this.outputTransformSchema).map((prop) => {
+      return { id: prop, title: prop };
+    });
+    const csvWriter = new CsvWriter(pathToOutputCsv, transformData, csvHeaders);
     const onRejected = (convId, error) => {
       if (!conversationStorage.has(convId)) return;
       const rawConvInput = conversationStorage.getRawInput(convId);
@@ -157,6 +166,31 @@ export default class CsvRunner {
     };
     const onReady = async (convId, conv, info) => {
       if (!conversationStorage.has(convId)) return;
+
+      if (options.configureConv) {
+        options.configureConv(conv);
+      }
+      let logFile;
+      if (options.logDirectory) {
+        const logDirectory = options.logDirectory;
+        logFile = await fs.promises.open(
+          path.join(logDirectory, `${convId}.txt`),
+          "w"
+        );
+        await logFile.appendFile("#".repeat(100) + "\n");
+        conv.on("transcription", async (entry) => {
+          await logFile.appendFile(`${entry.speaker}: ${entry.text}\n`);
+        });
+        conv.on("debugLog", async (event) => {
+          if (event?.msg?.msgId === "RecognizedSpeechMessage") {
+            const logEntry = event?.msg?.results[0]?.facts;
+            await logFile.appendFile(
+              JSON.stringify(logEntry, undefined, 2) + "\n"
+            );
+          }
+        });
+      }
+
       const rawConvInput = conversationStorage.getRawInput(convId);
       conv.input = this._transformData(rawConvInput, this.inputTransformSchema);
       try {
@@ -177,6 +211,7 @@ export default class CsvRunner {
         });
       } finally {
         conversationStorage.delete(convId);
+        await logFile?.close();
       }
     };
     this._app.queue.on("rejected", onRejected);
@@ -232,5 +267,14 @@ export default class CsvRunner {
       }
     }
     return transformedData;
+  }
+
+  _validateDirExists(path) {
+    if (!fs.existsSync(path)) {
+      throw new Error(`Path '${path}' does not exist.`);
+    }
+    if (!fs.statSync(path).isDirectory()) {
+      throw new Error(`'${path}' is not a directory`);
+    }
   }
 }

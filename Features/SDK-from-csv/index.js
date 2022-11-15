@@ -9,9 +9,19 @@ async function main() {
   const csvRunner = new CsvRunner(app, inputSchema, outputSchema);
   await app.start({ concurrency: 1 });
 
+  const configureConv = (conv) => {
+    conv.sip.config = "default";
+    conv.audio.tts = "default";
+  };
   const promises = [
-    csvRunner.runCsv("./test-input.csv", "test-output.csv"),
-    csvRunner.runCsv("./test-input2.csv", "test-output2.csv"),
+    csvRunner.runCsv("./test-input.csv", "test-output.csv", {
+      configureConv: (conv) => {
+        conv.sip.config = "default";
+        conv.audio.tts = "default";
+      },
+      logDirectory: "logs",
+    }),
+    csvRunner.runCsv("./test-input2.csv", "test-output.csv"),
   ];
   await Promise.all(promises);
 

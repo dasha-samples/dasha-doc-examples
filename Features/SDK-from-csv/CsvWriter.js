@@ -4,18 +4,14 @@ import moment from "moment";
 import path from "path";
 
 export default class CsvWriter {
-  constructor(outputFilePath, dataTransformer, outputTransformSchema) {
-    this.outputTransformSchema = outputTransformSchema
+  constructor(outputFilePath, dataTransformer, headers) {
     this.dataTransformer = dataTransformer;
     const dirPath = path.dirname(path.resolve(outputFilePath));
     this._validateDirExists(dirPath);
-    let header = Object.keys(this.outputTransformSchema).map((prop) => {
-      return { id: prop, title: prop };
-    });
     this.csvWriter = csvWriter.createObjectCsvWriter({
       alwaysQuote: true,
       path: outputFilePath,
-      header,
+      header: headers,
     });
   }
   writeOutput(_conversationId, _executionStatus, params) {
