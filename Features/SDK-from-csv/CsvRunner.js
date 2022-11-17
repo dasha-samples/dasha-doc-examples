@@ -1,4 +1,4 @@
-import EventEmitter from "eventemitter3";
+import dasha from "@dasha.ai/sdk";
 import Ajv from "ajv";
 import fs from "fs";
 import path from "path";
@@ -6,6 +6,54 @@ import csvParser from "csv-parser";
 import nextChunk from "next-chunk";
 import csvWriter from "csv-writer";
 import queue from "queue";
+import { EventEmitter } from "events";
+
+
+const systemInputParamsSchema = {
+  _before: (strValue) => {
+    if (strValue === "") strValue = undefined;
+    if (strValue === undefined) return undefined;
+    return new Date(strValue);
+  },
+  _after: (strValue) => {
+    if (strValue === "") strValue = undefined;
+    if (strValue === undefined) return undefined;
+    return new Date(strValue);
+  },
+  _priority: (strValue) => {
+    if (strValue === "") strValue = undefined;
+    if (strValue === undefined) return undefined;
+    return Number(strValue);
+  },
+  _channel: (strValue) => {
+    if (strValue === "") strValue = undefined;
+    if (strValue === undefined | strValue === "text" | strValue === "audio") return strValue;
+    throw new Error(`Could not transform value of property '_channel'. Expected values: undefined, "text" or "audio", actual: ${strValue}`);
+  }
+};
+const systemOutputParamsSchema = {
+  _conversationId: (value) => String(value),
+  _jobId: (value) => value,
+  _timestamp: (strValue) => String(strValue),
+  _executionStatus: (strValue) => strValue,
+  _failReason: (strValue) => strValue,
+  _recordingUrl: (strValue) => strValue,
+  _startTime: (dateValue) => {
+    if (dateValue === undefined) return undefined;
+    return dateValue.toISOString()
+  },
+  _endTime: (dateValue) => {
+    if (dateValue === undefined) return undefined;
+    return dateValue.toISOString();
+  },
+};
+const ExecutionStatus = {
+  completed: "completed",
+  failed: "failed",
+  skipped: "skipped",
+  rejected: "rejected",
+  timeout: "timeout",
+};
 
 class BadInputError extends Error {
   constructor(message) {
@@ -52,10 +100,12 @@ class ConversationStorage extends EventEmitter {
     this.rawInputs = new Map();
     this.queueOptions = new Map();
     this.jobIds = new Map();
+    this.convOptions = new Map();
   }
-  save(convId, rawConvInput, queueOptions) {
+  save(convId, rawConvInput, queueOptions, convOptions) {
     this.rawInputs.set(convId, rawConvInput);
     this.queueOptions.set(convId, queueOptions);
+    this.convOptions.set(convId, convOptions);
   }
   saveJobId(convId, jobId) {
     this.jobIds.set(convId, jobId);
@@ -69,13 +119,20 @@ class ConversationStorage extends EventEmitter {
   getQueueOptions(convId) {
     return this.queueOptions.get(convId);
   }
+  getConvOptions(convId) {
+    return this.convOptions.get(convId);
+  }
   getJobId(convId) {
     return this.jobIds.get(convId);
+  }
+  getSize(){
+    return this.rawInputs.size;
   }
   delete(convId) {
     this.rawInputs.delete(convId);
     this.queueOptions.delete(convId);
     this.jobIds.delete(convId);
+    this.convOptions.delete(convId);
     if (this.rawInputs.size === 0) {
       this.emit("empty");
     }
@@ -103,6 +160,7 @@ class CsvReader {
     delete rawConvInput._before;
     delete rawConvInput._after;
     delete rawConvInput._priority;
+    delete rawConvInput._channel;
     /** prepare queue push options */
     const { _before, _after, _priority } = data;
     const queuePushOptions = {
@@ -110,7 +168,9 @@ class CsvReader {
       _after,
       _priority,
     };
-    return { rawConvInput, queuePushOptions };
+    const { _channel } = data;
+    const convOptions = { _channel };
+    return { rawConvInput, queuePushOptions, convOptions };
   }
 }
 
@@ -179,46 +239,6 @@ class CsvWriter {
   }
 }
 
-const systemInputParamsSchema = {
-  _before: (strValue) => {
-    if (strValue === undefined) return undefined;
-    return new Date(strValue);
-  },
-  _after: (strValue) => {
-    if (strValue === undefined) return undefined;
-    return new Date(strValue);
-  },
-  _priority: (strValue) => {
-    if (strValue === undefined) return undefined;
-    return Number(strValue);
-  },
-};
-const systemOutputParamsSchema = {
-  _conversationId: (value) => String(value),
-  _jobId: (value) => value,
-  _timestamp: (strValue) => String(strValue),
-  _executionStatus: (strValue) => strValue,
-  _failReason: (strValue) => strValue,
-  _recordingUrl: (strValue) => {
-    if (strValue === undefined) return undefined;
-    return strValue;
-  },
-  _startTime: (dateValue) => {
-    if (dateValue === undefined) return undefined;
-    return dateValue.toISOString()
-  },
-  _endTime: (dateValue) => {
-    if (dateValue === undefined) return undefined;
-    return dateValue.toISOString();
-  },
-};
-const ExecutionStatus = {
-  completed: "completed",
-  failed: "failed",
-  skipped: "skipped",
-  rejected: "rejected",
-  timeout: "timeout",
-};
 
 
 export default class CsvRunner {
@@ -275,6 +295,7 @@ export default class CsvRunner {
     await this._subscribeConversationsToApp(
       conversationStorage,
       pathToOutputCsv,
+      // task,
       options
     );
     await this._enqueueConversations(conversationStorage);
@@ -290,7 +311,7 @@ export default class CsvRunner {
       const nextData = await csvReader.readNextCsvData();
       if (nextData === null) break;
 
-      let { rawConvInput, queuePushOptions } = nextData;
+      let { rawConvInput, queuePushOptions, convOptions } = nextData;
       try {
         /** throws BadInputError */
         this._validateInput(
@@ -300,8 +321,9 @@ export default class CsvRunner {
           queuePushOptions,
           this.csvInputTransformSchema
         );
+        convOptions = this._transformData(convOptions, this.csvInputTransformSchema);
         /** save input to storage */
-        conversationStorage.save(convId, rawConvInput, queuePushOptions);
+        conversationStorage.save(convId, rawConvInput, queuePushOptions, convOptions);
       } catch (e) {
         throw new Error(
           `Could not read ${inputIdx}-th input ${JSON.stringify(
@@ -315,29 +337,40 @@ export default class CsvRunner {
   async _subscribeConversationsToApp(
     conversationStorage,
     pathToOutputCsv,
+    // task,
     options
   ) {
     const writeOutput = this.csvWriter.getWriter(pathToOutputCsv);
 
     const onRejected = (convId, error) => {
       if (!conversationStorage.has(convId)) return;
-      const rawConvInput = conversationStorage.getRawInput(convId);
       writeOutput(convId, ExecutionStatus.rejected, {
         _jobId: conversationStorage.getJobId(convId),
-        ...rawConvInput,
+        ...conversationStorage.getRawInput(convId),
+        ...conversationStorage.getQueueOptions(convId),
+        ...conversationStorage.getConvOptions(convId),
         _failReason: error.message,
       });
       conversationStorage.delete(convId);
+      // if (conversationStorage.getSize() === 0) {
+      //   task.resolve();
+      //   unsubscribe();
+      // }
     };
     const onTimeout = (convId) => {
       if (!conversationStorage.has(convId)) return;
-      const rawConvInput = conversationStorage.getRawInput(convId);
       writeOutput(convId, ExecutionStatus.timeout, {
         _jobId: conversationStorage.getJobId(convId),
-        ...rawConvInput,
+        ...conversationStorage.getRawInput(convId),
+        ...conversationStorage.getQueueOptions(convId),
+        ...conversationStorage.getConvOptions(convId),
         _failReason: "Conversation timed out",
       });
       conversationStorage.delete(convId);
+      // if (conversationStorage.getSize() === 0) {
+      //   task.resolve();
+      //   unsubscribe();
+      // }
     };
     const onReady = async (convId, conv, info) => {
       if (!conversationStorage.has(convId)) return;
@@ -364,16 +397,20 @@ export default class CsvRunner {
         });
       }
 
+      const convOptions = conversationStorage.getConvOptions(convId);
+      if (convOptions._channel === "text") await dasha.chat.createConsoleChat(conv);
       const rawConvInput = conversationStorage.getRawInput(convId);
       conv.input = this._transformData(
         rawConvInput,
         this.csvInputTransformSchema
       );
       try {
-        const convResult = await conv.execute();
+        const convResult = await conv.execute({channel: convOptions._channel});
         writeOutput(convId, ExecutionStatus.completed, {
           _jobId: conversationStorage.getJobId(convId),
           ...rawConvInput,
+          ...conversationStorage.getQueueOptions(convId),
+          ...conversationStorage.getConvOptions(convId),
           _startTime: convResult.startTime,
           _endTime: convResult.endTime,
           _recordingUrl: convResult.recordingUrl,
@@ -386,22 +423,29 @@ export default class CsvRunner {
         writeOutput(convId, ExecutionStatus.failed, {
           _jobId: conversationStorage.getJobId(convId),
           ...rawConvInput,
+          ...conversationStorage.getQueueOptions(convId),
+          ...conversationStorage.getConvOptions(convId),
           _failReason: error.message,
         });
       } finally {
         conversationStorage.delete(convId);
         await logFile?.close();
+        // if (conversationStorage.getSize() === 0) {
+        //   task.resolve();
+        //   unsubscribe();
+        // }
       }
+    };
+    const unsubscribe = () => {
+      this._app.queue.off("rejected", onRejected);
+      this._app.queue.off("timeout", onTimeout);
+      this._app.queue.off("ready", onReady);
     };
 
     this._app.queue.on("rejected", onRejected);
     this._app.queue.on("timeout", onTimeout);
     this._app.queue.on("ready", onReady);
-    conversationStorage.on("empty", () => {
-      this._app.queue.off("rejected", onRejected);
-      this._app.queue.off("timeout", onTimeout);
-      this._app.queue.off("ready", onReady);
-    });
+    conversationStorage.on("empty", () => unsubscribe);
   }
 
   async _enqueueConversations(conversationStorage) {

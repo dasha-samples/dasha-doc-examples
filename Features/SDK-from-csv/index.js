@@ -18,7 +18,7 @@ async function main() {
       },
       logDirectory: "logs",
     }),
-    csvRunner.runCsv("./test-input2.csv", "test-output.csv"),
+    // csvRunner.runCsv("./test-input2.csv", "test-output.csv"),
   ];
   await Promise.all(promises);
 
