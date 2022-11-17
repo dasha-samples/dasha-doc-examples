@@ -1,13 +1,181 @@
-import CsvWriter, {CsvWriterError} from "./CsvWriter.js";
-import CsvReader from "./CsvReader.js";
-import ConversationStorage from "./ConversationStorage.js";
+import EventEmitter from "eventemitter3";
 import Ajv from "ajv";
 import fs from "fs";
 import path from "path";
+import csvParser from "csv-parser";
+import nextChunk from "next-chunk";
+import csvWriter from "csv-writer";
+import queue from "queue";
 
 class BadInputError extends Error {
   constructor(message) {
     super(message);
+  }
+}
+
+class CsvWriterError extends Error {
+  constructor(message) {
+    super(message);
+  }
+}
+
+class AsyncTask {
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+}
+
+function validateFileExists(path) {
+  if (!fs.existsSync(path)) {
+    throw new Error(`Path '${path}' does not exist.`);
+  }
+  if (!fs.statSync(path).isFile()) {
+    throw new Error(`'${path}' is not a file`);
+  }
+}
+
+function validateDirExists(path) {
+  if (!fs.existsSync(path)) {
+    throw new Error(`Path '${path}' does not exist.`);
+  }
+  if (!fs.statSync(path).isDirectory()) {
+    throw new Error(`'${path}' is not a directory`);
+  }
+}
+
+class ConversationStorage extends EventEmitter {
+  constructor() {
+    super();
+    this.rawInputs = new Map();
+    this.queueOptions = new Map();
+    this.jobIds = new Map();
+  }
+  save(convId, rawConvInput, queueOptions) {
+    this.rawInputs.set(convId, rawConvInput);
+    this.queueOptions.set(convId, queueOptions);
+  }
+  saveJobId(convId, jobId) {
+    this.jobIds.set(convId, jobId);
+  }
+  has(convId) {
+    return this.rawInputs.has(convId);
+  }
+  getRawInput(convId) {
+    return this.rawInputs.get(convId);
+  }
+  getQueueOptions(convId) {
+    return this.queueOptions.get(convId);
+  }
+  getJobId(convId) {
+    return this.jobIds.get(convId);
+  }
+  delete(convId) {
+    this.rawInputs.delete(convId);
+    this.queueOptions.delete(convId);
+    this.jobIds.delete(convId);
+    if (this.rawInputs.size === 0) {
+      this.emit("empty");
+    }
+  }
+}
+
+class CsvReader {
+  constructor(pathToInputCsv) {
+    try {
+      validateFileExists(pathToInputCsv);
+    } catch (e) {
+      throw new Error(
+        `Could not create input stream from '${pathToInputCsv}': ${e.message}`
+      );
+    }
+    this.inputCsvStream = fs.createReadStream(pathToInputCsv).pipe(csvParser());
+  }
+  async readNextCsvData() {
+    /** read data from csv */
+    const data = await nextChunk(this.inputCsvStream);
+    /** handle csv EOF */
+    if (data === null) return null;
+    /** prepare raw conversation params */
+    const rawConvInput = { ...data };
+    delete rawConvInput._before;
+    delete rawConvInput._after;
+    delete rawConvInput._priority;
+    /** prepare queue push options */
+    const { _before, _after, _priority } = data;
+    const queuePushOptions = {
+      _before,
+      _after,
+      _priority,
+    };
+    return { rawConvInput, queuePushOptions };
+  }
+}
+
+class CsvWriter {
+  constructor(dataTransformer, headers) {
+    this.dataTransformer = dataTransformer;
+    this.headers = headers;
+    this.writers = {};
+    this.taskQueue = queue({ autostart: true });
+  }
+  getWriter(outputFilePath) {
+    const isAlreadyRegistered = this.writers[outputFilePath] !== undefined;
+    if (!isAlreadyRegistered) {
+      this._registerWriterForPath(outputFilePath)
+    }
+    const writeOutput = (_conversationId, _executionStatus, params) => {
+      return this.writeOutputToFile(
+        outputFilePath,
+        _conversationId,
+        _executionStatus,
+        params
+      );
+    };
+    return writeOutput;
+  }
+  _registerWriterForPath(outputFilePath) {
+    const dirPath = path.dirname(path.resolve(outputFilePath));
+    validateDirExists(dirPath);
+    this._writeHeaders(outputFilePath, this.headers);
+
+    this.writers[outputFilePath] = csvWriter.createObjectCsvWriter({
+      alwaysQuote: true,
+      path: outputFilePath,
+      header: this.headers,
+      append: true,
+    });
+  }
+  writeOutputToFile(outputFilePath, _conversationId, _executionStatus, params) {
+    if (this.writers[outputFilePath] === undefined) {
+      throw new Error(`Unregistered path '${outputFilePath}'`);
+    }
+    const _timestamp = this._getTimestamp();
+    let csvOutput = {
+      _conversationId,
+      _executionStatus,
+      _timestamp,
+      ...params,
+    };
+    const task = this.writers[outputFilePath]
+      .writeRecords([this.dataTransformer(csvOutput)])
+      .catch((e) => {
+        throw new CsvWriterError(e.message);
+      });
+    this.taskQueue.push(function () {
+      return task;
+    });
+  }
+  _writeHeaders(outputFilePath, headers) {
+    fs.writeFileSync(
+      outputFilePath,
+      `${headers.map(({ title }) => title).join(",")}\n`
+    );
+  }
+  _getTimestamp() {
+    return new Date().toISOString()
   }
 }
 
@@ -52,14 +220,6 @@ const ExecutionStatus = {
   timeout: "timeout",
 };
 
-class AsyncTask {
-  constructor() {
-    this.promise = new Promise((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject = reject;
-    });
-  }
-}
 
 export default class CsvRunner {
   constructor(app, inputSchema, outputSchema) {
@@ -105,7 +265,7 @@ export default class CsvRunner {
   async runCsv(pathToInputCsv, pathToOutputCsv, options = {}) {
     options.configureConv = options.configureConv ?? ((conv) => {});
     if (options.logDirectory) {
-      this._validateDirExists(options.logDirectory);
+      validateDirExists(options.logDirectory);
     }
 
     const conversationStorage = await this.readValidateCsv(pathToInputCsv);
@@ -288,14 +448,5 @@ export default class CsvRunner {
       }
     }
     return transformedData;
-  }
-
-  _validateDirExists(path) {
-    if (!fs.existsSync(path)) {
-      throw new Error(`Path '${path}' does not exist.`);
-    }
-    if (!fs.statSync(path).isDirectory()) {
-      throw new Error(`'${path}' is not a directory`);
-    }
   }
 }
