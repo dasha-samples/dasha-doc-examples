@@ -1,8 +1,11 @@
 export default {
-  /** do nothing, i.e. we will use raw string as an argument */
-  endpoint: (arg) => arg,
-  /** apply Number() to argmument 'numOperations', i.e. it's equal to (arg) => Number(arg) */
-  numOperations: Number, 
+  /** apply String() to argmument 'endpoint', i.e. it's equal to (arg) => String(arg) */
+  endpoint: String,
+  /** check if argument is of particular values */
+  operation: (operationStr) => {
+    if (operationStr === "get" | operationStr === "put") return operationStr;
+    throw new Error(`Unknown operation: '${operationStr}'`)
+  }, 
   /** parse array from raw string provided in csv */
   coins: (coinsStr) => {
     /** transform string input */

@@ -1,27 +1,22 @@
 context {
-    // input parameters (provided outside)
-    // phone to call
     input endpoint: string;
-    // // input name: {name: string;};
     input coins: number[];
-    input numOperations: number;
+    input operation: "get"|"put";
 
-    some: string?;
-    output answer: number = 42;
-    // output status: string?;
-    // output anotherStatus: string = "None";
-    // output parameters (will be set during the dialogue)
+    output answer: number?;
 }
-
 
 start node root {
     do {
         #connectSafe($endpoint);
-        // #assert(false, "too baad");
-        #sayText("Hi! This is just a test.");
+        #sayText("Hi! This is virtual A.T.M machine.");
+        #sayText("Please, " + $operation + " the following coins:");
+        var sum: number = 0;
         for (var c in $coins) {
-            #sayText(#stringify(c) + ",");
+            set sum += c;
+            #sayText(#stringify(c));
         }
+        set $answer = sum;
         exit;
     }
 }

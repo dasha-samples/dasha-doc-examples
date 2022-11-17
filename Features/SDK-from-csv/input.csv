@@ -1,3 +1,4 @@
-endpoint,coins
-"xxx","1,2"
-"xxx","3,4"
+endpoint,coins,operation,_channel
+"invalid endoint","1,2","get","audio"
+"invalid endoint","3,4",put,
+"chat","3,4",put,"text"
