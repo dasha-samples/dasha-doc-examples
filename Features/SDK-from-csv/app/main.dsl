@@ -17,6 +17,7 @@ context {
 start node root {
     do {
         #connectSafe($endpoint);
+        // #assert(false, "too baad");
         #sayText("Hi! This is just a test.");
         for (var c in $coins) {
             #sayText(#stringify(c) + ",");

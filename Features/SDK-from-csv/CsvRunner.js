@@ -1,4 +1,4 @@
-import CsvWriter from "./CsvWriter.js";
+import CsvWriter, {CsvWriterError} from "./CsvWriter.js";
 import CsvReader from "./CsvReader.js";
 import ConversationStorage from "./ConversationStorage.js";
 import Ajv from "ajv";
@@ -31,9 +31,18 @@ const systemOutputParamsSchema = {
   _timestamp: (strValue) => String(strValue),
   _executionStatus: (strValue) => strValue,
   _failReason: (strValue) => strValue,
-  _recordingUrl: (strValue) => strValue,
-  _startTime: (dateValue) => dateValue.toISOString(),
-  _endTime: (dateValue) => dateValue.toISOString(),
+  _recordingUrl: (strValue) => {
+    if (strValue === undefined) return undefined;
+    return strValue;
+  },
+  _startTime: (dateValue) => {
+    if (dateValue === undefined) return undefined;
+    return dateValue.toISOString()
+  },
+  _endTime: (dateValue) => {
+    if (dateValue === undefined) return undefined;
+    return dateValue.toISOString();
+  },
 };
 const ExecutionStatus = {
   completed: "completed",
@@ -56,26 +65,37 @@ export default class CsvRunner {
   constructor(app, inputSchema, outputSchema) {
     /** params below are set in applyToApp */
     this._app = app;
-    this.inputTransformSchema = { ...systemInputParamsSchema, ...inputSchema };
-    this.outputTransformSchema = {
+    this.csvInputTransformSchema = {
+      ...systemInputParamsSchema,
+      ...inputSchema,
+    };
+    this.csvOutputTransformSchema = {
       ...systemOutputParamsSchema,
       /** add input params to output schema */
       ...Object.fromEntries(
-        Object.keys(this.inputTransformSchema).map((key) => [key, String])
+        Object.keys(this.csvInputTransformSchema).map((key) => [key, String])
       ),
       ...outputSchema,
     };
+    const transformData = (data) =>
+      this._transformData(data, this.csvOutputTransformSchema);
+    const csvHeaders = Object.keys(this.csvOutputTransformSchema).map(
+      (prop) => {
+        return { id: prop, title: prop };
+      }
+    );
+    this.csvWriter = new CsvWriter(transformData, csvHeaders);
     /** validate function built with application input schema */
     this._inputValidateFunction = new Ajv().compile(app.inputSchema);
     for (const prop of app.inputSchema.required ?? []) {
-      if (this.inputTransformSchema[prop] === undefined) {
+      if (this.csvInputTransformSchema[prop] === undefined) {
         throw new Error(
           `Provided input transform schema does not have transformer for property '${prop}' required by application`
         );
       }
     }
     for (const prop of app.outputSchema.required ?? []) {
-      if (this.outputTransformSchema[prop] === undefined) {
+      if (this.csvOutputTransformSchema[prop] === undefined) {
         throw new Error(
           `Provided output transform schema does not have transformer for property '${prop}' required by application`
         );
@@ -83,8 +103,7 @@ export default class CsvRunner {
     }
   }
   async runCsv(pathToInputCsv, pathToOutputCsv, options = {}) {
-    /** @TODO */
-    // const { configureConv, logDirectory } = options;
+    options.configureConv = options.configureConv ?? ((conv) => {});
     if (options.logDirectory) {
       this._validateDirExists(options.logDirectory);
     }
@@ -115,11 +134,11 @@ export default class CsvRunner {
       try {
         /** throws BadInputError */
         this._validateInput(
-          this._transformData(rawConvInput, this.inputTransformSchema)
+          this._transformData(rawConvInput, this.csvInputTransformSchema)
         );
         queuePushOptions = this._transformData(
           queuePushOptions,
-          this.inputTransformSchema
+          this.csvInputTransformSchema
         );
         /** save input to storage */
         conversationStorage.save(convId, rawConvInput, queuePushOptions);
@@ -138,16 +157,12 @@ export default class CsvRunner {
     pathToOutputCsv,
     options
   ) {
-    const transformData = (data) =>
-      this._transformData(data, this.outputTransformSchema);
-    const csvHeaders = Object.keys(this.outputTransformSchema).map((prop) => {
-      return { id: prop, title: prop };
-    });
-    const csvWriter = new CsvWriter(pathToOutputCsv, transformData, csvHeaders);
+    const writeOutput = this.csvWriter.getWriter(pathToOutputCsv);
+
     const onRejected = (convId, error) => {
       if (!conversationStorage.has(convId)) return;
       const rawConvInput = conversationStorage.getRawInput(convId);
-      csvWriter.writeOutput(convId, ExecutionStatus.rejected, {
+      writeOutput(convId, ExecutionStatus.rejected, {
         _jobId: conversationStorage.getJobId(convId),
         ...rawConvInput,
         _failReason: error.message,
@@ -157,7 +172,7 @@ export default class CsvRunner {
     const onTimeout = (convId) => {
       if (!conversationStorage.has(convId)) return;
       const rawConvInput = conversationStorage.getRawInput(convId);
-      csvWriter.writeOutput(convId, ExecutionStatus.timeout, {
+      writeOutput(convId, ExecutionStatus.timeout, {
         _jobId: conversationStorage.getJobId(convId),
         ...rawConvInput,
         _failReason: "Conversation timed out",
@@ -167,9 +182,7 @@ export default class CsvRunner {
     const onReady = async (convId, conv, info) => {
       if (!conversationStorage.has(convId)) return;
 
-      if (options.configureConv) {
-        options.configureConv(conv);
-      }
+      options.configureConv(conv);
       let logFile;
       if (options.logDirectory) {
         const logDirectory = options.logDirectory;
@@ -192,10 +205,13 @@ export default class CsvRunner {
       }
 
       const rawConvInput = conversationStorage.getRawInput(convId);
-      conv.input = this._transformData(rawConvInput, this.inputTransformSchema);
+      conv.input = this._transformData(
+        rawConvInput,
+        this.csvInputTransformSchema
+      );
       try {
         const convResult = await conv.execute();
-        csvWriter.writeOutput(convId, ExecutionStatus.completed, {
+        writeOutput(convId, ExecutionStatus.completed, {
           _jobId: conversationStorage.getJobId(convId),
           ...rawConvInput,
           _startTime: convResult.startTime,
@@ -204,7 +220,10 @@ export default class CsvRunner {
           ...convResult.output,
         });
       } catch (error) {
-        csvWriter.writeOutput(convId, ExecutionStatus.failed, {
+        if (error instanceof CsvWriterError) {
+          throw error;
+        }
+        writeOutput(convId, ExecutionStatus.failed, {
           _jobId: conversationStorage.getJobId(convId),
           ...rawConvInput,
           _failReason: error.message,
@@ -214,6 +233,7 @@ export default class CsvRunner {
         await logFile?.close();
       }
     };
+
     this._app.queue.on("rejected", onRejected);
     this._app.queue.on("timeout", onTimeout);
     this._app.queue.on("ready", onReady);
@@ -223,6 +243,7 @@ export default class CsvRunner {
       this._app.queue.off("ready", onReady);
     });
   }
+
   async _enqueueConversations(conversationStorage) {
     for (const [
       convId,

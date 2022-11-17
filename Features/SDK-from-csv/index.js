@@ -7,12 +7,9 @@ async function main() {
   const app = await dasha.deploy("./app");
 
   const csvRunner = new CsvRunner(app, inputSchema, outputSchema);
-  await app.start({ concurrency: 1 });
+  await app.start({ concurrency: 3 });
 
-  const configureConv = (conv) => {
-    conv.sip.config = "default";
-    conv.audio.tts = "default";
-  };
+
   const promises = [
     csvRunner.runCsv("./test-input.csv", "test-output.csv", {
       configureConv: (conv) => {
