@@ -19,6 +19,7 @@ Examples
  - [DSL Handle voicemail, answering machine and operator messages](Examples/DSL-Handle-voicemail-answering-machine)
  - [DSL Complex logic in digression](Examples/DSL-Complex-digression)
  - [DSL Slotfilling](Examples/DSL-Slotfilling)
+ - [DSL Warm Transfer](Examples/DSL-warm-transfer/)
 
 Features
  - [NLU Intents (simple)](Features/NLU-Intents-(simple))
@@ -46,16 +47,6 @@ Features
    - Answering machine detection
    - Pinging user
    - What to do, if we don't understand
- - DSL Types
-   - basic
-   - union
-   - array
-   - object
-   - nullable
-   - custom
-   - compatibility
-   - casting
-   - special
  - DSL HTTP requests
  - DSL External functions
  - [Voice over IP](Features/VoIP-overview)
