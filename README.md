@@ -61,6 +61,7 @@ Features
    - output
    - audio record
    - transcription
+ - [SDK run conversations from csv](Features/SDK-from-csv)
  - SDK concurrency
  - SDK conversation config
    - Audio
