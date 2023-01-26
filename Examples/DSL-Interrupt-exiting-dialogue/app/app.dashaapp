@@ -8,7 +8,8 @@
     "language": "en-US",
     "skills": [
       "common_phrases",
-      "sentiment"
+      "sentiment",
+      "common-intents-en:v2"
     ]
   },
   "nlg": {

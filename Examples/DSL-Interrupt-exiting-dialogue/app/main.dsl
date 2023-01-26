@@ -47,11 +47,23 @@ node greeting {
 node goodbye {
     do {
         #log("node 'goodbye'");
-        #sayText("Now I'm going to wait for 2 seconds before hangup. Have a nice day! Bye!");
+        /** interrupts can be caused by intents during Dasha utterance */
+        var is_completely_said = #sayText(
+            "Now I'm going to wait for 5 seconds before hangup. " + 
+            "You may say something like 'no' or 'wait' to prevent the exiting dialogue. " + 
+            "Now I say goodbye to you. Have a nice day! Bye!", 
+            interruptible: true,
+            options: { interruptConditions: ["no", "not_interested", "wait", "can_you_hear_me"] }
+        );
         set $status = "Done";
+        if (!is_completely_said) {
+            goto interrupt_hangup;
+        }
+        /** the other way to implement interrupts before hangup is to set timer before exiting dialogue */
         goto wait_for_interrupt_or_hangup;
     }
     transitions {
+        interrupt_hangup: goto interrupt_hangup;
         wait_for_interrupt_or_hangup: goto wait_for_interrupt_or_hangup;
     }
 }
@@ -59,8 +71,6 @@ node goodbye {
 node wait_for_interrupt_or_hangup {
     do {
         #log("node 'wait_for_interrupt_or_hangup'");
-        // disable digressions that you don't want to be triggered
-        digression disable {dont_understand};
         wait*;
     }
     transitions {
@@ -71,8 +81,7 @@ node wait_for_interrupt_or_hangup {
 
         // if timer is not finished and user wants to return in the dialogue, go to some node
         interrupt1: goto interrupt_hangup on #messageHasSentiment("negative");
-        interrupt2: goto interrupt_hangup on #messageHasAnyIntent(["not_interested", "wait", "can_you_hear_me"]);
-        // all other user inputs are ignored
+        interrupt2: goto interrupt_hangup on #messageHasAnyIntent(["no", "not_interested", "wait", "can_you_hear_me"]);
     }
 }
 
@@ -101,24 +110,6 @@ node hangup {
     do {
         #log("node 'hangup'");
         exit;
-    }
-}
-
-// this digression is visited if no other transition can be executed
-// in current example it is used to demonstrate logic in the end of the dialogue
-digression dont_understand {
-    conditions {
-        // set low priority to avoid triggering on any other transitions
-        on true priority -100;
-    }
-    do {
-        #log("digression 'dont_understand'");
-        // say phrase that will no be repeated 
-        #sayText("Sorry, I did not get it", repeatMode:"ignore");
-        // repeat last phrase without 'repeatMode:"ignore"' option
-        #repeat();
-        // return to the node where this digression was triggered
-        return;
     }
 }
 
