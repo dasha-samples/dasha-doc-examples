@@ -1,3 +1,4 @@
+/** Schema for csv-input transformation (from string to desired type) */
 export default {
   /** apply String() to argmument 'endpoint', i.e. it's equal to (arg) => String(arg) */
   endpoint: String,

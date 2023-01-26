@@ -1,14 +1,28 @@
-# Topic: Example name
+# SDK: run multiple conversations from csv file
 
 ## Description
 
-[Feature doc link](https://docs.dasha.ai/en-us/default/current-feature-doc)
+A single Dasha application is able to run many conversations.  \
+More over, it is able to run them in concurrent way, i.e. several conversations at a time.
 
-Some common information about the feature. What is it? How do we handle it, i.e. what instruments are there in Dasha to rule this feature? [Link to original demo if needed](https://some.demo.com)
+There are many ways to store and pass conversation inputs into an application. 
+It depends on desired architecture and other constraints.
 
-Overall example description. What is it about? What does current example contain? What files should user look at?
+The current example demonstrates the approach for running multiple conversations with inputs described in `.csv` file.
 
-Please, see our [some-important-link](https://docs.dasha.ai/en-us/default/current-feature-doc) for more details. 
+1. Here we've got a single Dasha application (with concurrency set to `3`) and two `.csv` file which are passed to the app (asynchronously) as conversation inputs.
+2. Conversation inputs are transformed via user-defined schema described in `inputSchema.js` (it is necessary since `.csv` file stores string data, and the app may require some specific data type).
+3. All results are written into single output `.csv` file. The conversation outputs are transformed into strings via user-defined schema `outputSchema.js`
+
+> Note: You can use this example as template for your application.
+
+### Project description
+- `app` - folder with Dasha files (dialogue script, nlu config, etc...)
+- `CsvRunner.js` - an utility class used to handle csv file inputs
+- `index.js` - main script
+- `inputSchema.js` - schema for csv-input transformation (from string to desired type)
+- `outputSchema.js` - schema for dialogue output transformation (from output type to string)
+- `input*.csv` - .csv file with conversation inputs
 
 ## Installation
 
@@ -17,15 +31,6 @@ Please, see our [some-important-link](https://docs.dasha.ai/en-us/default/curren
 
 ## Running the demo
 
-Run `npm start chat` for launching text chat or run `npm start <your_phone_number>` to start a phone call.
+Run `npm start`.
 
-
-## Detailed script description
-
-This section is needed to make code example clear to user. What exactly is going on in the example? How current feature is related to this example?
-
-This section probalby uses other features - they must be mentioned and referenced (references to the docs and demos)
-
-## Dialogue example
-
-Example demonstrating the real dialogue
+Note that you may change `endpoint` parametes in .csv files. For instance, you may set you phone number as an endpoint and Dasha will call that number. But, please, watch the `_channel` as well. If you use your phone number as an endpoint, `_channel` must be set to `audio`. Use `chat`  as  `_channel`  value to start your conversaiton in chat.
