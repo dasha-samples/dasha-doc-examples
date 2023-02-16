@@ -172,11 +172,11 @@ digression dtmf
 
 async block additional_channel()
 {
-    context 
+    context
     {
         text: string = "";
     }
-
+    
     start node root
     {
         do
@@ -196,6 +196,7 @@ async block additional_channel()
         do
         {
             #log(#getAsyncBlockDescription().id + " " + $text);
+            if($text != "") #sayText($text);
             wait *;
         }
         transitions
@@ -204,7 +205,8 @@ async block additional_channel()
         }
         onexit
         {
-            recognized: do {
+            recognized: do
+            {
                 set $text = #getMessageText();
             }
         }

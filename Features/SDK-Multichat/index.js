@@ -29,24 +29,30 @@ async function main() {
     const interface = readline.createInterface(process.stdin);
     const chats = [];
     interface.on("line", (text) => {
-      try{
-        const msg = text.split(':').map(x=>x.trim());
+      try {
+        const msg = text.split(":").map((x) => x.trim());
         console.log(msg);
         console.log(chats);
         const chatId = parseInt(msg[0]);
-        if(chats.length <= chatId) console.warn(`No chat with this id`);
-        else chats[chatId].sendText(msg[1]).catch((error) => chatChannel.emit("error", error));
-      }
-      catch(ex)
-      {
+        if (chats.length <= chatId) console.warn(`No chat with this id`);
+        else
+          chats[chatId].chatChannel
+            .sendText(msg[1])
+            .catch((error) => chatChannel.emit("error", error));
+      } catch (ex) {
         console.log(ex);
       }
     });
 
     chat.on("open", async (endpoint, channelId) => {
       const chatChannel = await chat.sendOpen(channelId);
-      console.log(`opened ${chats.length} chat with id ${channelId}, endpoint ${endpoint}`);
-      chats.push(chatChannel);
+      console.log(
+        `opened ${chats.length} chat with id ${channelId}, endpoint ${endpoint}`
+      );
+      chats.push({
+        active: true,
+        chatChannel: chatChannel,
+      });
 
       console.log("chat started");
 
@@ -57,11 +63,12 @@ async function main() {
       chatChannel.on("closed", () => {
         console.log("chat closed");
       });
-    }
-    )
+    });
   }
 
-  const result = await conv.execute({ channel: conv.input.phone ? "audio" : "text" });
+  const result = await conv.execute({
+    channel: conv.input.phone ? "audio" : "text",
+  });
 
   console.log(result.output);
 
@@ -69,4 +76,4 @@ async function main() {
   app.dispose();
 }
 
-main().catch(() => { });
+main().catch(() => {});
