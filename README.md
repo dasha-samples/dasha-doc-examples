@@ -69,7 +69,7 @@ Features
    - Call records
  - SDK conversation channels
  - SDK Text To Speech
-   - pre-recorded
+   - [pre-recorded](Features/SDK-tts-prerecorded/)
    - emotions control
    - voice cloning
  - Calling application from model

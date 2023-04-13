@@ -38,7 +38,7 @@ class AudioProvider {
    * @param {object} voiceInfo phrase voice information: lang, speaker, emotion, speed, variation
    * @returns dasha.audio.Audio object of a resource file.
    */
-  async handleTtsRequest(text, voiceInfo) {
+  handleTtsRequest = async (text, voiceInfo) => {
     console.log(`Got resource request for ${JSON.stringify({text, voiceInfo})}`);
     /** get audio file path for provided text and voiceInfo */
     const fname = this.getAudioResourcePath(text, voiceInfo);  
