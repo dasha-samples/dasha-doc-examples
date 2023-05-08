@@ -1,0 +1,20 @@
+{
+  "formatVersion": "2",
+  "name": "sdk-multichat-example",
+  "description": "Multichannel chat example",
+  "nlu": {
+    "skills": [
+      "common_phrases",
+      "sentiment"
+    ],
+    "language": "en-US"
+  },
+  "nlg": {
+    "type": "phrases",
+    "file": "phrasemap.json",
+    "signatureFile": "phrasemap.json"
+  },
+  "dialogue": {
+    "file": "main.dsl"
+  }
+}

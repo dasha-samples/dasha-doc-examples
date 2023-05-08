@@ -1,0 +1,84 @@
+{
+  "default": {
+    "voiceInfo": { "emotion": "good", "lang": "en-US", "speaker": "Kate" },
+    "phrases": {
+      "i_will_call_back": [{ "text": "I will call you later, bye!" }],
+      "hello": {
+        "random": [[{ "text": "Hello" }]]
+      },
+      "when_callback": [{ "text": "When I can call you back?" }],
+      "i_said": [{ "text": "I said" }],
+      "sorry_wont_call": [{ "text": "Sorry, I won't call, goodbye!" }],
+      "i_will_wait": [{ "text": "Ok, I will wait" }],
+      "i_can_hear_you": [{ "text": "I can hear you" }],
+      "dont_understand": {
+        "random": [[{ "text": "Sorry, I can't hear you" }], [{ "text": "Can you please repeat?" }]]
+      },
+      "dont_understand_hangup": {
+        "text": "I can't hear you, let me call you later. Goodbye!"
+      },
+      "yes_i_am_a_robot": [
+        {
+          "text": "Yes, I'm a robot, hope it won't reflect on our conversation"
+        }
+      ],
+      "is_that_all": [{ "text": "That's all?" }],
+      "greeting": [{ "text": "Hello!" }],
+
+      "mhm": { "random": [[{ "text": "mhm" }]] },
+
+      "introduce_self": [
+        { "text": "Hi " },
+        { "id": "username", "type": "names" },
+        {
+          "text": " my name is Dasha, I'm calling you "
+        }
+      ],
+      "kuzma": [{ "text": "Kuzma" }],
+      "veneamin": [{ "text": "Veneamin" }],
+      "alex": [{ "text": "Alex" }],
+
+      "ask_divide": [
+        {
+          "text": "Do you want to divide "
+        },
+        { "id": "numerator", "type": "dynamic" },
+        { "text": " by 4?" }
+      ],
+
+      "let_me_think": [
+        { "text": "Ok, let's divide by " },
+        { "id": "denominator", "type": "dynamic" },
+        { "text": ". Let me calculate..." }
+      ],
+
+      "result_is": [
+        { "text": "Result is " },
+        { "id": "value", "type": "dynamic" },
+        { "text": ". Want to talk more?" }
+      ],
+
+      "ask_if_ready_to_take_a_survey": [{ "text": "Ready to answer some questions?" }],
+      "sorry_goodbye": [{ "text": "I'm sorry, have a nice day, goodbye!" }],
+      "get_gotted": [{ "text": "Sorry, but I don't want" }]
+    },
+    "macros": {
+      "introduce_self": {},
+      "ask_divide": {},
+      "let_me_think": {},
+      "result_is": {},
+      "sorry_goodbye": {},
+      "get_gotted": {},
+      "hello": {},
+      "mhm": {},
+      "i_will_call_back": {},
+      "i_can_hear_you": {},
+      "dont_understand_hangup": {},
+      "dont_understand": {},
+      "yes_i_am_a_robot": {},
+      "i_said": {},
+      "i_will_wait": {},
+      "sorry_wont_call": {}
+    }
+  }
+}
