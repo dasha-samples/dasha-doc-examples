@@ -12,8 +12,7 @@
   },
   "nlg": {
     "type": "phrases",
-    "file": "phrasemap.json",
-    "signatureFile": "phrasemap.json"
+    "file": "phrasemap.json"
   },
-  "name": "sip-test-app"
+  "name": "warm-transfer-test-app"
 }

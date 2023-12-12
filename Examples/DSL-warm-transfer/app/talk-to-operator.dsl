@@ -1,12 +1,16 @@
 library
 
 /** asynchronous block that is able to extablish new connection */
-async block TalkToOperator(endpoint:string, parentId:string, userInfo: {feelsFine: boolean; userMessage:string;}) {   
+async block TalkToOperator(endpoint:string, parentId:string, userInfo: {feelsFine: boolean; userMessage:string;}, sipOptions: SipOptions? = null) {   
     start node root {
         do {
-            #setVadPauseLength(1.3);
+            var options:{ [x: string]: string; } = {};
+            if($sipOptions is not null)
+            {
+                $sipOptions.attachToOptions(options);
+            }
             /** establish new connection */
-            #connectSafe($endpoint);
+            #connectSafe($endpoint, options: options);
             /** notify parent block that operator picked up his phone */
             #sendMessageToAsyncBlock($parentId, "Content", { status: "operator answered" });
             #waitForSpeech(1000);
@@ -28,6 +32,8 @@ async block TalkToOperator(endpoint:string, parentId:string, userInfo: {feelsFin
     node accept_user {
         do {
             #sayText("Ok, I am now going to connect the user to you in a few seconds. Thank you!");
+            /**  turn off background noise for operator */
+            #noiseControl(false);
             /** disable stt and nlu in dialogue Dasha-operator */
             #disableRecognition();
             /** send command to parent block to say phrase */

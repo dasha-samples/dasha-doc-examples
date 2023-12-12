@@ -2,19 +2,14 @@
     "default": {
         "voiceInfo": {
             "lang": "en-US",
-            "speaker": "default",
-            "speed": 0.8
+            "speaker": "anna",
+            "speed": 1.1
         },
         "phrases": {
             "hello": [{ "text": "Hello" }],
             "hello_another": [{ "text": "Hello another" }],
             "forward": [{ "text": "I'm going to forward you" }],
             "fine": [{ "text": "Works fine. Good day!" }]
-        },
-        "macros": {
-            "hello": {},
-            "forward": {},
-            "fine": {}
         }
     }
 }

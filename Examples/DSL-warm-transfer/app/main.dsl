@@ -6,7 +6,7 @@ context
     input phone: string;
     /** operator's endpoint */
     input phone_interlocutor: string? = null;
-
+    fromUser: string? = null;
     childId: string = "";
     waitingPhrases:string[] = [
         "Nice weather, huh?", 
@@ -23,9 +23,12 @@ context
 
 start node root {
     do {
-        #setVadPauseLength(1.3);
         #log("phone_interlocutor: " + #stringify($phone_interlocutor));
         #connectSafe($phone);
+        set $fromUser = $phone;
+        if($fromUser == ""){
+            set $fromUser = #getConnectOptions().options["sip_fromUser"] ?? null;
+        }
         #waitForSpeech(1000);
         goto greeting;
         wait *;
@@ -81,7 +84,10 @@ node connect_to_operator {
         set $childId = blockcall TalkToOperator(
             $phone_interlocutor, 
             #getAsyncBlockDescription().id, 
-            {feelsFine: $userFeelsFine, userMessage: $userMessage}
+            {feelsFine: $userFeelsFine, userMessage: $userMessage},
+            {
+            FromUser: $fromUser, DisplayName: $fromUser
+            }
         ).id;
         #sayText("Waiting for operator to response...");
         wait *;
@@ -155,6 +161,8 @@ digression handle_block_content_message {
 node endless_waiting {
     do {
         #disableRecognition();
+        /**  turn off background noise for operator */
+        #noiseControl(false);
         /** dialogue continues until someone drops his phone, see :
         *   - digression 'exit_when_any_child_exit'
         *   - digression 'exit_when_parent_block_exit'
